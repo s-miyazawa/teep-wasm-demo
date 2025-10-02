@@ -1,0 +1,6 @@
+[
+    / type: / e'TEEP-TYPE-query-response',
+    / options: / {
+        e'attestation-payload': h'0011'
+    }
+]

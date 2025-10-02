@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2024 SECOM CO., LTD. All Rights reserved.
+# Copyright (c) 2025 SECOM CO., LTD. All Rights reserved.
 #
 # SPDX-License-Identifier: BSD-2-Clause
 #
@@ -8,6 +8,9 @@ TARGET=app.wasm.envelope.cbor
 APP_WASM=hello-wasi/target/wasm32-wasip1/release/hello-wasi.wasm
 .PHONY: all
 all: $(TARGET)
+
+# set cddl file
+CDDL_FILE=../cddl/suit-manifest.cddl
 
 # load generic rules
 include ../scripts/common.mk
@@ -30,7 +33,7 @@ app.wasm.envelope.cbor: \
 app.wasm.envelope.gdiag: \
 	app.wasm.envelope.rediag \
 	app.wasm.manifest.digest.gdiag \
-	app.wasm.manifest.digest.esp256.cose.gdiag \
+	app.wasm.manifest.digest.tc-signer.esp256.cose.gdiag \
 	app.wasm.manifest.gdiag \
 	app.wasm.bin.hdiag
 

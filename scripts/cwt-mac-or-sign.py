@@ -8,6 +8,7 @@ parser = argparse.ArgumentParser(description="Generate COSE_Mac0 or COSE_Sign1 b
 parser.add_argument("plaintext_payload", help="input filename to be MACed/signed")
 parser.add_argument("jwk",               help="jwk filename of MAC/sign key")
 parser.add_argument("cose",              help="output filename of COSE_Mac0 or COSE_Sign1 binary")
+parser.add_argument('--detached', action=argparse.BooleanOptionalAction, help="generate detached payload COSE")
 args = parser.parse_args()
 
 with open(args.plaintext_payload, "rb") as f:
@@ -22,12 +23,18 @@ encoded = sender.encode(
     input_bin,
     key
 )
-cose = COSEMessage.loads(encoded)
-encoded, detached_payload = cose.detach_payload()
 
-# Verify that the library has produced valid COSE_Mac0 or COSE_Sign1 binary
-recipient = COSE.new()
-assert input_bin == recipient.decode(encoded.dumps(), key, detached_payload=detached_payload)
+if args.detached:
+    cose = COSEMessage.loads(encoded)
+    detached_cose, detached_payload = cose.detach_payload()
+
+    # Verify that the library has produced valid COSE_Mac0 or COSE_Sign1 binary
+    encoded = detached_cose.dumps()
+    recipient = COSE.new()
+    assert input_bin == recipient.decode(encoded, key, detached_payload=detached_payload)
+else:
+    recipient = COSE.new()
+    assert input_bin == recipient.decode(encoded, key)
 
 with open(args.cose, "wb") as f:
-    f.write(encoded.dumps())
+    f.write(encoded)

@@ -4,12 +4,15 @@
     - [To TAM operator](#to-tam-operator)
     - [To TEEP Agent implementor](#to-teep-agent-implementor)
   - [Generate SUIT Manifest](#generate-suit-manifest)
+    - [Install requirements (Ruby and Rust)](#install-requirements-ruby-and-rust)
+    - [Generate](#generate)
   - [Build SUIT Manifest Processor](#build-suit-manifest-processor)
-    - [Install requirements](#install-requirements)
+    - [Install requirements (OpenSSL)](#install-requirements-openssl)
     - [Build](#build)
   - [Process app.wasm SUIT Manifest](#process-appwasm-suit-manifest)
     - [Install WasmRuntime](#install-wasmruntime)
     - [Run](#run)
+  - [Generate TEEP Protocol Messages](#generate-teep-protocol-messages)
 
 # SUIT for IETF124 Demo
 
@@ -43,7 +46,7 @@ The TAM would send the [prebuilt/app.wasm.envelope.cbor](./prebuilt/app.wasm.env
 
 ## Generate SUIT Manifest
 
-Install requirements (Ruby and Rust)
+### Install requirements (Ruby and Rust)
 ```sh
 sudo apt install ruby ruby-rubygems
 sudo gem install cbor-diag cbor-diag-e cbor-diag-ref cddl
@@ -51,23 +54,34 @@ sudo gem install cbor-diag cbor-diag-e cbor-diag-ref cddl
 curl https://sh.rustup.rs -sSf | sh
 ```
 
+### Generate
 ```sh
-make -C manifest test
+make -C manifest/ test
 ```
+
+> [!TIP]
+> The above command also validates the generated manifest against the CDDL definition of SUIT Manifest `cddl/suit-manifest.cddl`.
+> If you customize any of `manifest/*.rediag` files, make sure you've done it well.
+> In the files, `e'foo'` will be replaced with the actual value in the cddl file,
+> and `ref'bar'` will be replaced the content in the filename `bar` in the directory.
 
 ## Build SUIT Manifest Processor
 
-### Install requirements
+### Install requirements (OpenSSL)
+
 ```sh
 sudo apt install openssl openssl-dev gcc
-make -C QCBOR libqcbor.a
-make -C t_cose -f Makefile.ossl libt_cose.a
-make -C libcsuit -f Makefile libcsuit.a
 ```
+
+You may use [MbedTLS](https://github.com/Mbed-TLS/mbedtls) instead of OpenSSL.
+In that case, build t_cose with `Makefile.psa` and `make -C process MBEDTLS=1`.
 
 ### Build
 ```sh
-make -C process
+make -C QCBOR libqcbor.a
+make -C t_cose -f Makefile.ossl libt_cose.a
+make -C libcsuit -f Makefile libcsuit.a
+make -C process/
 ```
 
 ## Process app.wasm SUIT Manifest
@@ -85,9 +99,15 @@ sudo make install
 
 ### Run
 ```sh
-make -C run
+make -C run/
 ```
 
 > [!TIP]
-> The SUIT Manifest Processor consumes `manifest/app.wasm.envelope.cbor`, and extract the `app.wasm` file in current directory.
+> The above command executes SUIT Manifest Processor to consume `manifest/app.wasm.envelope.cbor`, and to extract the `app.wasm` file in current directory.
 > Additionally, it stores also the manifest itself as `manifest.app.wasm.0.suit`, because the manifest contains the id in `suit-manifest-component-id`.
+
+## Generate TEEP Protocol Messages
+
+```
+
+```
