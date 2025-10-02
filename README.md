@@ -1,10 +1,25 @@
-[[_TOC_]]
+
+- [SUIT for IETF124 Demo](#suit-for-ietf124-demo)
+  - [Generate SUIT Manifest](#generate-suit-manifest)
+  - [Build SUIT Manifest Processor](#build-suit-manifest-processor)
+    - [Install requirements](#install-requirements)
+    - [Build](#build)
+  - [Process app.wasm SUIT Manifest](#process-appwasm-suit-manifest)
+    - [Install WasmRuntime](#install-wasmruntime)
+    - [Run](#run)
 
 # SUIT for IETF124 Demo
 
+> [!NOTE]
+> Tested only in Ubuntu 22.04LTS
+```sh
+git clone --recursive https://github.com/kentakayama/ietf124
+cd ietf124
+```
+
 ## Generate SUIT Manifest
 
-Install requirements
+Install requirements (Ruby and Rust)
 ```sh
 sudo apt install ruby ruby-rubygems
 sudo gem install cbor-diag cbor-diag-e cbor-diag-ref cddl
@@ -49,3 +64,6 @@ sudo make install
 make -C run
 ```
 
+> [!TIP]
+> The SUIT Manifest Processor consumes `manifest/app.wasm.envelope.cbor`, and extract the `app.wasm` file in current directory.
+> Additionally, it also stores the manifest itself as `manifest.app.wasm.0.suit`, because the manifest contains the id in `suit-manifest-component-id`.
