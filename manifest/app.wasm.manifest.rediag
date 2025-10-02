@@ -21,6 +21,9 @@
       e'suit-condition-class-identifier', 15
     ] >>
   } >>,
+  e'suit-manifest-component-id': [
+    'manifest.app.wasm.0.suit'
+  ],
   e'suit-payload-fetch': << [
     e'suit-directive-override-parameters', {
       / NOTE: replace below with actual URI of image (via integrated or http) /
