@@ -1,5 +1,8 @@
 
 - [SUIT for IETF124 Demo](#suit-for-ietf124-demo)
+  - [For Collaborators](#for-collaborators)
+    - [To TAM operator](#to-tam-operator)
+    - [To TEEP Agent implementor](#to-teep-agent-implementor)
   - [Generate SUIT Manifest](#generate-suit-manifest)
   - [Build SUIT Manifest Processor](#build-suit-manifest-processor)
     - [Install requirements](#install-requirements)
@@ -16,6 +19,27 @@
 git clone --recursive https://github.com/kentakayama/ietf124
 cd ietf124
 ```
+
+## For Collaborators
+
+### To TAM operator
+
+The [prebuilt/app.wasm.envelope.cbor](./prebuilt/app.wasm.envelope.cbor) is the **untagged** SUIT Manifest to be transferred in the TEEP Protocol, and [prebuilt/manifest.diag](./prebuilt/manifest.diag) is its diagnostic notation.
+
+Please send it to the TEEP Agent in TEEP Update messages.
+
+> [!WARNING]
+> The manifest uses ESP256 (alg id -9), which is not widely supported by most COSE libraries.
+> If you use SUIT Manifest Processor other than one using libcsuit, please confirm that it supports the algorithm.
+
+### To TEEP Agent implementor
+
+The TAM would send the [prebuilt/app.wasm.envelope.cbor](./prebuilt/app.wasm.envelope.cbor) in TEEP Update message, process it using `suit_process_envelope()` libcsuit function. Please refer [process/suit_manifest_process_main.c](./process/suit_manifest_process_main.c).
+
+> [!TIP]
+> The libcsuit parses the manifest and triggers some callback functions, like suit_condition_callback and suit_store_callback, depending on the manifest.
+> You may need to modify them in the [process/suit_manifest_process_main.c](./process/suit_manifest_process_main.c).
+> At least, it doesn't produce any SUIT_Report to be sent to the TAM in TEEP Success/Error messages.
 
 ## Generate SUIT Manifest
 
