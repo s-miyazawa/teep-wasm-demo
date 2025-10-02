@@ -1,0 +1,8 @@
+/ SUIT_Envelope_Tagged / 107({
+  e'suit-authentication-wrapper': << [
+    << ref'app.wasm.manifest.digest.gdiag' >>,
+    << ref'app.wasm.manifest.digest.esp256.cose.gdiag' >>
+  ] >>,
+  e'suit-manifest': ref'app.wasm.manifest.gdiag',
+  "#app.wasm": ref'app.wasm.bin.hdiag'
+})

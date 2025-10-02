@@ -1,0 +1,10 @@
+[submodule "t_cose"]
+	path = t_cose
+	url = https://github.com/kentakayama/t_cose
+	branch = dev-deterministic-ecdsa
+[submodule "libcsuit"]
+	path = libcsuit
+	url = https://github.com/kentakayama/libcsuit
+[submodule "QCBOR"]
+	path = QCBOR
+	url = https://github.com/laurencelundblade/QCBOR
