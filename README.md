@@ -66,4 +66,4 @@ make -C run
 
 > [!TIP]
 > The SUIT Manifest Processor consumes `manifest/app.wasm.envelope.cbor`, and extract the `app.wasm` file in current directory.
-> Additionally, it also stores the manifest itself as `manifest.app.wasm.0.suit`, because the manifest contains the id in `suit-manifest-component-id`.
+> Additionally, it stores also the manifest itself as `manifest.app.wasm.0.suit`, because the manifest contains the id in `suit-manifest-component-id`.
