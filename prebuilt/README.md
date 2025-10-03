@@ -1,0 +1,17 @@
+# Prebuilt Binaries
+- query_request.tam.esp256.cose
+    - content: [query_request.rediag](teep/query_request.rediag)
+    - signing key: [scripts/tam-esp256-priv.jwk](scripts/tam-esp256-priv.jwk)
+    - note: since the TEEP Agent would return the blank `tc-list: []` which is CDDL violation, only `attestation` bit is set in data-item-requested
+- query_response.agent.esp256.cose
+    - content: [query_response.rediag](teep/query_response.rediag)
+    - signing key: [agent-esp256-priv.jwk](scripts/agent-esp256-priv.jwk)
+    - note: most of the content is [psa_token_evidence.attester.es256.cose](prebuilt/psa_token_evidence.attester.es256.cose)
+- psa_token_evidence.attester.es256.cose
+    - content: [psa_token_evidence.rediag](rats/psa_token_evidence.rediag)
+    - signing key: [attester-es256-priv.jwk](scripts/attester-es256-priv.jwk), provided from [VERAISON](https://github.com/veraison/services/blob/main/end-to-end/input/ec-p256.jwk)
+    - note: strictly, `eat_profile: "https://arm.com/psa/2.0.0"` is CDDL violation of RFC 9783 (need an errata?)
+- update.tam.esp256.cose
+    - content: [update.rediag](teep/update.rediag)
+    - signing key: [tam-esp256-priv.jwk](scripts/tam-esp256-priv.jwk)
+    - note: most of the content is [app.wasm.envelope.cbor](prebuilt/manifest.diag)
