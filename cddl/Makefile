@@ -21,14 +21,15 @@ $(CONCATENATED_SUIT_CDDL): $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SU
 	cat $^ > $@
 
 $(SUIT_MANIFEST_CDDL):
-	curl https://raw.githubusercontent.com/suit-wg/manifest-spec/master/draft-ietf-suit-manifest.cddl -o $@
+	curl https://raw.githubusercontent.com/suit-wg/manifest-spec/master/draft-ietf-suit-manifest.cddl | \
+	sed -e 's/SUIT_start = SUIT_Envelope_Tagged/SUIT_start = SUIT_Envelope \/ SUIT_Envelope_Tagged/' > $@
 
 $(SUIT_TRUST_DOMAINS_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/suit-multiple-trust-domains/main/draft-ietf-suit-trust-domains.cddl -o $@
 
 $(SUIT_UPDATE_MANAGEMENT_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/suit-update-management/refs/heads/master/draft-ietf-suit-update-management.cddl | \
-	sed -i -e 's/suit-current-version => \\/suit-current-version =>/' $@
+	sed -e 's/suit-current-version => \\/suit-set-version =>/' > $@
 
 $(SUIT_ENCRYPTED_PAYLOADS_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/suit-firmware-encryption/main/draft-ietf-suit-firmware-encryption.cddl -o $@
@@ -50,7 +51,8 @@ $(COSE_CDDL): $(COSE_XML)
 	sed -n -e '/<sourcecode type="cddl"/,/<\/sourcecode>/ p' $< | sed -e '/<sourcecode type="cddl"/ d' -e '/<\/sourcecode>/ d' -e 's/\&lt;/</g' -e 's/\&gt;/>/g' > $@
 
 $(TEEP_PROTOCOL_CDDL):
-	curl https://raw.githubusercontent.com/ietf-teep/teep-protocol/refs/heads/master/draft-ietf-teep-protocol.cddl -o $@
+	curl https://raw.githubusercontent.com/ietf-teep/teep-protocol/refs/heads/master/draft-ietf-teep-protocol.cddl | \
+	sed -e 's/sha256-es256/sha256-esp256/' -e 's/sha256-eddsa/sha256-ed25519/' > $@
 
 $(CONCATENATED_TEEP_CDDL): $(TEEP_PROTOCOL_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_UPDATE_MANAGEMENT_CDDL) $(SUIT_ENCRYPTED_PAYLOADS_CDDL) $(SUIT_REPORT_CDDL) $(SUIT_MTI_CDDL) $(COSWID_CDDL) $(COSE_CDDL)
 	cat $^ > $@
