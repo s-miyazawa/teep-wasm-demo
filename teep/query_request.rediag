@@ -17,5 +17,5 @@
             1 / A128GCM /
         ]
     ],
-    / data-item-requested: / 3 / trusted-components | attestation /
+    / data-item-requested: / 1 / attestation /
 ]
