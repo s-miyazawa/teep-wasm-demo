@@ -12,7 +12,8 @@
   - [Process app.wasm SUIT Manifest](#process-appwasm-suit-manifest)
     - [Install WasmRuntime](#install-wasmruntime)
     - [Run](#run)
-  - [Generate TEEP Protocol Messages](#generate-teep-protocol-messages)
+  - [Generate and Test RATS PSA Token Evidence](#generate-and-test-rats-psa-token-evidence)
+  - [Generate and Test TEEP Protocol Messages](#generate-and-test-teep-protocol-messages)
 
 # SUIT for IETF124 Demo
 
@@ -104,10 +105,30 @@ make -C run/
 
 > [!TIP]
 > The above command executes SUIT Manifest Processor to consume `manifest/app.wasm.envelope.cbor`, and to extract the `app.wasm` file in current directory.
-> Additionally, it stores also the manifest itself as `manifest.app.wasm.0.suit`, because the manifest contains the id in `suit-manifest-component-id`.
+> Additionally, it stores also the manifest itself as `manifest.app.wasm.0.suit`, because the manifest contains the id in `suit-manifest-component-id (5)`.
 
-## Generate TEEP Protocol Messages
+## Generate and Test RATS PSA Token Evidence
 
+```sh
+make -C rats/
+cbor2diag.rb -e rats/psa_token_evidence.attester.es256.cose
+make -C rats/ test
 ```
 
+> [!TIP]
+> The make test command checks that the encoded **CBOR** evidence matches the PSA Token CDDL definition.
+> As VERAISON doesn't support **ESP256** for now, we use **ES256** instead.
+
+## Generate and Test TEEP Protocol Messages
+
+```sh
+make -C teep/
+cbor2diag.rb -e teep/query_request.tam.esp256.cose
+cbor2diag.rb -e teep/query_response.agent.esp256.cose
+cbor2diag.rb -e teep/update.tam.esp256.cose
+make -C teep/ test
 ```
+
+> [!TIP]
+> The QueryResponse message contains PSA Token as an evidence in `attestation-payload (7)` and the Update message contains SUIT Manifest in `manifests (10)`.
+> The make test command checks that the each encoded **CBOR** messages matches the TEEP Protocol CDDL definition.
