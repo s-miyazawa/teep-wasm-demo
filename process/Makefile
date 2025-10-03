@@ -5,7 +5,7 @@
 #
 
 CFLAGS = $(CMD_C) -Wall
-LDFLAGS = $(CMD_LD) ../libcsuit.a ../libt_cose.a ../libqcbor -lm
+LDFLAGS = $(CMD_LD) ../libcsuit/libcsuit.a ../t_cose/libt_cose.a ../QCBOR/libqcbor.a -lm
 LDWRAP = \
 	-Xlinker --wrap=suit_fetch_callback \
 	-Xlinker --wrap=suit_store_callback \
