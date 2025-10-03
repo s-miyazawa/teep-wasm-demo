@@ -2,6 +2,7 @@
     / type: / e'TEEP-TYPE-query-request',
     / options: / {
         e'challenge': h'414A7C174141B3D0E9A1D28AF31520F0D42299FEAC4007DED89D68AE6CD92F19'
+          / in base64: QUp8F0FBs9DpodKK8xUg8NQimf6sQAfe2J1ormzZLxk= /
     },
     / supported-teep-cipher-suites: / [
         [
