@@ -3,8 +3,10 @@
   - [For Collaborators](#for-collaborators)
     - [To TAM operator](#to-tam-operator)
     - [To TEEP Agent implementor](#to-teep-agent-implementor)
+    - [To Both TAM and TEEP Agent implementors](#to-both-tam-and-teep-agent-implementors)
   - [Generate SUIT Manifest](#generate-suit-manifest)
-    - [Install requirements (Ruby and Rust)](#install-requirements-ruby-and-rust)
+    - [Install requirements (Ruby)](#install-requirements-ruby)
+    - [Install requirements (Rust)](#install-requirements-rust)
     - [Generate](#generate)
   - [Build SUIT Manifest Processor](#build-suit-manifest-processor)
     - [Install requirements (OpenSSL)](#install-requirements-openssl)
@@ -45,13 +47,29 @@ The TAM would send the [prebuilt/app.wasm.envelope.cbor](./prebuilt/app.wasm.env
 > You may need to modify them in the [process/suit_manifest_process_main.c](./process/suit_manifest_process_main.c).
 > At least, it doesn't produce any SUIT_Report to be sent to the TAM in TEEP Success/Error messages.
 
+### To Both TAM and TEEP Agent implementors
+
+The prebuilt TEEP Protocol messages are in the `prebuilt/` directory.
+You can print them with:
+
+```sh
+cbor2diag.rb -e prebuilt/query_request.tam.esp256.cose
+cbor2diag.rb -e prebuilt/query_response.agent.esp256.cose
+cbor2diag.rb -e prebuilt/update.tam.esp256.cose
+```
+
+To run these commands, you have to install cbor-diag (refer [Install requirements (Ruby)](#install-requirements-ruby)).
+
 ## Generate SUIT Manifest
 
-### Install requirements (Ruby and Rust)
+### Install requirements (Ruby)
 ```sh
 sudo apt install ruby ruby-rubygems
 sudo gem install cbor-diag cbor-diag-e cbor-diag-ref cddl
+```
 
+### Install requirements (Rust)
+```sh
 curl https://sh.rustup.rs -sSf | sh
 ```
 
