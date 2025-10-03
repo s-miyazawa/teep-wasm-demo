@@ -8,3 +8,6 @@
 [submodule "QCBOR"]
 	path = QCBOR
 	url = https://github.com/laurencelundblade/QCBOR
+[submodule "cddl/draft-psa-token"]
+	path = cddl/draft-psa-token
+	url = https://github.com/thomas-fossati/draft-psa-token

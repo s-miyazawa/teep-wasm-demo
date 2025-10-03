@@ -21,6 +21,7 @@ TEST_COMMAND=$(RUBYDEBUG) cddl $(CDDL_FILE) validate
 TC_SIGNER_ESP256_SIGN_KEY=../scripts/tc-signer-esp256-priv.jwk
 TAM_ESP256_SIGN_KEY=../scripts/tam-esp256-priv.jwk
 AGENT_ESP256_SIGN_KEY=../scripts/agent-esp256-priv.jwk
+ATTESTER_ES256_SIGN_KEY=../scripts/attester-es256-priv.jwk
 
 # generate the cddl file
 .PHONY: cddl
@@ -58,6 +59,9 @@ $(CDDL_FILE):
 
 %.agent.esp256.cose: %.cbor 
 	python3 ../scripts/cwt-mac-or-sign.py $< ${AGENT_ESP256_SIGN_KEY} $@ --no-detached
+
+%.attester.es256.cose: %.cbor
+	python3 ../scripts/cwt-mac-or-sign.py $< ${ATTESTER_ES256_SIGN_KEY} $@ --no-detached
 
 # generate byte string diag from a binary
 %.bin.hdiag:
