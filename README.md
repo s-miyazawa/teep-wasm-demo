@@ -42,7 +42,7 @@ Please send it to the TEEP Agent in TEEP Update messages.
 
 The TAM would send the [prebuilt/app.wasm.envelope.cbor](./prebuilt/app.wasm.envelope.cbor) in TEEP Update message, process it using `suit_process_envelope()` libcsuit function. Please refer [process/suit_manifest_process_main.c](./process/suit_manifest_process_main.c).
 
-> [!TIP]
+> [!NOTE]
 > The libcsuit parses the manifest and triggers some callback functions, like suit_condition_callback and suit_store_callback, depending on the manifest.
 > You may need to modify them in the [process/suit_manifest_process_main.c](./process/suit_manifest_process_main.c).
 > At least, it doesn't produce any SUIT_Report to be sent to the TAM in TEEP Success/Error messages.
@@ -78,7 +78,7 @@ curl https://sh.rustup.rs -sSf | sh
 make -C manifest/ test
 ```
 
-> [!TIP]
+> [!NOTE]
 > The above command also validates the generated manifest against the CDDL definition of SUIT Manifest `cddl/suit-manifest.cddl`.
 > If you customize any of `manifest/*.rediag` files, make sure you've done it well.
 > In the files, `e'foo'` will be replaced with the actual value in the cddl file,
@@ -92,7 +92,8 @@ make -C manifest/ test
 sudo apt install openssl openssl-dev gcc
 ```
 
-You may use [MbedTLS](https://github.com/Mbed-TLS/mbedtls) instead of OpenSSL.
+> [!TIP]
+> You may use [MbedTLS](https://github.com/Mbed-TLS/mbedtls) instead of OpenSSL.
 In that case, build t_cose with `Makefile.psa` and `make -C process MBEDTLS=1`.
 
 ### Build
@@ -121,7 +122,7 @@ sudo make install
 make -C run/
 ```
 
-> [!TIP]
+> [!NOTE]
 > The above command executes SUIT Manifest Processor to consume `manifest/app.wasm.envelope.cbor`, and to extract the `app.wasm` file in current directory.
 > Additionally, it stores also the manifest itself as `manifest.app.wasm.0.suit`, because the manifest contains the id in `suit-manifest-component-id (5)`.
 
@@ -133,7 +134,7 @@ cbor2diag.rb -e rats/psa_token_evidence.attester.es256.cose
 make -C rats/ test
 ```
 
-> [!TIP]
+> [!NOTE]
 > The make test command checks that the encoded **CBOR** evidence matches the PSA Token CDDL definition.
 > As VERAISON doesn't support **ESP256** for now, we use **ES256** instead.
 
@@ -147,6 +148,6 @@ cbor2diag.rb -e teep/update.tam.esp256.cose
 make -C teep/ test
 ```
 
-> [!TIP]
+> [!NOTE]
 > The QueryResponse message contains PSA Token as an evidence in `attestation-payload (7)` and the Update message contains SUIT Manifest in `manifests (10)`.
 > The make test command checks that the each encoded **CBOR** messages matches the TEEP Protocol CDDL definition.
