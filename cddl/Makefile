@@ -52,7 +52,8 @@ $(COSE_CDDL): $(COSE_XML)
 
 $(TEEP_PROTOCOL_CDDL):
 	curl https://raw.githubusercontent.com/ietf-teep/teep-protocol/refs/heads/master/draft-ietf-teep-protocol.cddl | \
-	sed -e 's/sha256-es256/sha256-esp256/' -e 's/sha256-eddsa/sha256-ed25519/' > $@
+	sed -e 's/sha256-es256/sha256-esp256/' -e 's/sha256-eddsa/sha256-ed25519/' \
+		-e 's/cose-alg-es256 = -7/cose-alg-esp256 = -9/' -e 's/cose-alg-es256/cose-alg-esp256/' > $@
 
 $(CONCATENATED_TEEP_CDDL): $(TEEP_PROTOCOL_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_UPDATE_MANAGEMENT_CDDL) $(SUIT_ENCRYPTED_PAYLOADS_CDDL) $(SUIT_REPORT_CDDL) $(SUIT_MTI_CDDL) $(COSWID_CDDL) $(COSE_CDDL)
 	cat $^ > $@

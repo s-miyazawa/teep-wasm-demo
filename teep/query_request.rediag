@@ -6,8 +6,10 @@
     },
     / supported-teep-cipher-suites: / [
         [
-            e'cose-sign1',
-            -9 / use ESP256 instead of e'cose-alg-es256' /
+            [
+                e'cose-sign1',
+                -9 / use ESP256 instead of e'cose-alg-es256' /
+            ]
         ]
     ],
     / supported-suit-cose-profiles: / [

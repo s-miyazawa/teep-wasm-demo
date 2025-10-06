@@ -53,11 +53,11 @@ $(UPDATE_CBOR): app.wasm.envelope.cbor.bin.hdiag
 .PHONY: test
 test: $(TARGET_CBORS) $(CDDL_FILE)
 	@for TARGET in $(TARGET_CBORS); do \
-		echo $(TEST_COMMAND) $(TARGET); \
-		if $(TEST_COMMAND) $(TARGET); then \
-			echo "[SUCCESS] Generated TEEP Protocol message binary $(TARGET) matches to the CDDL of TEEP Protocol messages."; \
+		echo $(TEST_COMMAND) $$TARGET; \
+		if $(TEST_COMMAND) $$TARGET; then \
+			echo "[SUCCESS] Generated TEEP Protocol message binary $$TARGET matches to the CDDL of TEEP Protocol messages."; \
 		else \
-			echo "[FAIL] Generated TEEP Protocol message binary $(TARGET) doesn't match to the CDDL of TEEP Protocol messages."; exit 1; \
+			echo "[FAIL] Generated TEEP Protocol message binary $$TARGET doesn't match to the CDDL of TEEP Protocol messages."; exit 1; \
 		fi; \
 	done
 
