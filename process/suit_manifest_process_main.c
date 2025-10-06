@@ -36,14 +36,6 @@ uint8_t class_identifier_raw[] = {
     0xbf, 0x42, 0x9b, 0x2d, 0x51, 0xf2, 0xab, 0x45
 };
 
-
-typedef struct {
-    char *url;
-    char *filename;
-    char *binary_in_hex;
-} UrlFilenamePair;
-UrlFilenamePair pairs[SUIT_MAX_ARRAY_LENGTH] = {0};
-
 char *g_prefix = "./";
 ssize_t suit_prefix_filename(char *buf, size_t buf_len)
 {
@@ -54,173 +46,6 @@ ssize_t suit_prefix_filename(char *buf, size_t buf_len)
     memcpy(buf, g_prefix, len);
     buf[len] = '\0';
     return len;
-}
-
-suit_err_t __real_suit_fetch_callback(suit_fetch_args_t fetch_args, suit_fetch_ret_t *fetch_ret);
-suit_err_t __wrap_suit_fetch_callback(suit_fetch_args_t fetch_args, suit_fetch_ret_t *fetch_ret)
-{
-    suit_err_t result = __real_suit_fetch_callback(fetch_args, fetch_ret);
-    if (result != SUIT_SUCCESS) {
-        return result;
-    }
-
-    char filename[SUIT_MAX_NAME_LENGTH];
-    ssize_t len = suit_prefix_filename(filename, sizeof(filename));
-    if (len < 0) {
-        return SUIT_ERR_NO_MEMORY;
-    }
-    char *tmp_filename = &filename[len];
-    result = suit_component_identifier_to_filename(&fetch_args.dst, SUIT_MAX_NAME_LENGTH, tmp_filename);
-    if (result != SUIT_SUCCESS) {
-        return result;
-    }
-
-    size_t i = 0;
-    for (i = 0; i < SUIT_MAX_ARRAY_LENGTH; i++) {
-        if (pairs[i].url == NULL) {
-            continue;
-        }
-        if (memcmp(pairs[i].url, fetch_args.uri, fetch_args.uri_len) == 0) {
-            if (fetch_args.ptr == NULL) {
-                return SUIT_ERR_NO_MEMORY;
-            }
-            if (pairs[i].filename != NULL) {
-                FILE *f = fopen(pairs[i].filename, "r");
-                fetch_ret->buf_len = fread(fetch_args.ptr, 1, fetch_args.buf_len, f);
-                fclose(f);
-                printf("fetched from %s as %s (%ld bytes) to %s\n\n", pairs[i].filename, pairs[i].url, fetch_ret->buf_len, filename);
-            }
-            else if (pairs[i].binary_in_hex != NULL) {
-                size_t num = strlen(pairs[i].binary_in_hex);
-                if (num % 2 != 0) {
-                    return SUIT_ERR_INVALID_VALUE;
-                }
-                for (size_t j = 0; j < num; j+=2) {
-                    uint8_t val = 0;
-                    switch (pairs[i].binary_in_hex[j]) {
-                    case '0':
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                    case '7':
-                    case '8':
-                    case '9':
-                        val = (pairs[i].binary_in_hex[j] - '0') * 16;
-                        break;
-                    case 'a':
-                    case 'b':
-                    case 'c':
-                    case 'd':
-                    case 'e':
-                    case 'f':
-                        val = (pairs[i].binary_in_hex[j] - 'a' + 10) * 16;
-                        break;
-                    case 'A':
-                    case 'B':
-                    case 'C':
-                    case 'D':
-                    case 'E':
-                    case 'F':
-                        val = (pairs[i].binary_in_hex[j] - 'A' + 10) * 16;
-                        break;
-                    default:
-                        return SUIT_ERR_INVALID_VALUE;
-                    }
-
-                    switch (pairs[i].binary_in_hex[j+1]) {
-                    case '0':
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                    case '7':
-                    case '8':
-                    case '9':
-                        val += (pairs[i].binary_in_hex[j+1] - '0');
-                        break;
-                    case 'a':
-                    case 'b':
-                    case 'c':
-                    case 'd':
-                    case 'e':
-                    case 'f':
-                        val += (pairs[i].binary_in_hex[j+1] - 'a' + 10);
-                        break;
-                    case 'A':
-                    case 'B':
-                    case 'C':
-                    case 'D':
-                    case 'E':
-                    case 'F':
-                        val += (pairs[i].binary_in_hex[j+1] - 'A' + 10);
-                        break;
-                    default:
-                        return SUIT_ERR_INVALID_VALUE;
-                    }
-                    ((uint8_t *)(fetch_args.ptr))[j / 2] = val;
-                }
-                fetch_ret->buf_len = num / 2;
-                printf("fetched from %s as %s (%ld bytes) to %s\n\n", pairs[i].binary_in_hex, pairs[i].url, fetch_ret->buf_len, filename);
-            }
-
-#if !defined(LIBCSUIT_DISABLE_PARAMETER_COMPONENT_METADATA)
-            write_to_file_component_metadata(filename, fetch_args.ptr, fetch_ret->buf_len, &fetch_args.component_metadata);
-#else
-            write_to_file(filename, fetch_args.ptr, fetch_ret->buf_len);
-#endif /* LIBCSUIT_DISABLE_PARAMETER_COMPONENT_METADATA */
-            break;
-        }
-    }
-    if (i == SUIT_MAX_ARRAY_LENGTH) {
-        /* not found */
-        /* ignore this for testing example 0-5 only */
-        //return SUIT_ERR_NOT_FOUND;
-        fetch_ret->buf_len = fetch_args.buf_len;
-    }
-
-    if (result != SUIT_SUCCESS) {
-        printf("callback : error = %s(%d)\n", suit_err_to_str(result), result);
-    }
-    else {
-        printf("fetched : ");
-        suit_print_hex_in_max(fetch_args.ptr, fetch_ret->buf_len, 32);
-        printf("\ncallback : %s SUCCESS\n\n", suit_command_sequence_key_to_str(SUIT_DIRECTIVE_FETCH));
-    }
-    return result;
-}
-
-suit_err_t suit_condition_check_content(const suit_component_identifier_t *dst,
-                                        UsefulBufC content)
-{
-    char filename[SUIT_MAX_NAME_LENGTH];
-    ssize_t len = suit_prefix_filename(filename, sizeof(filename));
-    if (len < 0) {
-        return SUIT_ERR_NO_MEMORY;
-    }
-    char *tmp_filename = &filename[len];
-    suit_err_t result = suit_component_identifier_to_filename(dst, SUIT_MAX_NAME_LENGTH, tmp_filename);
-    if (result != SUIT_SUCCESS) {
-        return result;
-    }
-
-    UsefulBuf buf;
-    buf.ptr = malloc(content.len + 1);
-    if (buf.ptr == NULL) {
-        return SUIT_ERR_NO_MEMORY;
-    }
-    buf.len = read_from_file(filename, buf.ptr, content.len + 1);
-
-    /* see https://datatracker.ietf.org/doc/html/draft-ietf-suit-manifest-22#name-suit-condition-check-conten */
-    uint8_t residual = 0;
-    for (size_t i = 0; i < content.len; i++) {
-        residual |= ((uint8_t *)content.ptr)[i] ^ ((uint8_t *)buf.ptr)[i];
-    }
-    return (residual == 0) ? SUIT_SUCCESS : SUIT_ERR_CONDITION_MISMATCH;
 }
 
 suit_err_t suit_condition_image_match(const suit_component_identifier_t *dst,
@@ -282,9 +107,6 @@ suit_err_t __wrap_suit_condition_callback(suit_condition_args_t condition_args)
     case SUIT_CONDITION_CLASS_IDENTIFIER:
         result = UsefulBuf_Compare(Q_USEFUL_BUF_FROM_BYTE_ARRAY_LITERAL(class_identifier_raw), condition_args.expected.str) ? SUIT_ERR_CONDITION_MISMATCH : SUIT_SUCCESS;
         break;
-    case SUIT_CONDITION_CHECK_CONTENT:
-        result = suit_condition_check_content(&condition_args.dst, condition_args.expected.str);
-        break;
 
     /* SUIT_Digest */
     case SUIT_CONDITION_IMAGE_NOT_MATCH:
@@ -293,6 +115,7 @@ suit_err_t __wrap_suit_condition_callback(suit_condition_args_t condition_args)
         result = suit_condition_image_match(&condition_args.dst, &condition_args.expected.image_digest, condition_args.expected.image_size, match);
         break;
 
+    case SUIT_CONDITION_CHECK_CONTENT:
     case SUIT_CONDITION_DEVICE_IDENTIFIER:
     case SUIT_CONDITION_COMPONENT_SLOT:
     case SUIT_CONDITION_ABORT:
@@ -315,49 +138,6 @@ suit_err_t __wrap_suit_condition_callback(suit_condition_args_t condition_args)
         printf("callback : %s SUCCESS\n\n", suit_command_sequence_key_to_str(condition_args.condition));
     }
     return result;
-}
-
-suit_err_t __real_suit_invoke_callback(suit_invoke_args_t invoke_args);
-suit_err_t __wrap_suit_invoke_callback(suit_invoke_args_t invoke_args)
-{
-    suit_err_t result = __real_suit_invoke_callback(invoke_args);
-    if (result != SUIT_SUCCESS) {
-        return result;
-    }
-
-    char command[SUIT_MAX_NAME_LENGTH];
-    snprintf(command, invoke_args.args_len + 1, "%s", (char *)invoke_args.args);
-
-    pid_t pid = fork();
-    if (pid == 0) {
-        /* child */
-        int ret;
-        ret = chdir(g_prefix);
-        if (ret != 0) {
-            printf("(callback) Failed to set working directory at \"%s\"\n", g_prefix);
-            return SUIT_ERR_FATAL;
-        }
-        printf("<callback>$ cd %s\n", g_prefix);
-        printf("<callback>$ %s\n", command);
-        ret = system(command);
-        printf("\n");
-        fflush(stdout);
-        exit(ret);
-    }
-    else if (pid > 0) {
-        int status;
-        waitpid(pid, &status, 0);
-        if (WIFEXITED(status)) {
-            printf("<callback> Command exited with %d\n", WEXITSTATUS(status));
-            return SUIT_SUCCESS;
-        }
-        else {
-            printf("<callback> Command terminated %u\n", status);
-            return SUIT_ERR_FATAL;
-        }
-    }
-    /* XXX: DO NOT REACH HERE */
-    return SUIT_ERR_FATAL;
 }
 
 suit_err_t store_component(const char *dst,
@@ -448,7 +228,6 @@ suit_err_t __wrap_suit_store_callback(suit_store_args_t store_args)
         return result;
     }
 
-    char src[SUIT_MAX_NAME_LENGTH];
     char dst[SUIT_MAX_NAME_LENGTH];
     ssize_t len = suit_prefix_filename(dst, sizeof(dst));
     if (len < 0) {
@@ -464,30 +243,10 @@ suit_err_t __wrap_suit_store_callback(suit_store_args_t store_args)
         result = store_component(dst, store_args.src_buf, store_args.encryption_info, store_args.mechanisms, &store_args.component_metadata);
         break;
     case SUIT_COPY:
-        len = suit_prefix_filename(src, sizeof(src));
-        if (len < 0) {
-            return SUIT_ERR_NO_MEMORY;
-        }
-        tmp_filename = &src[len];
-        result = suit_component_identifier_to_filename(&store_args.src, SUIT_MAX_NAME_LENGTH, tmp_filename);
-        if (result == SUIT_SUCCESS) {
-            result = copy_component(dst, src, store_args.encryption_info, store_args.mechanisms, &store_args.component_metadata);
-        }
-        break;
     case SUIT_SWAP:
-        len = suit_prefix_filename(src, sizeof(src));
-        if (len < 0) {
-            return SUIT_ERR_NO_MEMORY;
-        }
-        tmp_filename = &src[len];
-        result = suit_component_identifier_to_filename(&store_args.src, SUIT_MAX_NAME_LENGTH, tmp_filename);
-        if (result == SUIT_SUCCESS) {
-            result = swap_component(dst, src);
-            //result = (renameat2(AT_FDCWD, dst, AT_FDCWD, src, RENAME_EXCHANGE) == 0) ? SUIT_SUCCESS : SUIT_ERR_FATAL;
-        }
-        break;
     case SUIT_UNLINK:
-        result = (unlink(dst) == 0) ? SUIT_SUCCESS : SUIT_ERR_FATAL;
+    default:
+        result = SUIT_ERR_NOT_IMPLEMENTED;
         break;
     }
     if (result != SUIT_SUCCESS) {
@@ -499,56 +258,12 @@ suit_err_t __wrap_suit_store_callback(suit_store_args_t store_args)
     return result;
 }
 
-void display_help(const char *argv0, bool on_error)
-{
-    fprintf((on_error) ? stderr : stdout, "Usage: %s <manifest_filename> [ -p <prefix> ] [ -u <URL> [-f <filename> | -b <binary_in_hex>] ] ...\n", argv0);
-    exit((on_error) ? EXIT_FAILURE : EXIT_SUCCESS);
-}
-
 int main(int argc, char *argv[]) {
-    int opt;
-    int pair_count = 0;
-
-    while ((opt = getopt(argc, argv, "p:u:f:b:h")) != -1) {
-        if (pair_count >= SUIT_MAX_ARRAY_LENGTH) {
-            printf("The maximum number of URL={filename,binary_in_hex} is %d", SUIT_MAX_ARRAY_LENGTH);
-            display_help(argv[0], true);
-        }
-
-        switch (opt) {
-        case 'p': // prefix
-            g_prefix = optarg;
-            break;
-        case 'u': // uri
-            if (pairs[pair_count].url != NULL) {
-               display_help(argv[0], true);
-            }
-            pairs[pair_count].url = optarg;
-            break;
-        case 'f': // filename for the uri
-            if (pairs[pair_count].url == NULL) {
-                display_help(argv[0], true);
-            }
-            pairs[pair_count].filename = optarg;
-            pair_count++;
-            break;
-        case 'b': // hex-binary for the uri
-            if (pairs[pair_count].url == NULL) {
-                display_help(argv[0], true);
-            }
-            pairs[pair_count].binary_in_hex = optarg;
-            pair_count++;
-            break;
-        case 'h':
-            display_help(argv[0], false);
-            break;
-        default:
-            display_help(argv[0], true);
-            break;
-        }
-    }
-
     suit_err_t result = 0;
+    if (argc < 1) {
+        printf("[Usage] %s [SUIT Manifest File]\n", argv[0]);
+        return -1;
+    }
 
     int num_key = 0;
     #define NUM_PUBLIC_KEYS_FOR_ECDSA       1
@@ -582,9 +297,9 @@ int main(int argc, char *argv[]) {
     // Read manifest file.
     printf("\nmain : Read Manifest file.\n");
     suit_inputs->manifest.ptr = suit_inputs->buf;
-    suit_inputs->manifest.len = read_from_file(argv[optind], suit_inputs->buf, SUIT_MAX_DATA_SIZE);
+    suit_inputs->manifest.len = read_from_file(argv[1], suit_inputs->buf, SUIT_MAX_DATA_SIZE);
     if (suit_inputs->manifest.len <= 0) {
-        printf("main : Failed to read Manifest file. (%s)\n", argv[optind]);
+        printf("main : Failed to read Manifest file. (%s)\n", argv[1]);
         return EXIT_FAILURE;
     }
     suit_inputs->left_len -= suit_inputs->manifest.len;

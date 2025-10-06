@@ -7,9 +7,7 @@
 CFLAGS = $(CMD_C) -Wall
 LDFLAGS = $(CMD_LD) ../libcsuit/libcsuit.a ../t_cose/libt_cose.a ../QCBOR/libqcbor.a -lm
 LDWRAP = \
-	-Xlinker --wrap=suit_fetch_callback \
 	-Xlinker --wrap=suit_store_callback \
-	-Xlinker --wrap=suit_invoke_callback \
 	-Xlinker --wrap=suit_condition_callback
 
 INC = $(CMD_INC) -I./inc -I./examples/inc -I../libcsuit/inc -I../t_cose/inc -I../QCBOR/inc
@@ -18,6 +16,8 @@ SRCS = \
 	suit_examples_common.c \
 	suit_manifest_process_main.c
 OBJS = $(patsubst %.c,%.o,$(SRCS))
+
+MANIFEST ?= ../manifest/app.wasm.envelope.cbor
 
 WORKDIR := ./tmp
 
