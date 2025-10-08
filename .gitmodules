@@ -1,13 +1,16 @@
 [submodule "t_cose"]
-	path = t_cose
+	path = testvector/t_cose
 	url = https://github.com/kentakayama/t_cose
 	branch = dev-deterministic-ecdsa
 [submodule "libcsuit"]
-	path = libcsuit
+	path = testvector/libcsuit
 	url = https://github.com/kentakayama/libcsuit
 [submodule "QCBOR"]
-	path = QCBOR
+	path = testvector/QCBOR
 	url = https://github.com/laurencelundblade/QCBOR
 [submodule "cddl/draft-psa-token"]
-	path = cddl/draft-psa-token
+	path = testvector/cddl/draft-psa-token
 	url = https://github.com/thomas-fossati/draft-psa-token
+[submodule "testvector/libteep"]
+	path = testvector/libteep
+	url = https://github.com/kentakayama/libteep
