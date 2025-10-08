@@ -30,14 +30,14 @@ flowchart TB
   end
 
 
-  attester -- 1. <a src="https://github.com/kentakayama/ietf124/tree/main/testvector/prebiult/query_response.diag">QueryResponse</a> --> relying_party
-  relying_party -- 4. <a src="https://github.com/kentakayama/ietf124/tree/main/testvector/prebiult/update.diag">Update</a> --> attester
+  attester -- 1. <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/query_response.diag">QueryResponse</a> --> relying_party
+  relying_party -- 4. <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebiult/update.diag">Update</a> --> attester
 
   relying_party -- 2. Evidence --> verifier
   verifier -- 3. Attestation Result --> relying_party
 
   verifier([VERAISON: Verifier])
-  click verifier "https://github.com/kentakayama/ietf124/tree/main/veraison/services"
+  click verifier "https://github.com/kentakayama/ietf124/tree/main/veraison"
 ```
 
 The detailed sequence diagram and endpoints are documented respectively:
