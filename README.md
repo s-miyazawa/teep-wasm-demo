@@ -24,11 +24,11 @@
 flowchart TB
 
 verifier[VERAISON: Verifier]
-click verifier "./tree/main/veraison/services"
+click verifier "https://github.com/kentakayama/ietf124/tree/main/veraison/services"
 attester[TEE Device: Attester]
-click attester "./tree/main/attester"
+click attester "https://github.com/kentakayama/ietf124/tree/main/attester"
 relying_party[TAM: Relying Party]
-click relying_party "./tree/main/tam"
+click relying_party "https://github.com/kentakayama/ietf124/tree/main/tam"
 
   subgraph TEEP Protocol
     direction LR
