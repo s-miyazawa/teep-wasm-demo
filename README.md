@@ -1,5 +1,6 @@
-
-- [IETF124 Hackathon Demo](#ietf124-hackathon-demo)
+- [Secure Software Provisioning with TEEP \& VERAISON](#secure-software-provisioning-with-teep--veraison)
+  - [Objectives](#objectives)
+  - [Architecture](#architecture)
   - [How to Run](#how-to-run)
 
 # Secure Software Provisioning with TEEP & VERAISON
