@@ -8,7 +8,7 @@
 This repository hosts running code and docs of the hackathon project at IETF124.
 
 ## Objectives
-- Provides mature implementations of TEEP Protocol combined with SUIT Manifest Processor and RATS EAT & EAR
+- Provides mature implementations of [TEEP Protocol](https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol) combined with [SUIT Manifest Processor](https://datatracker.ietf.org/doc/html/draft-ietf-suit-manifest) and [RATS EAT](https://datatracker.ietf.org/doc/html/rfc9711) & [EAR](https://datatracker.ietf.org/doc/html/draft-ietf-rats-ear) implementations
 - Uses [VERAISON](https://github.com/veraison) as the background-check model Verifier for the Trusted Application Manager (TAM), enabling the TAM
   - to entrust VERAISON to verify the Evidence provided with QueryResponse message from TEEP Agent,
   - to authenticate all the TEEP messages from TEEP Agent with the key in confirmation claim (cnf) of the Attestation Result, and
