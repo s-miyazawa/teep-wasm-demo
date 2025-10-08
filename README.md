@@ -31,7 +31,7 @@ flowchart TB
 
 
   attester -- 1. <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/query_response.diag">QueryResponse</a> --> relying_party
-  relying_party -- 4. <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebiult/update.diag">Update</a> --> attester
+  relying_party -- 4. <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/update.diag">Update</a> --> attester
 
   relying_party -- 2. Evidence --> verifier
   verifier -- 3. Attestation Result --> relying_party
