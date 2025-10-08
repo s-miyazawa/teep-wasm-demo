@@ -1,5 +1,5 @@
 
-- [SUIT for IETF124 Demo](#suit-for-ietf124-demo)
+- [IETF124 Hackathon Demo](#ietf124-hackathon-demo)
   - [For Collaborators](#for-collaborators)
     - [To TAM operator](#to-tam-operator)
     - [To TEEP Agent implementor](#to-teep-agent-implementor)
@@ -17,7 +17,30 @@
   - [Generate and Test RATS PSA Token Evidence](#generate-and-test-rats-psa-token-evidence)
   - [Generate and Test TEEP Protocol Messages](#generate-and-test-teep-protocol-messages)
 
-# SUIT for IETF124 Demo
+# IETF124 Hackathon Demo
+
+
+```mermaid
+flowchart TB
+
+verifier[VERAISON: Verifier]
+click verifier "./tree/main/veraison/services"
+attester[TEE Device: Attester]
+click attester "./tree/main/attester"
+relying_party[TAM: Relying Party]
+click relying_party "./tree/main/tam"
+
+  subgraph TEEP Protocol
+    direction LR
+    attester -- QueryResponse --> relying_party
+    relying_party -. Update .-> attester
+  end
+
+  relying_party -- Evidence --> verifier
+  verifier -. Attestation Result .-> relying_party
+
+
+```
 
 > [!NOTE]
 > Tested only in Ubuntu 22.04LTS
