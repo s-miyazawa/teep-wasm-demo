@@ -9,7 +9,7 @@ This repository hosts running code and docs of the hackathon project at IETF124.
 
 ## Objectives
 - Provides mature implementations of TEEP Protocol combined with SUIT Manifest Processor and RATS EAT & EAR
-- Uses [VERAISON](https://github.com/veraison) as the background-check model Verifier for the Trusted Attestation manager (TAM), enabling the TAM
+- Uses [VERAISON](https://github.com/veraison) as the background-check model Verifier for the Trusted Application Manager (TAM), enabling the TAM
   - to entrust VERAISON to verify the Evidence provided with QueryResponse message from TEEP Agent,
   - to authenticate all the TEEP messages from TEEP Agent with the key in confirmation claim (cnf) of the Attestation Result, and
   - to select appropriate Trusted Component(s) for the TEE Device to be installed and run
