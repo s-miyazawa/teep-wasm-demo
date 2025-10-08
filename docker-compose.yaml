@@ -1,0 +1,20 @@
+services:
+  container_tam:
+    build: ./tam
+    networks:
+      - tam-attester-net
+      - veraison-net
+
+  container_attester:
+    build: ./attester
+    depends_on:
+      - container_tam
+    networks:
+      - tam-attester-net
+
+
+networks:
+  tam-attester-net:
+    driver: bridge
+  veraison-net:
+    external: true

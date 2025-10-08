@@ -14,3 +14,6 @@
 [submodule "testvector/libteep"]
 	path = testvector/libteep
 	url = https://github.com/kentakayama/libteep
+[submodule "veraison/services"]
+	path = veraison/services
+	url = https://github.com/veraison/services
