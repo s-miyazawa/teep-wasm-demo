@@ -30,11 +30,11 @@ flowchart TB
   end
 
 
-  attester -- 1. <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/query_response.diag">QueryResponse</a> --> relying_party
-  relying_party -- 4. <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/update.diag">Update</a> --> attester
+  attester -- 1. <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/query_response.diag">QueryResponse</a> with an <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/psa_token.diag">EAT Evidence</a> --> relying_party
+  relying_party -- 4. <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/update.diag">Update</a> with a <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/manifest.diag">SUIT Manifest</a> --> attester
 
-  relying_party -- 2. Evidence --> verifier
-  verifier -- 3. Attestation Result --> relying_party
+  relying_party -- 2. <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/psa_token.diag">Evidence</a> --> verifier
+  verifier -- 3. <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/eat_attestation_result.txt">Attestation Result</a> --> relying_party
 
   verifier([VERAISON: Verifier])
   click verifier "https://github.com/kentakayama/ietf124/tree/main/veraison"
