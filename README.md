@@ -41,10 +41,10 @@ flowchart TD
   click verifier "https://github.com/kentakayama/ietf124/tree/main/veraison"
 ```
 
-The detailed sequence diagram and endpoints are documented respectively:
-- [sequence diagram](./doc/README.md)
-- [TAM endpoint](./doc/TAM.md)
-- [VERAISON endpoints](./doc/VERAISON.md)
+The details are explained here:
+- [Architecture and Message flow](./doc/README.md)
+- [TAM HTTP endpoint](./doc/TAM.md)
+- [VERAISON HTTP endpoints](./doc/VERAISON.md)
 
 ## How to Run
 
