@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="560" width="904" viewBox="0 0 904 560" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+<path d="M 8,48 L 8,64" fill="none" stroke="black"/>
+<path d="M 8,240 L 8,544" fill="none" stroke="black"/>
+<path d="M 24,352 L 24,512" fill="none" stroke="black"/>
+<path d="M 40,400 L 40,480" fill="none" stroke="black"/>
+<path d="M 56,432 L 56,464" fill="none" stroke="black"/>
+<path d="M 80,144 L 80,176" fill="none" stroke="black"/>
+<path d="M 136,176 L 136,232" fill="none" stroke="black"/>
+<path d="M 136,248 L 136,280" fill="none" stroke="black"/>
+<path d="M 136,320 L 136,344" fill="none" stroke="black"/>
+<path d="M 160,48 L 160,64" fill="none" stroke="black"/>
+<path d="M 200,432 L 200,464" fill="none" stroke="black"/>
+<path d="M 216,400 L 216,480" fill="none" stroke="black"/>
+<path d="M 232,352 L 232,512" fill="none" stroke="black"/>
+<path d="M 248,240 L 248,544" fill="none" stroke="black"/>
+<path d="M 416,240 L 416,544" fill="none" stroke="black"/>
+<path d="M 432,416 L 432,496" fill="none" stroke="black"/>
+<path d="M 448,448 L 448,496" fill="none" stroke="black"/>
+<path d="M 592,448 L 592,496" fill="none" stroke="black"/>
+<path d="M 608,416 L 608,496" fill="none" stroke="black"/>
+<path d="M 624,240 L 624,544" fill="none" stroke="black"/>
+<path d="M 792,368 L 792,496" fill="none" stroke="black"/>
+<path d="M 896,368 L 896,496" fill="none" stroke="black"/>
+<path d="M 24,32 L 144,32" fill="none" stroke="black"/>
+<path d="M 24,80 L 72,80" fill="none" stroke="black"/>
+<path d="M 96,80 L 144,80" fill="none" stroke="black"/>
+<path d="M 64,160 L 96,160" fill="none" stroke="black"/>
+<path d="M 112,160 L 120,160" fill="none" stroke="black"/>
+<path d="M 8,240 L 248,240" fill="none" stroke="black"/>
+<path d="M 416,240 L 624,240" fill="none" stroke="black"/>
+<path d="M 248,254 L 408,254" fill="none" stroke="black"/><path d="M 248,258 L 408,258" fill="none" stroke="black"/>
+<path d="M 40,288 L 192,288" fill="none" stroke="black"/>
+<path d="M 40,320 L 192,320" fill="none" stroke="black"/>
+<path d="M 256,318 L 416,318" fill="none" stroke="black"/><path d="M 256,322 L 416,322" fill="none" stroke="black"/>
+<path d="M 24,352 L 232,352" fill="none" stroke="black"/>
+<path d="M 792,368 L 896,368" fill="none" stroke="black"/>
+<path d="M 56,384 L 200,384" fill="none" stroke="black"/>
+<path d="M 248,398 L 408,398" fill="none" stroke="black"/><path d="M 248,402 L 408,402" fill="none" stroke="black"/>
+<path d="M 448,400 L 592,400" fill="none" stroke="black"/>
+<path d="M 624,398 L 784,398" fill="none" stroke="black"/><path d="M 624,402 L 784,402" fill="none" stroke="black"/>
+<path d="M 72,416 L 184,416" fill="none" stroke="black"/>
+<path d="M 448,432 L 592,432" fill="none" stroke="black"/>
+<path d="M 56,448 L 200,448" fill="none" stroke="black"/>
+<path d="M 448,448 L 592,448" fill="none" stroke="black"/>
+<path d="M 72,480 L 184,480" fill="none" stroke="black"/>
+<path d="M 256,478 L 416,478" fill="none" stroke="black"/><path d="M 256,482 L 416,482" fill="none" stroke="black"/>
+<path d="M 632,478 L 792,478" fill="none" stroke="black"/><path d="M 632,482 L 792,482" fill="none" stroke="black"/>
+<path d="M 56,496 L 200,496" fill="none" stroke="black"/>
+<path d="M 448,496 L 592,496" fill="none" stroke="black"/>
+<path d="M 792,496 L 896,496" fill="none" stroke="black"/>
+<path d="M 24,512 L 232,512" fill="none" stroke="black"/>
+<path d="M 448,512 L 592,512" fill="none" stroke="black"/>
+<path d="M 248,526 L 408,526" fill="none" stroke="black"/><path d="M 248,530 L 408,530" fill="none" stroke="black"/>
+<path d="M 8,544 L 248,544" fill="none" stroke="black"/>
+<path d="M 416,544 L 624,544" fill="none" stroke="black"/>
+<path d="M 80,176 L 88,192" fill="none" stroke="black"/>
+<path d="M 72,80 L 84,104" fill="none" stroke="black"/>
+<path d="M 84,104 L 96,80" fill="none" stroke="black"/>
+<path d="M 72,192 L 80,176" fill="none" stroke="black"/>
+<path d="M 24,32 C 15.16936,32 8,39.16936 8,48" fill="none" stroke="black"/>
+<path d="M 144,32 C 152.83064,32 160,39.16936 160,48" fill="none" stroke="black"/>
+<path d="M 24,80 C 15.16936,80 8,72.83064 8,64" fill="none" stroke="black"/>
+<path d="M 144,80 C 152.83064,80 160,72.83064 160,64" fill="none" stroke="black"/>
+<path d="M 80,112 C 71.16936,112 64,119.16936 64,128" fill="none" stroke="black"/>
+<path d="M 80,112 C 88.83064,112 96,119.16936 96,128" fill="none" stroke="black"/>
+<path d="M 80,144 C 71.16936,144 64,136.83064 64,128" fill="none" stroke="black"/>
+<path d="M 80,144 C 88.83064,144 96,136.83064 96,128" fill="none" stroke="black"/>
+<path d="M 120,160 C 128.83064,160 136,167.16936 136,176" fill="none" stroke="black"/>
+<path d="M 40,288 C 31.16936,288 24,295.16936 24,304" fill="none" stroke="black"/>
+<path d="M 192,288 C 200.83064,288 208,295.16936 208,304" fill="none" stroke="black"/>
+<path d="M 40,320 C 31.16936,320 24,312.83064 24,304" fill="none" stroke="black"/>
+<path d="M 192,320 C 200.83064,320 208,312.83064 208,304" fill="none" stroke="black"/>
+<path d="M 56,384 C 47.16936,384 40,391.16936 40,400" fill="none" stroke="black"/>
+<path d="M 200,384 C 208.83064,384 216,391.16936 216,400" fill="none" stroke="black"/>
+<path d="M 448,400 C 439.16936,400 432,407.16936 432,416" fill="none" stroke="black"/>
+<path d="M 592,400 C 600.83064,400 608,407.16936 608,416" fill="none" stroke="black"/>
+<path d="M 72,416 C 63.16936,416 56,423.16936 56,432" fill="none" stroke="black"/>
+<path d="M 184,416 C 192.83064,416 200,423.16936 200,432" fill="none" stroke="black"/>
+<path d="M 448,432 C 439.16936,432 432,424.83064 432,416" fill="none" stroke="black"/>
+<path d="M 592,432 C 600.83064,432 608,424.83064 608,416" fill="none" stroke="black"/>
+<path d="M 72,480 C 63.16936,480 56,472.83064 56,464" fill="none" stroke="black"/>
+<path d="M 184,480 C 192.83064,480 200,472.83064 200,464" fill="none" stroke="black"/>
+<path d="M 56,496 C 47.16936,496 40,488.83064 40,480" fill="none" stroke="black"/>
+<path d="M 200,496 C 208.83064,496 216,488.83064 216,480" fill="none" stroke="black"/>
+<path d="M 448,512 C 439.16936,512 432,504.83064 432,496" fill="none" stroke="black"/>
+<path d="M 592,512 C 600.83064,512 608,504.83064 608,496" fill="none" stroke="black"/>
+<polygon class="arrowhead" points="792,400 780,394.4 780,405.6" fill="black" transform="rotate(0,784,400)"/>
+<polygon class="arrowhead" points="640,480 628,474.4 628,485.6" fill="black" transform="rotate(180,632,480)"/>
+<polygon class="arrowhead" points="416,528 404,522.4 404,533.6" fill="black" transform="rotate(0,408,528)"/>
+<polygon class="arrowhead" points="416,400 404,394.4 404,405.6" fill="black" transform="rotate(0,408,400)"/>
+<polygon class="arrowhead" points="416,256 404,250.4 404,261.6" fill="black" transform="rotate(0,408,256)"/>
+<polygon class="arrowhead" points="264,480 252,474.4 252,485.6" fill="black" transform="rotate(180,256,480)"/>
+<polygon class="arrowhead" points="264,320 252,314.4 252,325.6" fill="black" transform="rotate(180,256,320)"/>
+<polygon class="arrowhead" points="144,344 132,338.4 132,349.6" fill="black" transform="rotate(90,136,344)"/>
+<polygon class="arrowhead" points="144,280 132,274.4 132,285.6" fill="black" transform="rotate(90,136,280)"/>
+<path class="jump" d="M 136,248 C 142,248 142,232 136,232" fill="none" stroke="black"/><g class="text">
+<text x="80" y="52">want to install</text>
+<text x="84" y="68">and run app.wasm</text>
+<text x="220" y="212">request ['app.wasm']</text>
+<text x="332" y="244">session creation</text>
+<text x="68" y="260">[TEE Device]</text>
+<text x="448" y="260">[TAM]</text>
+<text x="332" y="292">QueryRequest</text>
+<text x="112" y="308">TEEP Broker</text>
+<text x="332" y="308">(Who are you?)</text>
+<text x="320" y="356">QueryResponse</text>
+<text x="56" y="372">[TEE]</text>
+<text x="328" y="372">(Genuine Agent,</text>
+<text x="708" y="372">Evidence</text>
+<text x="332" y="388">see this Evidence)</text>
+<text x="708" y="388">(Is he genuine?)</text>
+<text x="844" y="388">[Verifier]</text>
+<text x="92" y="404">TEEP Agent</text>
+<text x="128" y="436">no ['app.wasm']</text>
+<text x="332" y="436">Update</text>
+<text x="332" y="452">(Here's a Manifest</text>
+<text x="708" y="452">Attestation Result</text>
+<text x="128" y="468">WasmRuntime</text>
+<text x="336" y="468">for ['app.wasm'])</text>
+<text x="512" y="468">SUIT Manifest</text>
+<text x="704" y="468">(Yes he is)</text>
+<text x="520" y="484">of ['app.wasm']</text>
+<text x="328" y="516">Success</text>
+</g>
+</svg>

@@ -2,6 +2,7 @@
   - [Objectives](#objectives)
   - [Architecture](#architecture)
   - [How to Run](#how-to-run)
+  - [Next Plan](#next-plan)
 
 # Secure Software Provisioning with TEEP & VERAISON
 
@@ -20,7 +21,7 @@ This repository hosts running code and docs of the hackathon project at IETF124.
 > You can click to jump the messages and the components.
 
 ```mermaid
-flowchart TB
+flowchart TD
   subgraph TEEP Protocol
     attester([TEE Device: Attester])
     click attester "https://github.com/kentakayama/ietf124/tree/main/attester"
@@ -63,3 +64,6 @@ make -C veraison/services docker-deploy
 
 docker compose up -d
 ```
+
+## Next Plan
+
