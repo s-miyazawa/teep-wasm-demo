@@ -66,57 +66,58 @@ You can deploy VERAISON also in other environments, see [VERAISON deployments/do
 ### Run End-to-End Demo
 
 ```sh
-cd ietf124/
+$ cd ietf124/
 
 # run and initialize VERAISON Verifier
-source ./veraison/services/deployments/docker/env.bash
-veraison start
-./veraison/services/end-to-end/end-to-end-docker provision
+$ source ./veraison/services/deployments/docker/env.bash
+$ veraison start
+$ ./veraison/services/end-to-end/end-to-end-docker provision
 
 # run TAM and the TEEP HTTP Client
-docker compose up
+$ docker compose up
 ```
 
 ### Run as an User
 
 ```
-cd ietf124/
+$ cd ietf124/
 
 # run and initialize VERAISON verifier
-source ./veraison/services/deployments/docker/env.bash
-veraison start
-./veraison/services/end-to-end/end-to-end-docker provision
+$ source ./veraison/services/deployments/docker/env.bash
+$ veraison start
+$ ./veraison/services/end-to-end/end-to-end-docker provision
 
 # run TAM in background
-docker compose up -d container_tam
+$ docker compose up -d container_tam
 
 # run and enter the TEEP HTTP Client container
-docker compose up container_agent /bin/bash
+$ docker compose up container_agent /bin/bash
 ```
 
 In the contaienr terminal,
 
 ```sh
-# ls -la ./
+$ ls -la ./
 [no files exists]
 
-# teep_wasm_get install app.wasm
+$ teep_wasm_get install app.wasm
 [TEEP Broker] > POST http://container_tam:8080/tam {empty}
 [TEEP Broker] < TEEP Message
 [TEEP Agent] parsed TEEP QueryRequest message
-[TEEP Agent] generate EAT Evidence with challenge h'414a7c174141b3d0e9a1d28af31520f0d42299feac4007ded89d68ae6cd92f19'
+[TEEP Agent] generate EAT Evidence with challenge h'414A7C174141B3D0E9A1D28AF31520F0D42299FEAC4007DED89D68AE6CD92F19'
 [TEEP Agent] generate QueryResponse with attestation-payload h'D28443A10126A05901D7A...'
 [TEEP Broker] > POST http://container_tam:8080/tam [QueryResponse]
 [TEEP Broker] < TEEP Message
 [TEEP Agent] parsed TEEP Update message
-[SUIT Manifest Processor] store: to ['app.wasm'] h'A2025873825824822F...'
+[TEEP Agent] process SUIT Manifest h'A2025873825824822F...'
+[SUIT Manifest Processor] store: to ['app.wasm'] h' h'0061736D01000000016C0F...'
 [TEEP Broker] OK
 
-# ls -la ./
+$ ls -la ./
 app.wasm
 manifest.app.wasm.0.suit
 
-# iwasm app.wasm
+$ iwasm app.wasm
 Hello, World!
 ```
 
