@@ -2,4 +2,4 @@
 all: composition.svg
 
 %.svg: %.aasvg
-	aasvg < $< > $@
+	aasvg --backdrop --spaces=0 < $< > $@
