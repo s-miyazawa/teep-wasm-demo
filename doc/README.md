@@ -1,4 +1,4 @@
-- [Detailed Sequence Diagram of this Demo](#detailed-sequence-diagram-of-this-demo)
+- [Detailed Explanation of this Hackathon Demo](#detailed-explanation-of-this-hackathon-demo)
   - [Situation](#situation)
   - [Message flow](#message-flow)
   - [Components](#components)
@@ -7,7 +7,7 @@
     - [Q. Why the TAM can trust the public key of the TEEP Agent?](#q-why-the-tam-can-trust-the-public-key-of-the-teep-agent)
     - [Q. What is TEEP Broker?](#q-what-is-teep-broker)
 
-# Detailed Sequence Diagram of this Demo
+# Detailed Explanation of this Hackathon Demo
 
 ## Situation
 ![](../img/composition.svg)

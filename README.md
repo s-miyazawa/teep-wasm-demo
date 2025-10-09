@@ -42,7 +42,7 @@ flowchart TD
 ```
 
 The detailed sequence diagram and endpoints are documented respectively:
-- [sequence diagram](./doc/SEQUENCE.md)
+- [sequence diagram](./doc/README.md)
 - [TAM endpoint](./doc/TAM.md)
 - [VERAISON endpoints](./doc/VERAISON.md)
 
