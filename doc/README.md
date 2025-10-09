@@ -115,7 +115,7 @@ flowchart TD;
   end
 
   subgraph TAM: Relying Party
-    HTTP([HTTP])
+    HTTP([HTTP Endpoint])
     EMH[EmptyMessage Handler]
     QRG[QueryRequest Generator]
     QRH[QueryResponse Handler]
@@ -129,19 +129,27 @@ flowchart TD;
   end
 
   subgraph TEE Device: Attester
-    TEEPBroker([command line])
-    TEEPHttpClient[TEEP HTTP Client]
+    subgraph TEEP Broker
+      command([command line]) --> TEEPBroker[TEEP Broker]
+      TEEPBroker --> TEEPHttpClient[HTTP Client]
+      TEEPHttpClient --POST--> HTTP
+    end
 
-    TEEPBroker --> TEEPHttpClient
-    TEEPHttpClient --> HTTP
-    TEEPBroker --> libteep
-    libteep --> t_cose
-    libteep --> QCBOR
-    t_cose --> QCBOR
-    t_cose --> OpenSSL
-    libteep --> libcsuit
-    libcsuit --> t_cose
-    libcsuit --> QCBOR
+    subgraph TEE
+      subgraph TE[Target Environment]
+        TEEPBroker --> TEEPAgent
+        TEEPAgent[TEEP Agent] --> libteep
+        libteep --> t_cose
+        libteep --> QCBOR
+        t_cose --> QCBOR
+        t_cose --> OpenSSL
+        libteep --> libcsuit
+        libcsuit --> t_cose
+        libcsuit --> QCBOR
+      end
+      libteep --generate EAT Evidence-->AE[Attesting Environment]
+      AE -.Attest.-> TE
+    end
   end
 ```
 
@@ -152,7 +160,7 @@ flowchart TD;
 key | who has the private key | who has the public key
 --|--|--
 TAM key | TAM | TEEP Agent
-TEEP Agent key | TEEP Agent | no body initially, and TAM after Remote Attestation
+TEEP Agent key | TEEP Agent | nobody initially, and TAM after Remote Attestation
 Attester key | Attester | Endorser initially, and Verifier after provisioning
 Verifier key | Verifier | TAM
 SUIT Manifest key | Trusted Component Signer | TEEP Agent (or SUIT Manifest Processor precisely)
