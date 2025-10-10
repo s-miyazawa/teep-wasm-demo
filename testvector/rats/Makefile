@@ -9,7 +9,7 @@ PSA_TOKEN_EVIDENCE=$(PSA_TOKEN_EVIDENCE_CBOR:.cbor=.attester.es256.cose)
 .PRECIOUS: $(PSA_TOKEN_EVIDENCE_CBOR)
 
 .PHONY: all
-all: $(PSA_TOKEN_EVIDENCE)
+all: $(PSA_TOKEN_EVIDENCE) eat_evidence.attester.es256.cose
 
 # set cddl file
 CDDL_FILE=../cddl/psa-token.cddl
