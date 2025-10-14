@@ -44,7 +44,7 @@ teep_err_t teep_send_http_post(const char *url,
     recv_buffer->len = 0;
 
     // Set parameter.
-    printf("HTTP POST %s\n", url);
+    printf("[TEEP Broker] > HTTP POST %s\n", url);
     curl = curl_easy_init();
     if (curl == NULL) {
         printf("teep_send_post_request : curl_easy_init : Fail.\n");

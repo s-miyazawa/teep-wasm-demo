@@ -223,6 +223,7 @@ suit_err_t __wrap_suit_store_callback(suit_store_args_t store_args)
     }
     switch (store_args.operation) {
     case SUIT_STORE:
+        printf("[SUIT Manifest Processor] Store : to [%s]\n", dst);
         result = store_component(dst, store_args.src_buf, store_args.encryption_info, store_args.mechanisms, &store_args.component_metadata);
         break;
     case SUIT_COPY:

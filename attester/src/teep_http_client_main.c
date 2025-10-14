@@ -126,6 +126,8 @@ teep_err_t create_success_or_error(const teep_update_t *update,
                                    UsefulBuf msg_buf,
                                    teep_message_t *message)
 {
+    printf("[TEEP Agent] parsed TEEP Update message\n");
+
     if (!(update->contains & TEEP_MESSAGE_CONTAINS_TOKEN) ||
         update->token.len < 8 || 64 < update->token.len) {
         useful_buf_strncpy("INVALID TOKEN", ERR_MSG_BUF_LEN, &msg_buf);
@@ -164,6 +166,7 @@ teep_err_t create_success_or_error(const teep_update_t *update,
     suit_inputs->key_len = num_key;
 
     // Read manifest.
+    printf("[TEEP Agent] process SUIT Manifest\n");
     suit_inputs->manifest.ptr = update->manifest_list.items[0].ptr;
     suit_inputs->manifest.len = update->manifest_list.items[0].len; 
 
@@ -218,6 +221,7 @@ teep_err_t create_query_response_or_error(const teep_query_request_t *query_requ
     teep_err_t          result;
     UsefulBuf tmp = msg_buf;
 
+    printf("[TEEP Agent] parsed TEEP QueryRequest message\n");
     if (query_request->contains & TEEP_MESSAGE_CONTAINS_VERSIONS) {
         for (i = 0; i < query_request->versions.len; i++) {
             if (query_request->versions.items[i] == SUPPORTED_VERSION) {
@@ -257,7 +261,7 @@ out:
 
     
     if (query_request->data_item_requested.attestation) {
-        printf("Create evidence.\n");
+        printf("[TEEP Agent] generate EAT Evidence\n");
         result = create_evidence(query_request, msg_buf, &eat);
         if (result != TEEP_SUCCESS) {
             goto error;
@@ -276,6 +280,8 @@ error: /* would be unneeded if the err-code becomes bit field */
 
 
     /* generate the query_response */
+    printf("[TEEP Agent] generate QueryResponse\n");
+
     teep_query_response_t *query_response = (teep_query_response_t*)message;
     memset(query_response, 0, sizeof(teep_query_response_t));
     
@@ -469,7 +475,7 @@ int main(int argc, const char * argv[])
             if (result == TEEP_ERR_ABORT) {
                 /* just the TAM terminated the connection */
                 result = TEEP_SUCCESS;
-                printf("main : The TAM terminated the connection.\n");
+                printf("[TEEP Broker] OK\n");
                 break;
             }
             else if (result == TEEP_ERR_VERIFICATION_FAILED) {
@@ -483,11 +489,11 @@ int main(int argc, const char * argv[])
 
         switch (recv_message.teep_message.type) {
         case TEEP_TYPE_QUERY_REQUEST:
-            printf("main : Received QueryRequest.\n");
+            printf("[TEEP Broker] < Received QueryRequest.\n");
             result = create_query_response_or_error((const teep_query_request_t *)&recv_message, msg_buf, app_name,&send_message);
             break;
         case TEEP_TYPE_UPDATE:
-            printf("main : Received UpdateMessage.\n");
+            printf("[TEEP Broker] < Received UpdateMessage.\n");
             if (status == WAITING_QUERY_REQUEST) {
                 printf("main : Received Update message without QueryRequest.\n");
                 goto interval;
@@ -503,7 +509,6 @@ int main(int argc, const char * argv[])
             return EXIT_FAILURE;
         }
 
-        printf("main : Sending...\n");
         if (status == WAITING_QUERY_REQUEST &&
             send_message.teep_message.type == TEEP_TYPE_QUERY_RESPONSE) {
             status = WAITING_UPDATE_OR_QUERY_REQUEST;
