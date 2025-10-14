@@ -1,23 +1,36 @@
-# Copyright (c) 2025 SECOM CO., LTD. All Rights reserved.
-# SPDX-License-Identifier: BSD-2-Clause
-FROM debian:latest
-
-ENV DEBIAN_FRONTEND=noninteractive
+FROM ubuntu:24.04
 
 RUN apt-get update
-RUN apt-get -y install libcurl4-openssl-dev git gcc make libssl-dev
+RUN apt-get -y install libcurl4-openssl-dev git gcc make libssl-dev cmake g++
 
-RUN git clone --depth 1 https://github.com/laurencelundblade/QCBOR.git /root/QCBOR
-WORKDIR /root/QCBOR
+# build wasm-micro-runtime
+WORKDIR /root/
+RUN git clone https://github.com/bytecodealliance/wasm-micro-runtime
+WORKDIR /root/wasm-micro-runtime/product-mini/platforms/linux/
+RUN mkdir build
+WORKDIR /root/wasm-micro-runtime/product-mini/platforms/linux/build
+RUN cmake ..
+RUN make
+RUN make install
+
+# build teep-attester
+WORKDIR /root/
+COPY . ./ietf124-teep-attester/
+
+WORKDIR /root/ietf124-teep-attester/third_party/QCBOR
 RUN make libqcbor.a install
 
-RUN git clone --branch dev-deterministic-ecdsa --depth 1 https://github.com/kentakayama/t_cose.git /root/t_cose
-WORKDIR /root/t_cose
+WORKDIR /root/ietf124-teep-attester/third_party/t_cose
 RUN make -f Makefile.ossl libt_cose.a install
 
-WORKDIR /root
-RUN git clone --depth 1 https://github.com/kentakayama/libteep.git /root/libteep
-WORKDIR /root/libteep
-RUN make -f Makefile.client
+WORKDIR /root/ietf124-teep-attester/third_party/libcsuit
+RUN make -f Makefile libcsuit.a install
 
-CMD sh -c "sleep 1 && ./bin/teep_http_client http://container_tam:8080/tam"
+WORKDIR /root/ietf124-teep-attester/third_party/libteep
+RUN make -f Makefile install
+
+WORKDIR /root/ietf124-teep-attester
+RUN make
+
+WORKDIR /tmp
+CMD sh -C "sleep 1 && teep_wasm_get install app.wasm"
