@@ -5,7 +5,7 @@ RUN apt-get -y install libcurl4-openssl-dev git gcc make libssl-dev cmake g++ ne
 
 # build wasm-micro-runtime
 WORKDIR /root/
-RUN git clone https://github.com/bytecodealliance/wasm-micro-runtime
+RUN git clone --depth 1 https://github.com/bytecodealliance/wasm-micro-runtime
 WORKDIR /root/wasm-micro-runtime/product-mini/platforms/linux/
 RUN mkdir build
 WORKDIR /root/wasm-micro-runtime/product-mini/platforms/linux/build
