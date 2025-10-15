@@ -1,7 +1,7 @@
 FROM ubuntu:24.04
 
 RUN apt-get update
-RUN apt-get -y install libcurl4-openssl-dev git gcc make libssl-dev cmake g++
+RUN apt-get -y install libcurl4-openssl-dev git gcc make libssl-dev cmake g++ netcat-openbsd
 
 # build wasm-micro-runtime
 WORKDIR /root/
@@ -32,6 +32,7 @@ RUN make -f Makefile install
 WORKDIR /root/ietf124-teep-attester
 RUN make
 
-ENV TAM_URL=http://container_tam:8080
-WORKDIR /tmp
-CMD sh -c "sleep 1 && teep_wasm_get install app.wasm"
+WORKDIR /root/ietf124-teep-attester/tests
+
+CMD sh -c "./tam_server.sh>/dev/null & sleep 1 && teep_wasm_get install app.wasm"
+

@@ -36,6 +36,7 @@ TEEP Attester uses the following libraries.
 ### Prerequisites
 
 - Docker is required for the sample build flow (See [README](../README.md)).
+- To run this program as part of the complete architecture, please refer to the [README](../README.md).
 
 
 ### Run TAM Mock Server
@@ -50,6 +51,8 @@ host$ ./tam_server.sh
 
 ### Attester Client
 - After launching the TAM mock server, run `teep_wasm_get install app.wasm` from the attester directory so the binary fetches `app.wasm` from the mock endpoint.
+- The address http://172.17.0.1:8080/tam corresponds to the Docker host. Verify your environment settings and modify this address as appropriate.
+
 
 ```
 host$ docker build -t teep-attester .
@@ -60,6 +63,16 @@ host$ docker run -it teep-attester:latest bash
 (container)$ ls -la # appears "app.wasm" and "manifest.app.wasm.0.suit"
 (container)$ iwasm app.wasm 
 ```
+
+- When running the program using Docker only, execute the following command. In this configuration, the TAM mock server runs in the background, and the TEEP Agent is executed on top of it.
+
+```
+host$ docker build -t teep-attester .
+host$ docker run teep-attester:latest 
+```
+
+
+
 
 
 ## Running & CLI Options
