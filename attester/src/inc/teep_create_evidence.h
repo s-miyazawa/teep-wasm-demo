@@ -1,0 +1,15 @@
+// create_evidence.h
+#ifndef CREATE_EVIDENCE_H
+#define CREATE_EVIDENCE_H
+
+#include <stdint.h>                 // uint32_t を使うなら安全のため
+#include "teep/teep_message_data.h" // create_evidence の引数型
+#include "teep/teep_common.h"       // UsefulBuf, UsefulBufC, teep_err_t
+
+
+teep_err_t create_evidence(const teep_query_request_t *query_request,
+                           UsefulBuf buf,
+                           UsefulBufC *ret);
+                    
+
+#endif /* CREATE_EVIDENCE_H */
