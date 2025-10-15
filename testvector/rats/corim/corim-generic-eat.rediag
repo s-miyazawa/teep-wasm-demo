@@ -1,0 +1,74 @@
+/ unsigned corim / 501({
+    / id / 0: h'b144156aa8d111f0b4e21fea72631d14' / random UUID /,
+    / tags / 1: [
+        506(<< / concise-mid-tag / {
+            / language / 0: "en-GB",
+            / tag-identity / 1: {
+                / rag-id / 0: h'36A995CCA8D211F0A51F07E758AF6331' / random UUID /
+            },
+            / entities / 2: [
+                {
+                    / entity-name / 0: "ACME",
+                    / reg-id / 1: 32("https://acme.example"),
+                    / role / 2: [
+                        0, / tag-creator /
+                        1, / creator /
+                        2 / signer /
+                    ]
+                }
+            ],
+            / triples / 4: {
+                / reference-triples / 0: [
+                    / reference-triple-record / [
+                        / ref-env: / {
+                            / class is absent /
+                            / instance / 1: 37(h'0198F50A4FF6C05861C8860D13A638EA')
+                        },
+                        / ref-claims: / [
+                            / measurement-map / {
+                                / mkey is absent /
+                                / mval / 1: {
+                                    / version / 0: [
+                                        "1.3.4",
+                                        1 / Multipartnumeric /
+                                    ]
+                                }
+                            }
+                        ]
+                    ]
+                ]
+            }
+        } >>),
+        506(<< / concise-mid-tag / {
+            / language / 0: "en-GB",
+            / tag-identity / 1: {
+                / rag-id / 0: h'36A995CCA8D211F0A51F07E758AF6331'
+            },
+            / entities / 2: [
+                {
+                    / entity-name / 0: "ACME",
+                    / reg-id / 1: 32("https://acme.example"),
+                    / role / 2: [
+                        0, / tag-creator /
+                        1, / creator /
+                        2 / signer /
+                    ]
+                }
+            ],
+            / triples / 4: {
+                / attest-key-triples / 3: [
+                    / attest-key-triple-record / [
+                        / environment: / {
+                            / class is absent /
+                            / instance / 1: 37(h'0198F50A4FF6C05861C8860D13A638EA')
+                        },
+                        / key-list: / [
+                            / tagged-pkix-base64-key-type / 554("-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEMKBCTNIcKUSDii11ySs3526iDZ8A\niTo7Tu6KPAqv7D7gS2XpJFbZiItSs3m9+9Ue6GnvHw/GW2ZZaVtszggXIw==\n-----END PUBLIC KEY-----")
+                        ]
+                    ]
+                ]
+            }
+        } >>)
+    ]
+    / profile is absent /
+})

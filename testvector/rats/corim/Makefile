@@ -26,7 +26,7 @@ test: $(CORIM_CBOR) $(CDDL_FILE)
 	@if $(TEST_COMMAND) $<; then \
 		echo "[SUCCESS] Generated CoRIM binary $< matches to the CDDL of CoRIM."; \
 	else \
-		echo "[FAIL] Generated CoRIM binary $< doesn't match to the CDDL of CoRIM`."; exit 1; \
+		echo "[FAIL] Generated CoRIM binary $< doesn't match to the CDDL of CoRIM."; exit 1; \
 	fi
 
 .PHONY: clean
