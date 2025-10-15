@@ -1,7 +1,7 @@
 # ietf124-teep-attester 
 
 This repository hosts the Attester implementation used in the TEEP demo planned for IETF 124. 
-The TAM and Verifier components live in separate repositories; here we focus on building and running the Attester (teep_wasm_get). 
+The TAM and Verifier components live in separate repositories; here we focus on building and running the Attester. 
 By combining this Attester with the matching TAM, you can replay the full TEEP provisioning
 
 Notes: This sample does not currently run inside a Trusted Execution Environment. Enabling a real TEE integration (e.g., OP-TEE, Intel SGX) remains future work.
@@ -20,7 +20,6 @@ Notes: This sample does not currently run inside a Trusted Execution Environment
 │   ├── 📁 QCBOR 
 │   ├── 📁 t_cose 
 ├── 📁 src (attester sources)
-└── 📁 bin (build output directory created after running make)
 └── 📁 tests (CBOR fixtures and the TAM mock server utilities)
 ````
 

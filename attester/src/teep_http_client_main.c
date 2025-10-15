@@ -235,13 +235,13 @@ teep_err_t create_query_response_or_error(const teep_query_request_t *query_requ
         /* means version=0 is supported */
         version = 0;
     }
+
     if (version != SUPPORTED_VERSION) {
         err_code_contains |= TEEP_ERR_CODE_UNSUPPORTED_MSG_VERSION;
         goto error;
     }
 
     if (!(query_request->contains & TEEP_MESSAGE_CONTAINS_SUPPORTED_TEEP_CIPHER_SUITES)) {
-
         cipher_suite = supported_teep_cipher_suites[0];
     }
     for (i = 0; i < query_request->supported_teep_cipher_suites.len; i++) {
@@ -266,18 +266,15 @@ out:
         if (result != TEEP_SUCCESS) {
             goto error;
         }
-
         tmp = UsefulBuf_SliceTail(msg_buf, eat);
-
-
         result = TEEP_SUCCESS;  
     }
+
 
 error: /* would be unneeded if the err-code becomes bit field */
     if (err_code_contains != 0) {
         return create_error(query_request->token, err_code_contains, msg_buf, message);
     }
-
 
     /* generate the query_response */
     printf("[TEEP Agent] generate QueryResponse\n");
@@ -460,7 +457,6 @@ int main(int argc, const char * argv[])
     }
     mechanism_verify.cose_tag = CBOR_TAG_COSE_SIGN1;
 
-
     teep_message_t send_message;
     teep_message_t recv_message;
     UsefulBuf_MAKE_STACK_UB(msg_buf, MSG_BUF_LEN);
@@ -475,7 +471,7 @@ int main(int argc, const char * argv[])
             if (result == TEEP_ERR_ABORT) {
                 /* just the TAM terminated the connection */
                 result = TEEP_SUCCESS;
-                printf("[TEEP Broker] OK\n");
+                printf("[TEEP Broker] The TAM terminated the connection\n");
                 break;
             }
             else if (result == TEEP_ERR_VERIFICATION_FAILED) {
