@@ -66,7 +66,7 @@ host$ docker run -it teep-attester:latest bash
 (container)$ iwasm app.wasm 
 ```
 
-- If you want to run the program using Docker only, execute the following command. In this configuration, the TAM mock server runs in the background, and the TEEP Agent is executed on top of it.
+- If you want to run the program using Docker only, execute the following command. In this configuration, the TAM mock server runs in the background, and then the TEEP Agent is executed.
 
 ```
 host$ docker build -t teep-attester .
