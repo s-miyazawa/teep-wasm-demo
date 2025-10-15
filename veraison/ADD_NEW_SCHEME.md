@@ -220,3 +220,6 @@ You will see a result
 $ ./test-verify.sh
 result: {"ear.verifier-id":{"build":"0.0.2510+b8cd07b","developer":"Veraison Project"},"eat_nonce":"OTQ4Rjg4NjBEMTNBNDYzRThFCg==","eat_profile":"tag:github.com,2023:veraison/ear","iat":1760106976,"submods":{"generic-eat":{"ear.appraisal-policy-id":"policy:generic-eat","ear.status":"contraindicated","ear.trustworthiness-vector":{"configuration":99,"executables":99,"file-system":99,"hardware":99,"instance-identity":99,"runtime-opaque":99,"sourced-data":99,"storage-opaque":99},"ear.veraison.policy-claims":{"problem":"no trust anchor for evidence"}}}}
 ```
+
+## Step 3: Register TrustAnchor
+

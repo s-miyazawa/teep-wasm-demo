@@ -17,3 +17,9 @@
 [submodule "veraison/services"]
 	path = veraison/services
 	url = https://github.com/veraison/services
+[submodule "testvector/cddl/eat"]
+	path = testvector/cddl/eat
+	url = https://github.com/ietf-rats-wg/eat
+[submodule "testvector/cddl/draft-ietf-rats-corim"]
+	path = testvector/cddl/draft-ietf-rats-corim
+	url = https://github.com/ietf-rats-wg/draft-ietf-rats-corim

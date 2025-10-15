@@ -13,9 +13,11 @@ CONCATENATED_TEEP_CDDL       := teep-protocol.cddl
 TEEP_PROTOCOL_CDDL           := draft-ietf-teep-protocol.cddl
 
 CONCATENATED_PSA_TOKEN_CDDL  := psa-token.cddl
+CONCATENATED_EAT_PAYLOAD_CDDL:= eat-payload.cddl
+CONCATENATED_CORIM_CDDL      := corim.cddl
 
 .PHONY: cat-cddl
-cat-cddl: $(CONCATENATED_SUIT_CDDL) $(CONCATENATED_TEEP_CDDL) $(CONCATENATED_PSA_TOKEN_CDDL)
+cat-cddl: $(CONCATENATED_SUIT_CDDL) $(CONCATENATED_TEEP_CDDL) $(CONCATENATED_PSA_TOKEN_CDDL) $(CONCATENATED_EAT_PAYLOAD_CDDL) $(CONCATENATED_CORIM_CDDL)
 
 $(CONCATENATED_SUIT_CDDL): $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_UPDATE_MANAGEMENT_CDDL) $(SUIT_ENCRYPTED_PAYLOADS_CDDL) $(SUIT_REPORT_CDDL) $(SUIT_MTI_CDDL) $(COSWID_CDDL) $(COSE_CDDL)
 	cat $^ > $@
@@ -60,7 +62,15 @@ $(CONCATENATED_TEEP_CDDL): $(TEEP_PROTOCOL_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TR
 
 $(CONCATENATED_PSA_TOKEN_CDDL):
 	make -C ./draft-psa-token/cddl/ psa-attestation.cddl
-	sed -e 's/psa-profile-type = "tag:psacertified.org,2023:psa#tfm"/psa-profile-type = tstr/' < ./draft-psa-token/cddl/psa-attestation.cddl > $(CONCATENATED_PSA_TOKEN_CDDL)
+	sed -e 's/psa-profile-type = "tag:psacertified.org,2023:psa#tfm"/psa-profile-type = tstr/' < ./draft-psa-token/cddl/psa-attestation.cddl > $@
+
+$(CONCATENATED_EAT_PAYLOAD_CDDL):
+	make -C ./eat/cddl .CBOR_PAYLOAD_VALIDATION.CDDL
+	cp ./eat/cddl/.CBOR_PAYLOAD_VALIDATION.CDDL $@
+
+$(CONCATENATED_CORIM_CDDL):
+	make -C ./draft-ietf-rats-corim/cddl corim-autogen.cddl
+	cp ./draft-ietf-rats-corim/cddl/corim-autogen.cddl corim.cddl
 
 .PHONY: clean
 clean:
