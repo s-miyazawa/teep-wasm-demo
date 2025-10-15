@@ -28,10 +28,10 @@
                             / measurement-map / {
                                 / mkey is absent /
                                 / mval / 1: {
-                                    / version / 0: [
-                                        "1.3.4",
-                                        1 / Multipartnumeric /
-                                    ]
+                                    / version / 0: {
+                                        / version / 0: "1.3.4",
+                                        / version-scheme / 1: 1 / Multipartnumeric /
+                                    }
                                 }
                             }
                         ]
