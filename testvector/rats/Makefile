@@ -1,0 +1,12 @@
+.PHONY: all
+all:
+	$(MAKE) -C psa
+	$(MAKE) -C eat_evidence
+	$(MAKE) -C corim
+
+.PHONY: clean
+clean:
+	$(MAKE) -C psa clean
+	$(MAKE) -C eat_evidence clean
+	$(MAKE) -C corim clean
+
