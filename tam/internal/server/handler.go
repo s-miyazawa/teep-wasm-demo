@@ -105,7 +105,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
 	}
-	if r.URL.Path != "/tam/" {
+	if r.URL.Path != "/tam" {
 		http.NotFound(w, r)
 		return
 	}
