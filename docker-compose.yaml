@@ -2,7 +2,7 @@ services:
   container_tam:
     build: ./tam
     environment:
-      - AM4WASM_CHALLENGE_SERVER=https://host.docker.internal:8443
+      - TAM4WASM_CHALLENGE_SERVER=https://host.docker.internal:8443
       - TAM4WASM_CHALLENGE_CONTENT_TYPE=application/psa-attestation-token
     extra_hosts:
       - "host.docker.internal:host-gateway"
