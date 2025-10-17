@@ -122,13 +122,13 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	msgType, payload := detectTeepMessage(body)
 
-	resp := h.pickResponse(msgType)
-
-	h.writeResponse(w, resp)
-
 	if msgType == teepTypeQueryResponse {
 		h.logQueryResponseCBOR(payload)
 	}
+
+	resp := h.pickResponse(msgType)
+
+	h.writeResponse(w, resp)
 
 	h.logger.Printf("Received message type %s -> sent %s.", msgType.String(), resp.describe())
 }
