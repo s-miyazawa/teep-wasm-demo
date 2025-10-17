@@ -17,20 +17,9 @@ RUN make install
 WORKDIR /root/
 COPY . ./ietf124-teep-attester/
 
-WORKDIR /root/ietf124-teep-attester/third_party/QCBOR
-RUN make libqcbor.a install
-
-WORKDIR /root/ietf124-teep-attester/third_party/t_cose
-RUN make -f Makefile.ossl libt_cose.a install
-
-WORKDIR /root/ietf124-teep-attester/third_party/libcsuit
-RUN make -f Makefile libcsuit.a install
-
-WORKDIR /root/ietf124-teep-attester/third_party/libteep
-RUN make -f Makefile install
-
 WORKDIR /root/ietf124-teep-attester
-RUN make
+RUN make 
+RUN make install
 
 WORKDIR /root/ietf124-teep-attester/tests
 
