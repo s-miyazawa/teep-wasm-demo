@@ -22,6 +22,16 @@ echo session is: $SESSION
 
 VERIFICATION_RESULT=$(curl -H "Content-Type: ${MEDIA_TYPE}" --data-binary "@${BINARY}" --insecure https://localhost:8443/challenge-response/v1/session/${SESSION})
 echo "response from VERAISON: ${VERIFICATION_RESULT}"
+VERIFIED_EVIDENCE_BASE64=$(echo ${VERIFICATION_RESULT} | jq -r .evidence.value)
+if [[ "$VERIFIED_EVIDENCE_BASE64" == "null" ]]; then
+  exit 1
+fi
+VERIFIED_EVIDENCE=$(echo ${VERIFIED_EVIDENCE_BASE64} | base64 -d | cbor2diag.rb -e)
+
 RESULT_PAYLOAD_BASE64=$(echo ${VERIFICATION_RESULT} | jq -r '.result' | cut -d '.' -f2) # | base64 -d)
+if [[ "$RESULT_PAYLOAD_BASE64" == "null" ]]; then
+  exit 1
+fi
 RESULT_PAYLOAD=$(echo ${RESULT_PAYLOAD_BASE64} | awk '{ l=length($0)%4; print $0 (l==2?"==":(l==3?"=":"")) }' | base64 -d)
 echo "result: ${RESULT_PAYLOAD}"
+echo "evidence: ${VERIFIED_EVIDENCE}"
