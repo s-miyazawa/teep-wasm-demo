@@ -67,7 +67,7 @@ teep_err_t teep_send_http_post(const char *url,
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, recv_buffer);
 
-    curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 102400); // 100KB buffer
+    curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, MAX_RECEIVE_BUFFER_SIZE); 
     curl_easy_setopt(curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 
     // Send request.

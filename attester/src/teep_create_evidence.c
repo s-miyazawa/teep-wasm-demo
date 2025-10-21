@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include "teep_create_evidence.h"
 
-//#include "teep_agent_es256_private_key.h"
-//#include "teep_agent_es256_public_key.h"
+#include "teep_agent_es256_private_key.h"
+#include "teep_agent_es256_public_key.h"
+
 const unsigned char teep_agent_hardware_es256_private_key[] = {
     0xf3, 0xbd, 0x0c, 0x07, 0xa8, 0x1f, 0xb9, 0x32, 
     0x78, 0x1e, 0xd5, 0x27, 0x52, 0xf6, 0x0c, 0xc8,
@@ -32,7 +33,7 @@ const unsigned char teep_agent_hardware_es256_evidence_public_key[] = {
 
     \return     This returns TEEP_AGENT_SUCCESS or TEEP_AGENT_ERR_FAILED_TO_CREATE_EVIDENCE.
 */
-teep_err_t create_evidence(const teep_query_request_t *query_request,
+teep_err_t create_evidence_psa(const teep_query_request_t *query_request,
                                  UsefulBuf buf,
                                  UsefulBufC *ret)
 {
@@ -182,6 +183,125 @@ teep_err_t create_evidence(const teep_query_request_t *query_request,
 
     return TEEP_SUCCESS;
 }
+
+
+
+/*!
+    \brief      Create evidence with RATS EAT.
+
+    \param[in]      query_request   Received teep-query-request message from the TAM.
+    \param[in]      buf          Allocated buffer.
+    \param[out]     ret             Pointer of the output struct.
+
+    \return     This returns TEEP_AGENT_SUCCESS or TEEP_AGENT_ERR_FAILED_TO_CREATE_EVIDENCE.
+*/
+teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
+                                 UsefulBuf buf,
+                                 UsefulBufC *ret)
+{
+
+  struct t_cose_sign1_sign_ctx sign_ctx;
+    enum t_cose_err_t cose_result;
+    UsefulBufC tmp_signed_cose;
+
+    QCBOREncodeContext context;
+
+    /* Initialize for signing */
+    teep_mechanism_t mechanism_sign;
+    teep_err_t          result;
+    result = teep_key_init_es256_key_pair(teep_agent_es256_private_key, teep_agent_es256_public_key, NULLUsefulBufC, &mechanism_sign.key);
+    if (result != TEEP_SUCCESS) {
+        printf("main : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
+        return EXIT_FAILURE;
+    }
+    t_cose_sign1_sign_init(&sign_ctx, 0, T_COSE_ALGORITHM_ES256);
+    t_cose_sign1_set_signing_key(&sign_ctx, mechanism_sign.key.cose_key, mechanism_sign.key.kid);
+    
+    /* encode the header */
+    QCBOREncode_Init(&context, buf);
+
+    enum t_cose_err_t t_cose_result = t_cose_sign1_encode_parameters(&sign_ctx, &context);
+    if (t_cose_result != T_COSE_SUCCESS) {
+        return TEEP_ERR_SIGNING_FAILED;
+    }
+
+
+    /* encoding payload start */
+    QCBOREncode_OpenMap(&context);
+
+    /* confirmation */
+    //8: {/ kid / 3 : h'*********'}
+    QCBOREncode_OpenMapInMapN(&context, 8);
+    UsefulBuf cnf;
+    cnf.len = 32; // SHA256: 256bit / 8 = 32byte
+    cnf.ptr = malloc(cnf.len);
+    const unsigned char teep_agent_es256_public_key_X[32];
+    memcpy(teep_agent_es256_public_key_X, teep_agent_es256_public_key, 32);
+    const unsigned char teep_agent_es256_public_key_Y[32];
+    memcpy(teep_agent_es256_public_key_X, teep_agent_es256_public_key+32, 32);    
+    hashOfECCpubkey(teep_agent_es256_public_key_X,
+                    sizeof(teep_agent_es256_public_key_X),
+                    teep_agent_es256_public_key_Y,
+                    sizeof(teep_agent_es256_public_key_Y),
+                    &cnf);
+    QCBOREncode_AddBytesToMapN(&context, 3, UsefulBuf_Const(cnf));
+    QCBOREncode_CloseMap(&context);
+    free((void *)cnf.ptr);
+
+    /* eat_nonce */
+    UsefulBufC eat_nonce;
+    eat_nonce.len = query_request->challenge.len;
+    eat_nonce.ptr = query_request->challenge.ptr;
+    if (eat_nonce.len > 0) {
+        QCBOREncode_AddBytesToMapN(&context, 10, eat_nonce);
+    }
+
+    /* ueid */
+    uint8_t ueid[] = {0x01, 0x98, 0xf5, 0x0a, 0x4f, 0xf6, 0xc0, 0x58, 0x61, 0xc8, 0x86, 0x0d, 0x13, 0xa6, 0x38, 0xea};
+    QCBOREncode_AddBytesToMapN(&context, 256, UsefulBuf_FROM_BYTE_ARRAY_LITERAL(ueid));
+
+    /* oemid */
+    uint8_t oemid[] = {0x89, 0x48, 0x23};
+    QCBOREncode_AddBytesToMapN(&context, 258, UsefulBuf_FROM_BYTE_ARRAY_LITERAL(oemid));
+
+    /* hwmodel */
+    uint8_t hwmodel[] = {0x54, 0x9d, 0xce, 0xcc, 0x8b, 0x98, 0x7c, 0x73, 0x7b, 0x44, 0xe4, 0x0f, 0x7c, 0x63, 0x5c, 0xe8};
+    QCBOREncode_AddBytesToMapN(&context, 259, UsefulBuf_FROM_BYTE_ARRAY_LITERAL(hwmodel));
+
+    /* hwversion */
+    QCBOREncode_OpenArrayInMapN(&context, 260);
+    QCBOREncode_AddText(&context, UsefulBuf_FROM_SZ_LITERAL("1.3.4"));
+    QCBOREncode_AddInt64(&context, 1);
+    QCBOREncode_CloseArray(&context);
+
+    /* XXX: verifier_nonce */
+/*
+    if (!UsefulBuf_IsEmptyC(verifier_nonce)) {
+        QCBOREncode_AddBytesToMapN(&context, EAT_CLAIM_VERIFIER_NONCE, verifier_nonce);
+    }
+*/  
+    QCBOREncode_CloseMap(&context);
+
+    /* sign */
+    cose_result = t_cose_sign1_encode_signature(&sign_ctx, &context);
+    if (cose_result != T_COSE_SUCCESS) {
+        return TEEP_ERR_SIGNING_FAILED;
+    }
+
+    
+    /* complete CBOR Encoding */
+    QCBORError error = QCBOREncode_Finish(&context, ret);
+    if (error != QCBOR_SUCCESS) {
+        printf("QCBOREncode_Finish() = %d\n", error);
+        return TEEP_ERR_UNEXPECTED_ERROR;
+    }
+
+
+    return TEEP_SUCCESS;
+}
+
+
+
 
 
 

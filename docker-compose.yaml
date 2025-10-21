@@ -1,16 +1,22 @@
 services:
   container_tam:
     build: ./tam
+    environment:
+      - TAM4WASM_CHALLENGE_SERVER=https://host.docker.internal:8443
+      - TAM4WASM_CHALLENGE_CONTENT_TYPE=application/psa-attestation-token
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - tam-attester-net
-      - veraison-net
 
   container_attester:
     build: ./attester
     environment:
-      TAM_URL: http://container_tam:8080
+      - TAM_URL=http://container_tam:8080/tam
+    working_dir:
+      /tmp
     command: >
-      sh -c "sleep 1 && teep_wasm_get install app.wasm"
+      sh -c "sleep 1; set -x; teep_wasm_get install app.wasm && ls; iwasm app.wasm"
     depends_on:
       - container_tam
     networks:
@@ -20,5 +26,3 @@ services:
 networks:
   tam-attester-net:
     driver: bridge
-  veraison-net:
-    external: true

@@ -186,8 +186,6 @@ teep_err_t create_success_or_error(const teep_update_t *update,
 
     free(suit_inputs);
 
-
-
     // create SUCCESS message
     teep_success_t *success = (teep_success_t *)message;
     success->type = TEEP_TYPE_TEEP_SUCCESS;
@@ -351,7 +349,6 @@ teep_err_t get_teep_message(const char *tam_url,
     teep_err_t result;
 
     // Send TEEP/HTTP POST request.
-
     result = teep_send_http_post(tam_url, send_buf, &recv_buf);
     if (result != TEEP_SUCCESS) {
         return result;
@@ -370,7 +367,6 @@ teep_err_t get_teep_message(const char *tam_url,
         printf("main : Failed to verify TEEP message. %s(%d)\n", teep_err_to_str(result), result);
         return result;
     }
-
 
 
     return teep_set_message_from_bytes(payload.ptr, payload.len, message);
