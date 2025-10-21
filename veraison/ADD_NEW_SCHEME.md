@@ -1,5 +1,9 @@
 # Adding a Scheme for your Profile
 
+> [!NOTE]
+> You can try the generic-eat scheme with https://github.com/kentakayama/services which is forked from https://github.com/veraison/services .
+> In this article, some of the essence are described.
+
 ## Step1: Register your Scheme to VERAISON
 
 item | example definition 
@@ -221,5 +225,51 @@ $ ./test-verify.sh
 result: {"ear.verifier-id":{"build":"0.0.2510+b8cd07b","developer":"Veraison Project"},"eat_nonce":"OTQ4Rjg4NjBEMTNBNDYzRThFCg==","eat_profile":"tag:github.com,2023:veraison/ear","iat":1760106976,"submods":{"generic-eat":{"ear.appraisal-policy-id":"policy:generic-eat","ear.status":"contraindicated","ear.trustworthiness-vector":{"configuration":99,"executables":99,"file-system":99,"hardware":99,"instance-identity":99,"runtime-opaque":99,"sourced-data":99,"storage-opaque":99},"ear.veraison.policy-claims":{"problem":"no trust anchor for evidence"}}}}
 ```
 
-## Step 3: Register TrustAnchor
+## Step 3: Register Handlers for Endorsements and Reference Values
+
+You need to provide important handlers:
+- `Decode()` to `endorsement_handler.go`
+  - `RefValExtractor` and `TaExtractor` for scheme-specific callback functions for `UnsignedCorimDecoder()` and `SignedCorimDecoder()`
+- `SynthKeysFromRefValue()` and `SynthKeysFromTrustAnchor()` to `store_handler.go`
+  - the extracted Reference Value and Trust Anchor will be stored into the key-value store
+
+```sh
+$ curl -X POST --data-binary "@../testvector/prebuilt/corim-generic-eat.cbor" -H 'Content-Type: application/corim-unsigned+cbor; profile="http://example.com/corim/profile"' --insecure https://localhost:9443/endorsement-provisioning/v1/submit
+{"status":"success","expiry":"2025-10-20T14:30:11Z"}
+
+$ veraison show-stores
+TRUST ANCHORS:
+--------------
+{
+  "scheme": "GENERIC_EAT",
+  "type": "trust anchor",
+  "subType": "",
+  "attributes": {
+    "ak-pub": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEMKBCTNIcKUSDii11ySs3526iDZ8A\niTo7Tu6KPAqv7D7gS2XpJFbZiItSs3m9+9Ue6GnvHw/GW2ZZaVtszggXIw==\n-----END PUBLIC KEY-----",
+    "instance-id": "0198f50a-4ff6-c058-61c8-860d13a638ea"
+  }
+}
+
+ENDORSEMENTS:
+-------------
+{
+  "scheme": "GENERIC_EAT",
+  "type": "reference value",
+  "subType": "",
+  "attributes": {
+    "instance-id": "0198f50a-4ff6-c058-61c8-860d13a638ea",
+    "version": {
+      "value": "1.3.4",
+      "scheme": "multipartnumeric"
+    }
+  }
+}
+
+POLICIES:
+-------------
+
+
+$ ./test-verify.sh
+result: {"ear.verifier-id":{"build":"N/A","developer":"Veraison Project"},"eat_nonce":"OTQ4Rjg4NjBEMTNBNDYzRThFCg==","eat_profile":"tag:github.com,2023:veraison/ear","iat":1761015248,"submods":{"GENERIC_EAT":{"ear.appraisal-policy-id":"policy:GENERIC_EAT","ear.status":"affirming","ear.trustworthiness-vector":{"configuration":0,"executables":0,"file-system":0,"hardware":0,"instance-identity":0,"runtime-opaque":0,"sourced-data":0,"storage-opaque":0}}}}
+```
 

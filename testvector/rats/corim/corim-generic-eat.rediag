@@ -1,7 +1,10 @@
 / unsigned corim / 501({
     / id / 0: h'b144156aa8d111f0b4e21fea72631d14' / random UUID /,
     / tags / 1: [
-        506(<< / concise-mid-tag / {
+        / TODO:
+            the CDDL of draft-ietf-rats-corim: tagged-concise-mid-tag = #6.506(bytes .cbor concise-mid-tag)
+            but VERAISON accept bytes .cbor #6.506(concise-mid-tag) /
+        << / concise-mid-tag / 506({
             / language / 0: "en-GB",
             / tag-identity / 1: {
                 / rag-id / 0: h'36A995CCA8D211F0A51F07E758AF6331' / random UUID /
@@ -38,8 +41,8 @@
                     ]
                 ]
             }
-        } >>),
-        506(<< / concise-mid-tag / {
+        }) >>,
+        << / concise-mid-tag / 506({
             / language / 0: "en-GB",
             / tag-identity / 1: {
                 / rag-id / 0: h'36A995CCA8D211F0A51F07E758AF6331'
@@ -68,7 +71,7 @@
                     ]
                 ]
             }
-        } >>)
-    ]
-    / profile is absent /
+        }) >>
+    ],
+    / profile / 3: "http://example.com/corim/profile" / TODO: profile must be uri = #6.32(tstr) /
 })
