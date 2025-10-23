@@ -3,7 +3,7 @@ services:
     build: ./tam
     environment:
       - TAM4WASM_CHALLENGE_SERVER=https://host.docker.internal:8443
-      - TAM4WASM_CHALLENGE_CONTENT_TYPE=application/psa-attestation-token
+      - TAM4WASM_CHALLENGE_CONTENT_TYPE=${TAM4WASM_CHALLENGE_CONTENT_TYPE:-application/eat-cwt; profile="urn:ietf:rfc:rfc9711"}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
@@ -13,6 +13,7 @@ services:
     build: ./attester
     environment:
       - TAM_URL=http://container_tam:8080/tam
+      - PROFILE=${PROFILE:-generic}
     working_dir:
       /tmp
     command: >

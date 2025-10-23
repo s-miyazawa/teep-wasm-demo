@@ -2,6 +2,11 @@
   - [Objectives](#objectives)
   - [Architecture](#architecture)
   - [How to Run](#how-to-run)
+    - [Setup](#setup)
+    - [Run VERAISON](#run-veraison)
+    - [A. Provision TEE Device with Generic EAT Evidence](#a-provision-tee-device-with-generic-eat-evidence)
+    - [B. Provision TEE Device with PSA Attestation Token](#b-provision-tee-device-with-psa-attestation-token)
+    - [(Optional) Run Step by Step with TEEP Agent](#optional-run-step-by-step-with-teep-agent)
   - [Next Plan](#next-plan)
 
 # Secure Software Provisioning with TEEP & VERAISON
@@ -63,7 +68,7 @@ make -C veraison/services docker-deploy
 
 You can deploy VERAISON also in other environments, see [VERAISON deployments/docker](https://github.com/veraison/services/tree/main/deployments/docker).
 
-### Run End-to-End Demo
+### Run VERAISON
 
 ```sh
 $ cd ietf124/
@@ -71,21 +76,39 @@ $ cd ietf124/
 # run and initialize VERAISON Verifier
 $ source ./veraison/services/deployments/docker/env.bash
 $ veraison start
+$ veraison clear-stores
 $ ./veraison/services/end-to-end/end-to-end-docker provision
+$ curl -X POST --data-binary "@./testvector/prebuilt/corim-generic-eat-measurements.cbor" -H 'Content-Type: application/corim-unsigned+cbor; profile="http://example.com/corim/profile"' --insecure https://localhost:9443/endorsement-provisioning/v1/submit
+```
 
-# run TAM and the TEEP HTTP Client
+### A. Provision TEE Device with Generic EAT Evidence
+
+TODO: What is Generic EAT?
+- digeest of TEE environment is measured and compared against Reference Value
+  - yet the digest is not actual one
+- the TAM can dynamically trust the TEEP Agent's key with key confirmation claim 
+
+```sh
 $ docker compose up
 ```
 
-### Run as an User
+> [!TIP]
+> You can check the VERAISON logs with following command:
+> `$ veraison logs && tail -n30 veraison-logs/*.log`
 
+### B. Provision TEE Device with PSA Attestation Token
+
+TODO: What is PSA Attestation Token?
+- there is no room for key confirmation claim in the token, so the TAM must have the pre-shared TEEP Agent's key
+
+```sh
+$ TAM4WASM_CHALLENGE_CONTENT_TYPE=application/psa-attestation-token PROFILE=psa docker compose up
 ```
-$ cd ietf124/
 
-# run and initialize VERAISON verifier
-$ source ./veraison/services/deployments/docker/env.bash
-$ veraison start
-$ ./veraison/services/end-to-end/end-to-end-docker provision
+### (Optional) Run Step by Step with TEEP Agent
+
+```sh
+$ cd ietf124/
 
 # run TAM in background
 $ docker compose up -d container_tam
@@ -102,24 +125,30 @@ $ ls -la ./
 
 $ teep_wasm_get install app.wasm
 [TEEP Broker] > POST http://container_tam:8080/tam {empty}
-[TEEP Broker] < TEEP Message
+[TEEP Broker] < TEEP Received QueryRequest.
 [TEEP Agent] parsed TEEP QueryRequest message
 [TEEP Agent] generate EAT Evidence with challenge h'414A7C174141B3D0E9A1D28AF31520F0D42299FEAC4007DED89D68AE6CD92F19'
 [TEEP Agent] generate QueryResponse with attestation-payload h'D28443A10126A05901D7A...'
-[TEEP Broker] > POST http://container_tam:8080/tam [QueryResponse]
-[TEEP Broker] < TEEP Message
+[TEEP Broker] > POST http://container_tam:8080/tam {QueryResponse}
+[TEEP Broker] < TEEP Update message
 [TEEP Agent] parsed TEEP Update message
 [TEEP Agent] process SUIT Manifest h'A2025873825824822F...'
-[SUIT Manifest Processor] store: to ['app.wasm'] h' h'0061736D01000000016C0F...'
-[TEEP Broker] OK
+[SUIT Manifest Processor] Store : to ['./manifest.app.wasm.0.suit']
+[SUIT Manifest Processor] Store : to ['./app.wasm']
+[TEEP Broker] > HTTP POST http://container_tam:8080/tam {Success}
+[TEEP Broker] The TAM terminated the connection
 
 $ ls -la ./
 app.wasm
 manifest.app.wasm.0.suit
 
 $ iwasm app.wasm
-Hello, World!
+Hello, world!
 ```
+
+> [!TIP]
+> You can check the background TAM output with following command:
+> `$ docker compose logs container_tam`
 
 ## Next Plan
 
