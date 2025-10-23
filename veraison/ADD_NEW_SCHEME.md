@@ -270,6 +270,7 @@ POLICIES:
 
 
 $ ./test-verify.sh
-result: {"ear.verifier-id":{"build":"N/A","developer":"Veraison Project"},"eat_nonce":"OTQ4Rjg4NjBEMTNBNDYzRThFCg==","eat_profile":"tag:github.com,2023:veraison/ear","iat":1761015248,"submods":{"GENERIC_EAT":{"ear.appraisal-policy-id":"policy:GENERIC_EAT","ear.status":"affirming","ear.trustworthiness-vector":{"configuration":0,"executables":0,"file-system":0,"hardware":0,"instance-identity":0,"runtime-opaque":0,"sourced-data":0,"storage-opaque":0}}}}
+result: {"ear.verifier-id":{"build":"N/A","developer":"Veraison Project"},"eat_nonce":"OTQ4Rjg4NjBEMTNBNDYzRThFCg==","eat_profile":"tag:github.com,2023:veraison/ear","iat":1761181365,"submods":{"GENERIC_EAT":{"ear.appraisal-policy-id":"policy:GENERIC_EAT","ear.status":"affirming","ear.trustworthiness-vector":{"configuration":0,"executables":0,"file-system":0,"hardware":0,"instance-identity":0,"runtime-opaque":0,"sourced-data":0,"storage-opaque":0}}}}
+evidence: 18([<< {1: -7} >>, {}, << {8: {1: {1: 2, -1: 1, -2: h'5886CD61DD875862E5AAA820E7A15274C968A9BC96048DDCACE32F50C3651BA3', -3: h'9EED8125E932CD60C0EAD3650D0A485CF726D378D1B016ED4298B2961E258F1B'}, 3: h'E96788B10B1610ABE478F9CE8DCFE2304C0911DD8CFEADDE25EC30CCB5A7B5AF'}, 10: h'948F8860D13A463E8E', 256: h'0198F50A4FF6C05861C8860D13A638EA', 258: h'894823', 259: h'549DCECC8B987C737B44E40F7C635CE8', 260: ["1.3.4", 1], 265: "urn:ietf:rfc:rfc9711"} >>, h'316C3C092BEDF27520CBAD7791E13C6F5F5D94CDB997C3EA3A90F1FBAABA8FE3B930D8D4B6B4434AF577A75A128806FAC94F0054D9AB6F5629E261F6A75CEF6F'])
 ```
 
