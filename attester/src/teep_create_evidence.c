@@ -2,16 +2,16 @@
 #include <teep/teep_message_print.h>
 #include "teep_create_evidence.h"
 
-#include "teep_agent_es256_cose_key_private.h"
+#include "attester_es256_cose_key_private.h"
 
 
-const unsigned char teep_agent_hardware_es256_private_key[] = {
+const unsigned char attester_es256_private_key[] = {
     0xf3, 0xbd, 0x0c, 0x07, 0xa8, 0x1f, 0xb9, 0x32, 
     0x78, 0x1e, 0xd5, 0x27, 0x52, 0xf6, 0x0c, 0xc8,
     0x9a, 0x6b, 0xe5, 0xe5, 0x19, 0x34, 0xfe, 0x01, 
     0x93, 0x8d, 0xdb, 0x55, 0xd8, 0xf7, 0x78, 0x01
 };
-const unsigned char teep_agent_hardware_es256_evidence_public_key[] = {
+const unsigned char attester_es256_evidence_public_key[] = {
     0x04 /* POINT_CONVERSION_UNCOMPRESSED */,
     0x30, 0xa0, 0x42, 0x4c, 0xd2, 0x1c, 0x29, 0x44,
     0x83, 0x8a, 0x2d, 0x75, 0xc9, 0x2b, 0x37, 0xe7,
@@ -45,7 +45,7 @@ teep_err_t create_evidence_psa(const teep_query_request_t *query_request,
     /* Initialize for signing */
     teep_mechanism_t mechanism_sign;
     teep_err_t          result;
-    result = teep_key_init_es256_key_pair(teep_agent_hardware_es256_private_key, teep_agent_hardware_es256_evidence_public_key, NULLUsefulBufC, &mechanism_sign.key);
+    result = teep_key_init_es256_key_pair(attester_es256_private_key, attester_es256_evidence_public_key, NULLUsefulBufC, &mechanism_sign.key);
     if (result != TEEP_SUCCESS) {
         printf("main : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
         return EXIT_FAILURE;
@@ -204,7 +204,7 @@ teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
     teep_mechanism_t mechanism_sign;
     teep_err_t          result;
 
-    result = teep_set_mechanism_from_cose_key(teep_agent_es256_cose_key_private, NULLUsefulBufC, &mechanism_sign);
+    result = teep_set_mechanism_from_cose_key(attester_es256_cose_key_private, NULLUsefulBufC, &mechanism_sign);
     if (result != TEEP_SUCCESS) {
         printf("create_evidence_generic : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
         return EXIT_FAILURE;
@@ -235,7 +235,7 @@ teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
     memcpy(public_key_y, mechanism_sign.key.public_key+33, 32);
 
     thumbprint.ptr = malloc(thumbprint.len);
-    result = teep_calc_cose_key_thumbprint(teep_agent_es256_cose_key_private, thumbprint);
+    result = teep_calc_cose_key_thumbprint(attester_es256_cose_key_private, thumbprint);
     if (result != TEEP_SUCCESS) {
         printf("create_evidence_generic : Failed to calc cose key thumbprint. %s(%d)\n", teep_err_to_str(result), result);
         return result;
