@@ -14,6 +14,7 @@
 #include "teep_examples_common.h"
 #include "teep_http_client.h"
 #include "teep_create_evidence.h"
+#include "debug_print.h"
 
 #include "csuit/suit_manifest_process.h"
 #include "csuit/suit_manifest_print.h"
@@ -32,6 +33,7 @@ const unsigned char *teep_agent_public_key = teep_agent_es256_public_key;
 const unsigned char *tam_public_key = tam_es256_public_key;
 
 const char DEFAULT_TAM_URL[] =          "http://localhost:8080/tam";
+const char DEFAULT_PROFILE[] =          "psa";
 #define MAX_RECEIVE_BUFFER_SIZE         1024*100 // 100KB
 #define MAX_SEND_BUFFER_SIZE            1024*2
 #define MAX_FILE_BUFFER_SIZE            512
@@ -127,7 +129,6 @@ teep_err_t create_success_or_error(const teep_update_t *update,
                                    teep_message_t *message)
 {
     printf("[TEEP Agent] parsed TEEP Update message\n");
-
     if (!(update->contains & TEEP_MESSAGE_CONTAINS_TOKEN) ||
         update->token.len < 8 || 64 < update->token.len) {
         useful_buf_strncpy("INVALID TOKEN", ERR_MSG_BUF_LEN, &msg_buf);
@@ -202,13 +203,15 @@ teep_err_t create_success_or_error(const teep_update_t *update,
     \param[in]  update      Received teep-query-request message from the TAM.
     \param[in]  msg_buf Tstr err-msg buffer allocated by caller.
     \param[in]  app_name    Application filename to be requested.
+    \param[in]  profile_arg Profile name string from command line argument.
     \param[out] message     Pointer of returned struct.
 
     \return     This returns only TEEP_SUCCESS;
  */
 teep_err_t create_query_response_or_error(const teep_query_request_t *query_request,
                                           UsefulBuf msg_buf,
-                                          char *app_name,
+                                          const char *app_name,
+                                          const char *profile_arg,
                                           teep_message_t *message)
 {
     size_t i;
@@ -259,8 +262,17 @@ out:
 
     
     if (query_request->data_item_requested.attestation) {
-        printf("[TEEP Agent] generate EAT Evidence\n");
-        result = create_evidence(query_request, msg_buf, &eat);
+        if (strcmp(profile_arg, "psa") == 0) {
+            printf("[TEEP Agent] generate PSA EAT Evidence\n");
+            result = create_evidence_psa(query_request, msg_buf, &eat);
+        }else if (strcmp(profile_arg, "generic") == 0) {
+            printf("[TEEP Agent] generate Generic EAT Evidence\n");
+            result = create_evidence_generic(query_request, msg_buf, &eat);
+        } else {
+            printf("create_query_response_or_error : Unsupported profile '%s'\n", profile_arg);
+            err_code_contains |= TEEP_ERR_CODE_PERMANENT_ERROR;
+            goto error;
+        }
         if (result != TEEP_SUCCESS) {
             goto error;
         }
@@ -325,6 +337,7 @@ error: /* would be unneeded if the err-code becomes bit field */
         .have_binary = false
     };
 
+    TEEP_DEBUG_QUERY_RESPONSE(query_response, 2, 2);
 
     return TEEP_SUCCESS;
 }
@@ -354,7 +367,6 @@ teep_err_t get_teep_message(const char *tam_url,
         return result;
     }
 
-
     // Verify and print QueryRequest cose.
     UsefulBufC payload;
     verifying_key->cose_tag = CBOR_TAG_COSE_SIGN1;
@@ -368,14 +380,13 @@ teep_err_t get_teep_message(const char *tam_url,
         return result;
     }
 
-
     return teep_set_message_from_bytes(payload.ptr, payload.len, message);
 }
 
 
 
 void usage(const char *progname) {
-    fprintf(stderr, "Usage: %s install <app_name> [--url <url> | -u <url>]\n", progname);
+    fprintf(stderr, "Usage: %s install <app_name> [--url <url> | -u <url>] [--profile <profile> | -p <profile>]\n", progname);
     exit(EXIT_FAILURE);
 }
 
@@ -388,7 +399,8 @@ int main(int argc, const char * argv[])
     } teep_agent_status_t;
     teep_agent_status_t status = WAITING_QUERY_REQUEST;
     const char *tam_url = NULL;
-    char app_name[MAX_APP_NAME_SIZE];
+    const char *profile_arg = NULL;
+    const char app_name[MAX_APP_NAME_SIZE];
     char *command = NULL;
 
 
@@ -411,13 +423,17 @@ int main(int argc, const char * argv[])
     int option_index = 0;
     static struct option long_options[] = {
         {"url", required_argument, 0, 'u'},
+        {"profile", required_argument, 0, 'p'},
         {0, 0, 0, 0}
     };
     optind = 3;
-    while ((opt = getopt_long(argc, argv, "u:", long_options, &option_index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "u:p:", long_options, &option_index)) != -1) {
         switch (opt) {
             case 'u':
                 tam_url = optarg;
+                break;
+            case 'p':
+                profile_arg = optarg;
                 break;
             case '?':
             default:
@@ -428,6 +444,12 @@ int main(int argc, const char * argv[])
         tam_url = getenv("TAM_URL");
         if (tam_url == NULL) {
             tam_url = DEFAULT_TAM_URL; 
+        }
+    }
+    if (profile_arg == NULL) {
+        profile_arg = getenv("PROFILE");
+        if (profile_arg == NULL) {
+            profile_arg = DEFAULT_PROFILE;
         }
     }
 
@@ -482,10 +504,12 @@ int main(int argc, const char * argv[])
         switch (recv_message.teep_message.type) {
         case TEEP_TYPE_QUERY_REQUEST:
             printf("[TEEP Broker] < Received QueryRequest.\n");
-            result = create_query_response_or_error((const teep_query_request_t *)&recv_message, msg_buf, app_name,&send_message);
+            TEEP_DEBUG_QUERY((const teep_query_request_t *)&recv_message, 2, 2);
+            result = create_query_response_or_error((const teep_query_request_t *)&recv_message, msg_buf, app_name, profile_arg, &send_message);
             break;
         case TEEP_TYPE_UPDATE:
             printf("[TEEP Broker] < Received UpdateMessage.\n");
+            TEEP_DEBUG_UPDATE((const teep_update_t *)&recv_message, 2, 2, tam_public_key); 
             if (status == WAITING_QUERY_REQUEST) {
                 printf("main : Received Update message without QueryRequest.\n");
                 goto interval;

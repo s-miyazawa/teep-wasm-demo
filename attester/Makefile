@@ -48,11 +48,9 @@ else
     LDFLAGS += -lcrypto
 endif
 
-ifdef debug
-    CFLAGS += -DALLOW_CBOR_WITHOUT_SIGN1 -DSEND_CBOR_WITHOUT_SIGN1
+ifeq ($(DEBUG),1)
+CFLAGS += -g -DDEBUG
 endif
-
-
 
 .PHONY: all build clean install uninstall run third_party
 
@@ -85,7 +83,7 @@ $(THIRD_PARTY_STAMP): | $(LIBDIR)
 	touch $@
 
 run: $(BIN)
-	$(BIN)
+	$(BIN) $(ARGS)
 
 install: $(BIN)
 	install -d $(DESTDIR)$(BINDIR)
