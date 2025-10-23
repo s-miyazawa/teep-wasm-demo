@@ -12,6 +12,6 @@
   / ueid / 256: h'0198F50A4FF6C05861C8860D13A638EA',
   / oemid / 258: h'894823', / IEEE OUI format OEM ID /
   / hwmodel / 259: h'549DCECC8B987C737B44E40F7C635CE8' / Hash of chip model name /,
-  / hwversion / 260: ["1.3.4", 1 / Multipartnumeric /],
+  / hwversion / 260: ["1.3.4", 1 / multipartnumeric /],
   / eat_profile / 265: "urn:ietf:rfc:rfc9711"
 }
