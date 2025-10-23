@@ -211,22 +211,30 @@ func extractPSAIOTEarStatus(payload map[string]any) (string, error) {
 		return "", errors.New("JWT payload submods is not an object")
 	}
 
-	psaVal, ok := submods["PSA_IOT"]
-	if !ok {
-		return "", errors.New(`JWT payload missing submods["PSA_IOT"]`)
-	}
-	psa, ok := psaVal.(map[string]any)
-	if !ok {
-		return "", errors.New(`JWT payload submods["PSA_IOT"] is not an object`)
+	submodsKeys := []string{"PSA_IOT", "GENERIC_EAT"}
+	submod := func(m map[string]any, keys []string) map[string]any {
+		for _, key := range keys {
+			if val, ok := m[key]; ok {
+				if submod, ok := val.(map[string]any); ok {
+					return submod
+				}
+			}
+		}
+		return nil
+	}(submods, submodsKeys)
+
+	if submod == nil {
+		return "", fmt.Errorf(`no key candidate %v found in submods[]`, submodsKeys)
 	}
 
-	statusVal, ok := psa["ear.status"]
+	statusVal, ok := submod["ear.status"]
 	if !ok {
-		return "", errors.New(`JWT payload missing submods["PSA_IOT"]["ear.status"]`)
+		return "", errors.New(`JWT payload missing submods[]["ear.status"]`)
 	}
+
 	status, ok := statusVal.(string)
 	if !ok {
-		return "", errors.New(`JWT payload submods["PSA_IOT"]["ear.status"] is not a string`)
+		return "", errors.New(`JWT payload submods[]["ear.status"] is not a string`)
 	}
 
 	return strings.TrimSpace(status), nil
