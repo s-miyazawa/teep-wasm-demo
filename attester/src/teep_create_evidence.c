@@ -233,12 +233,6 @@ teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
     memcpy(public_key_x, mechanism_sign.key.public_key+1, 32);
     memcpy(public_key_y, mechanism_sign.key.public_key+33, 32);
 
-    const uint8_t kid[] = {
-    0xE9, 0x67, 0x88, 0xB1, 0x0B, 0x16, 0x10, 0xAB,
-    0xE4, 0x78, 0xF9, 0xCE, 0x8D, 0xCF, 0xE2, 0x30,
-    0x4C, 0x09, 0x11, 0xDD, 0x8C, 0xFE, 0xAD, 0xDE,
-    0x25, 0xEC, 0x30, 0xCC, 0xB5, 0xA7, 0xB5, 0xAF
-    };
     thumbprint.ptr = malloc(thumbprint.len);
     result = teep_calc_cose_key_thumbprint(teep_agent_es256_cose_key_private, thumbprint);
     if (result != TEEP_SUCCESS) {
@@ -254,8 +248,7 @@ teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
     QCBOREncode_AddBytesToMapN(&context, -2, UsefulBuf_FROM_BYTE_ARRAY_LITERAL(public_key_x)); /* x */
     QCBOREncode_AddBytesToMapN(&context, -3, UsefulBuf_FROM_BYTE_ARRAY_LITERAL(public_key_y)); /* y */
     QCBOREncode_CloseMap(&context);
-    //QCBOREncode_AddBytesToMapN(&context, 3, UsefulBuf_FROM_BYTE_ARRAY_LITERAL(thumbprint.ptr)); /* kid */       
-    QCBOREncode_AddBytesToMapN(&context, 3, UsefulBuf_FROM_BYTE_ARRAY_LITERAL(kid));
+    QCBOREncode_AddBytesToMapN(&context, 3, (UsefulBufC){.ptr = thumbprint.ptr, .len = thumbprint.len}); /* kid */       
     QCBOREncode_CloseMap(&context);
     
     /* eat_nonce */
@@ -299,6 +292,7 @@ teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
         return TEEP_ERR_UNEXPECTED_ERROR;
     }
 
+    teep_free_key(&mechanism_sign.key);
     free(thumbprint.ptr);
     return TEEP_SUCCESS;
 }

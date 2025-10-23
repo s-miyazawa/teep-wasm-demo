@@ -27,8 +27,7 @@
 
 #include "teep_agent_es256_private_key.h"
 #include "teep_agent_es256_public_key.h"
-const unsigned char *teep_agent_private_key = teep_agent_es256_private_key;
-const unsigned char *teep_agent_public_key = teep_agent_es256_public_key;
+
 #include "tam_es256_public_key.h"
 const unsigned char *tam_public_key = tam_es256_public_key;
 
