@@ -18,7 +18,7 @@
           ]
         ],
         / measurement / 2: [
-          / alg: / -16 / SHA-256 /,
+          / alg: / 1 / sha-256 /,
           / val: / h'DEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF'
         ]
       } >>
