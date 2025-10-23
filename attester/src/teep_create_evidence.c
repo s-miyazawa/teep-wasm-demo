@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <teep/teep_message_print.h>
 #include "teep_create_evidence.h"
 
 #include "teep_agent_es256_cose_key_private.h"
@@ -274,7 +275,43 @@ teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
     QCBOREncode_CloseArray(&context);
 
     /* eat_profile */
-    QCBOREncode_AddTextToMapN(&context, 265, UsefulBuf_FROM_SZ_LITERAL("tag:ietf.org,2025-07:ear"));
+    QCBOREncode_AddTextToMapN(&context, 265, UsefulBuf_FROM_SZ_LITERAL("urn:ietf:rfc:rfc9711"));
+
+    /* measurements */
+    static const uint8_t deadbeef_bytes[] = {
+    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
+    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
+    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF,
+    0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF
+    };
+
+    QCBOREncode_OpenArrayInMapN(&context, 273); //measurements
+    QCBOREncode_OpenArray(&context); 
+
+    QCBOREncode_AddInt64(&context, 600); //content-type
+    
+    QCBOREncode_BstrWrap(&context);
+    QCBOREncode_OpenMap(&context); //content-format
+
+    QCBOREncode_OpenArrayInMapN(&context, 1); //id
+    QCBOREncode_AddText(&context, UsefulBuf_FROM_SZ_LITERAL("TEEP Agent")); //name
+    QCBOREncode_OpenArray(&context); //version
+    QCBOREncode_AddText(&context, UsefulBuf_FROM_SZ_LITERAL("1.3.4"));
+    QCBOREncode_AddInt64(&context, 1);
+    QCBOREncode_CloseArray(&context); // close version 
+    QCBOREncode_CloseArray(&context); // close id
+    QCBOREncode_OpenArrayInMapN(&context, 2); //measurement
+    QCBOREncode_AddInt64(&context, 1); //alg
+    QCBOREncode_AddBytes(&context, UsefulBuf_FROM_BYTE_ARRAY_LITERAL(deadbeef_bytes)); //value
+    QCBOREncode_CloseArray(&context); // close measurement
+    QCBOREncode_CloseMap(&context); // close map
+    QCBOREncode_CloseBstrWrap(&context, NULL);
+
+    QCBOREncode_CloseArray(&context);
+    QCBOREncode_CloseArray(&context); // close measurements array
+
+
+
 
     QCBOREncode_CloseMap(&context);
 
