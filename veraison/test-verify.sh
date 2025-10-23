@@ -2,7 +2,7 @@
 
 ### vvv EDIT HERE vvv
 MEDIA_TYPE='application/eat-cwt; profile="urn:ietf:rfc:rfc9711"'
-BINARY=../testvector/prebuilt/eat_evidence.attester.es256.cose
+BINARY=../testvector/prebuilt/eat_evidence_measurements.attester.es256.cose
 ### ^^^ EDIT HERE ^^^
 
 if [[ -z "$NONCE" ]]; then
