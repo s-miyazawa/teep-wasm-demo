@@ -7,9 +7,13 @@
 #include "teep/teep_common.h"       // UsefulBuf, UsefulBufC, teep_err_t
 
 
-teep_err_t create_evidence(const teep_query_request_t *query_request,
+teep_err_t create_evidence_psa(const teep_query_request_t *query_request,
                            UsefulBuf buf,
                            UsefulBufC *ret);
                     
+teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
+                           UsefulBuf buf,
+                           UsefulBufC *ret);
+
 
 #endif /* CREATE_EVIDENCE_H */
