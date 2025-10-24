@@ -1,10 +1,11 @@
 # ietf124-teep-attester 
 
-This repository hosts the Attester implementation used in the TEEP demo planned for IETF 124. 
-The TAM and Verifier components are maintained in separate repositories; this repository focuses on building and running the Attester. 
+This repository contains the Attester implementation used in the TEEP demo planned for IETF 124. 
+The TAM and Verifier components are maintained in separate repositories.
+This repository focuses on building and running the Attester. 
 By combining this Attester with the corresponding TAM, you can simulate the full TEEP provisioning flow.
 
-Note: This sample does not currently run inside a Trusted Execution Environment. Enabling a real TEE integration (e.g., OP-TEE, Intel SGX) is planned as future work.
+Note: This sample currently does not run inside a Trusted Execution Environment (TEE). Enabling a real TEE integration (e.g., OP-TEE, Intel SGX) is planned as future work.
 
 ## Architecture
 
@@ -13,14 +14,15 @@ Note: This sample does not currently run inside a Trusted Execution Environment.
 ## Directory Structure
 
 ````
-📁 ietf124-teep-attester 
+📁 attester 
 ├── 📁 third_party (TEEP dependencies tracked as git submodules)
 │   ├── 📁 libcsuit
 │   ├── 📁 libteep 
 │   ├── 📁 QCBOR 
 │   ├── 📁 t_cose 
 ├── 📁 src (attester sources)
-└── 📁 tests (CBOR fixtures and the TAM mock server utilities)
+├── 📁 scripts (building third_party libraries)
+└── 📁 tests (CBOR fixtures and the utilities for TAM mock server) 
 ````
 
 The TEEP Attester uses the following libraries.
@@ -35,28 +37,39 @@ The TEEP Attester uses the following libraries.
 ## Getting started
 
 ### Prerequisites
+Docker is required for the sample build process. (See [README](../README.md).) \
+To run this program as part of the complete architecture, please refer to the [README](../README.md).
 
-- Docker is required for the sample build flow. (See [README](../README.md).)
-- To run this program as part of the complete architecture, please refer to the [README](../README.md).
-
+```
+host$ git clone --recursive https://github.com/kentakayama/ietf124.git
+host$ cd /path/to/ietf124/attester
+```
 
 ### Run TAM Mock Server
-- The TAM mock server listens on port 8080 and serves `app.wasm`. Start it before running the attester client so that the Attester can fetch the application payload.
+- The TAM mock server listens on port 8080 and serves `app.wasm` file. Start it before running the attester client so that the Attester can fetch the application payload.
 - Stop the mock server with `Ctrl+C` when finished.
 
 ```
-host$ cd tests
+host$ cd /path/to/ietf124/attester/tests
 host$ ./tam_server.sh
 ```
 
 
-
 ### Attester Client
+
+The Attester client can be built and executed in two ways:  
+(1) using Docker for an isolated environment, or  
+(2) building directly on the host machine. 
+
+The Docker-based method is recommended for first-time users or for quickly running the demo.
+
+#### Docker environment
 - After launching the TAM mock server, run `teep_wasm_get install app.wasm` from the attester directory so the binary fetches `app.wasm` from the mock endpoint.
-- The address `http://172.17.0.1:8080/tam` corresponds to the Docker host. Verify your environment settings and modify this address as appropriate.
+- The address `http://172.17.0.1:8080/tam` corresponds to the Docker host. Check your environment settings and update this address if necessary.
 
 
 ```
+host$ cd /path/to/ietf124/attester
 host$ docker build -t teep-attester .
 host$ docker run -it teep-attester:latest bash
 
@@ -73,19 +86,60 @@ host$ docker build -t teep-attester .
 host$ docker run teep-attester:latest 
 ```
 
+#### Host environment
+- The host build has been tested on **Ubuntu 22.04 LTS**. Other Linux distributions may work but have not been verified.
+- For a host-only workflow, install dependencies locally, build the project, launch the mock server, and then run the attester CLI from the host environment.
 
+```
+# install dependencies (Ubuntu example)
+host$ sudo apt-get update
+host$ sudo apt-get -y install libcurl4-openssl-dev git gcc \
+        make libssl-dev cmake g++ netcat-openbsd
+
+# install wasm-micro-runtime CLI
+host$ git clone --depth 1 https://github.com/bytecodealliance/wasm-micro-runtime
+host$ cd wasm-micro-runtime/product-mini/platforms/linux
+host$ mkdir build && cd build
+host$ cmake .. 
+host$ make
+host$ sudo make install   # installs iwasm under /usr/local/bin
+
+# fetch submodules and build
+host$ cd /path/to/ietf124/attester
+host$ make
+host$ sudo make install  # installs teep_wasm_get under /usr/local/bin
+
+# run the attester CLI on the host
+host$ teep_wasm_get install app.wasm
+host$ iwasm app.wasm
+```
 
 
 
 ## Running & CLI Options
-- After building the attester (see the [Attester Client section](#attester-client)), you can use the `teep_wasm_get` command located in `/usr/bin/` to install the application.
+After building the attester (see the [Attester Client section](#attester-client)), you can use the `teep_wasm_get` command located in `/usr/local/bin/` to install the application.
 
+
+### CLI Options
 
 ```
-Usage: ./teep_wasm_get install <application_name> [--tam-url <url>]
+Usage: ./teep_wasm_get install <app_name> [--url <url> | -u <url>] [--profile <profile> | -p <profile>]
 ```
 
-- `install`: Currently supported mode that requests the TAM to provision the selected application.
-- `<application_name>`: Specifies the name of the application to install.
-- `--url <url>` / `-u <url>`: Override TAM base URL when connecting. Default is `http://localhost:8080/tam`.
-- `TAM_URL`: Environment variable that also sets the TAM base URL; the CLI flag takes priority when both are provided.
+| Option | Description |
+|---------|--------------|
+| `install` | The currently supported mode; it requests the TAM to provision the selected application. |
+| `<app_name>` | Specifies the name of the application to install. |
+| `--url <url>` / `-u <url>` | Override the TAM base URL when connecting. Default: `http://localhost:8080/tam`. |
+| `--profile <profile> ` / `-p <profile>` | Specifies the Entity Attestation Token (EAT) profile used by the Attester when generating evidence. Supported profiles are `psa-eat` and `generic-eat`. Default: `psa-eat`. |
+
+---
+
+### Environment Variables
+
+| Variable | Description |
+|-----------|--------------|
+| `TAM_URL` | Sets the base URL of the TAM. The CLI `--url` option takes precedence if both are provided. |
+
+
+

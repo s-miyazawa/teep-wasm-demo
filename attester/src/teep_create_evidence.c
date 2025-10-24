@@ -242,15 +242,15 @@ teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
     }
 
 
-    QCBOREncode_OpenMapInMapN(&context, 8);
-    QCBOREncode_OpenMapInMapN(&context, 1);
-    QCBOREncode_AddInt64ToMapN(&context, 1, kty); /* kty: EC2 */
-    QCBOREncode_AddInt64ToMapN(&context, -1, crv); /* crv: P-256 */
-    QCBOREncode_AddBytesToMapN(&context, -2, UsefulBuf_FROM_BYTE_ARRAY_LITERAL(public_key_x)); /* x */
-    QCBOREncode_AddBytesToMapN(&context, -3, UsefulBuf_FROM_BYTE_ARRAY_LITERAL(public_key_y)); /* y */
-    QCBOREncode_CloseMap(&context);
-    QCBOREncode_AddBytesToMapN(&context, 3, (UsefulBufC){.ptr = thumbprint.ptr, .len = thumbprint.len}); /* kid */       
-    QCBOREncode_CloseMap(&context);
+    QCBOREncode_OpenMapInMapN(&context, 8); // open cnf map
+    QCBOREncode_OpenMapInMapN(&context, 1); // open cose_key map
+    QCBOREncode_AddInt64ToMapN(&context, 1, kty); // key type
+    QCBOREncode_AddInt64ToMapN(&context, -1, crv); //curve
+    QCBOREncode_AddBytesToMapN(&context, -2, UsefulBuf_FROM_BYTE_ARRAY_LITERAL(public_key_x)); // x
+    QCBOREncode_AddBytesToMapN(&context, -3, UsefulBuf_FROM_BYTE_ARRAY_LITERAL(public_key_y)); // y 
+    QCBOREncode_CloseMap(&context); // close cose_key map
+    QCBOREncode_AddBytesToMapN(&context, 3, (UsefulBufC){.ptr = thumbprint.ptr, .len = thumbprint.len}); // kid       
+    QCBOREncode_CloseMap(&context); // close cnf map
     
     /* eat_nonce */
     const uint8_t eat_nonce[] = {0x94, 0x8F, 0x88, 0x60, 0xD1, 0x3A, 0x46, 0x3E, 0x8E};
@@ -285,34 +285,31 @@ teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
     0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF
     };
 
-    QCBOREncode_OpenArrayInMapN(&context, 273); //measurements
-    QCBOREncode_OpenArray(&context); 
+    QCBOREncode_OpenArrayInMapN(&context, 273); // open measurements array
+    QCBOREncode_OpenArray(&context);  // open measurements inner array
 
     QCBOREncode_AddInt64(&context, 600); //content-type
-    
-    QCBOREncode_BstrWrap(&context);
-    QCBOREncode_OpenMap(&context); //content-format
-
-    QCBOREncode_OpenArrayInMapN(&context, 1); //id
+    QCBOREncode_BstrWrap(&context); // open bstr wrap
+    QCBOREncode_OpenMap(&context); // open content-format map
+    QCBOREncode_OpenArrayInMapN(&context, 1); // open id array
     QCBOREncode_AddText(&context, UsefulBuf_FROM_SZ_LITERAL("TEEP Agent")); //name
-    QCBOREncode_OpenArray(&context); //version
+    QCBOREncode_OpenArray(&context); // open version array
     QCBOREncode_AddText(&context, UsefulBuf_FROM_SZ_LITERAL("1.3.4"));
     QCBOREncode_AddInt64(&context, 1);
-    QCBOREncode_CloseArray(&context); // close version 
-    QCBOREncode_CloseArray(&context); // close id
-    QCBOREncode_OpenArrayInMapN(&context, 2); //measurement
+    QCBOREncode_CloseArray(&context); // close version array
+    QCBOREncode_CloseArray(&context); // close id array
+    QCBOREncode_OpenArrayInMapN(&context, 2); // open measurement array
     QCBOREncode_AddInt64(&context, 1); //alg
     QCBOREncode_AddBytes(&context, UsefulBuf_FROM_BYTE_ARRAY_LITERAL(deadbeef_bytes)); //value
-    QCBOREncode_CloseArray(&context); // close measurement
-    QCBOREncode_CloseMap(&context); // close map
-    QCBOREncode_CloseBstrWrap(&context, NULL);
+    QCBOREncode_CloseArray(&context); // close measurement array
+    QCBOREncode_CloseMap(&context); // close content-format map
+    QCBOREncode_CloseBstrWrap(&context, NULL); // close bstr wrap
 
-    QCBOREncode_CloseArray(&context);
+    QCBOREncode_CloseArray(&context); // close measurements inner array
     QCBOREncode_CloseArray(&context); // close measurements array
 
 
-
-
+    /* encoding payload end */
     QCBOREncode_CloseMap(&context);
 
     

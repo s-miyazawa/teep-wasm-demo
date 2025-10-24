@@ -32,7 +32,7 @@
 const unsigned char *tam_public_key = tam_es256_public_key;
 
 const char DEFAULT_TAM_URL[] =          "http://localhost:8080/tam";
-const char DEFAULT_PROFILE[] =          "psa";
+const char DEFAULT_PROFILE[] =          "psa-eat";
 #define MAX_RECEIVE_BUFFER_SIZE         1024*100 // 100KB
 #define MAX_SEND_BUFFER_SIZE            1024*2
 #define MAX_FILE_BUFFER_SIZE            512
@@ -261,10 +261,10 @@ out:
 
     
     if (query_request->data_item_requested.attestation) {
-        if (strcmp(profile_arg, "psa") == 0) {
+        if (strcmp(profile_arg, "psa-eat") == 0) {
             printf("[TEEP Agent] generate PSA EAT Evidence\n");
             result = create_evidence_psa(query_request, msg_buf, &eat);
-        }else if (strcmp(profile_arg, "generic") == 0) {
+        }else if (strcmp(profile_arg, "generic-eat") == 0) {
             printf("[TEEP Agent] generate Generic EAT Evidence\n");
             result = create_evidence_generic(query_request, msg_buf, &eat);
         } else {
@@ -389,7 +389,7 @@ void usage(const char *progname) {
     exit(EXIT_FAILURE);
 }
 
-int main(int argc, const char * argv[])
+int main(int argc, char * const argv[])
 {
     teep_err_t          result;
     typedef enum teep_agent_status {
@@ -399,8 +399,8 @@ int main(int argc, const char * argv[])
     teep_agent_status_t status = WAITING_QUERY_REQUEST;
     const char *tam_url = NULL;
     const char *profile_arg = NULL;
-    const char app_name[MAX_APP_NAME_SIZE];
-    char *command = NULL;
+    char app_name[MAX_APP_NAME_SIZE];
+    const char *command = NULL;
 
 
     if (argc < 3) {
