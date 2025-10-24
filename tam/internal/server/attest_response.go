@@ -186,7 +186,7 @@ func selectUpdateArtifact(resp *AttestationResponse, payload map[string]any) (st
 		return "", nil
 	}
 
-	status, err := extractPSAIOTEarStatus(payload)
+	status, err := extractEarStatus(payload)
 	if err != nil {
 		return updateArtifactErrorPath, err
 	}
@@ -197,7 +197,7 @@ func selectUpdateArtifact(resp *AttestationResponse, payload map[string]any) (st
 	return updateArtifactErrorPath, nil
 }
 
-func extractPSAIOTEarStatus(payload map[string]any) (string, error) {
+func extractEarStatus(payload map[string]any) (string, error) {
 	if len(payload) == 0 {
 		return "", errors.New("JWT payload empty")
 	}
