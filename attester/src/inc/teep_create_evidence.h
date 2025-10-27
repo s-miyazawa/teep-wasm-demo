@@ -2,9 +2,9 @@
 #ifndef CREATE_EVIDENCE_H
 #define CREATE_EVIDENCE_H
 
-#include <stdint.h>                 // uint32_t を使うなら安全のため
-#include "teep/teep_message_data.h" // create_evidence の引数型
-#include "teep/teep_common.h"       // UsefulBuf, UsefulBufC, teep_err_t
+#include <stdint.h>                 
+#include "teep/teep_message_data.h" 
+#include "teep/teep_common.h"       
 
 
 teep_err_t create_evidence_psa(const teep_query_request_t *query_request,
@@ -13,6 +13,7 @@ teep_err_t create_evidence_psa(const teep_query_request_t *query_request,
                     
 teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
                            UsefulBuf buf,
+                           teep_key_t *key_pair,
                            UsefulBufC *ret);
 
 

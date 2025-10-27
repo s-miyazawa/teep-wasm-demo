@@ -29,10 +29,10 @@
 #include "teep_agent_es256_public_key.h"
 
 #include "tam_es256_public_key.h"
-const unsigned char *tam_public_key = tam_es256_public_key;
 
 const char DEFAULT_TAM_URL[] =          "http://localhost:8080/tam";
 const char DEFAULT_PROFILE[] =          "psa-eat";
+const char DEFAULT_TEEP_AGENT_KEYGEN[] = "no";
 #define MAX_RECEIVE_BUFFER_SIZE         1024*100 // 100KB
 #define MAX_SEND_BUFFER_SIZE            1024*2
 #define MAX_FILE_BUFFER_SIZE            512
@@ -203,6 +203,7 @@ teep_err_t create_success_or_error(const teep_update_t *update,
     \param[in]  msg_buf Tstr err-msg buffer allocated by caller.
     \param[in]  app_name    Application filename to be requested.
     \param[in]  profile_arg Profile name string from command line argument.
+    \param[in]  teep_agent_key_pair The Evidence includes the TEEP Agent’s public key.
     \param[out] message     Pointer of returned struct.
 
     \return     This returns only TEEP_SUCCESS;
@@ -211,6 +212,7 @@ teep_err_t create_query_response_or_error(const teep_query_request_t *query_requ
                                           UsefulBuf msg_buf,
                                           const char *app_name,
                                           const char *profile_arg,
+                                          teep_key_t *key_pair,
                                           teep_message_t *message)
 {
     size_t i;
@@ -266,7 +268,7 @@ out:
             result = create_evidence_psa(query_request, msg_buf, &eat);
         }else if (strcmp(profile_arg, "generic-eat") == 0) {
             printf("[TEEP Agent] generate Generic EAT Evidence\n");
-            result = create_evidence_generic(query_request, msg_buf, &eat);
+            result = create_evidence_generic(query_request, msg_buf, key_pair, &eat);
         } else {
             printf("create_query_response_or_error : Unsupported profile '%s'\n", profile_arg);
             err_code_contains |= TEEP_ERR_CODE_PERMANENT_ERROR;
@@ -399,6 +401,7 @@ int main(int argc, char * const argv[])
     teep_agent_status_t status = WAITING_QUERY_REQUEST;
     const char *tam_url = NULL;
     const char *profile_arg = NULL;
+    const char *teep_agent_keygen = NULL;
     char app_name[MAX_APP_NAME_SIZE];
     const char *command = NULL;
 
@@ -406,7 +409,6 @@ int main(int argc, char * const argv[])
     if (argc < 3) {
         usage(argv[0]);
     }
-
     command = argv[1];
     if (strcmp(command, "install") != 0) {
         fprintf(stderr, "Error: unknown command '%s'\n", command);
@@ -423,16 +425,20 @@ int main(int argc, char * const argv[])
     static struct option long_options[] = {
         {"url", required_argument, 0, 'u'},
         {"profile", required_argument, 0, 'p'},
+        {"teep_agent_keygen", required_argument, 0, 't'},
         {0, 0, 0, 0}
     };
     optind = 3;
-    while ((opt = getopt_long(argc, argv, "u:p:", long_options, &option_index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "u:p:t:", long_options, &option_index)) != -1) {
         switch (opt) {
             case 'u':
                 tam_url = optarg;
                 break;
             case 'p':
                 profile_arg = optarg;
+                break;
+            case 't':
+                teep_agent_keygen = optarg;
                 break;
             case '?':
             default:
@@ -451,6 +457,12 @@ int main(int argc, char * const argv[])
             profile_arg = DEFAULT_PROFILE;
         }
     }
+    if (teep_agent_keygen == NULL){
+        teep_agent_keygen = getenv("TEEP_AGENT_KEYGEN");
+        if (teep_agent_keygen == NULL){
+            teep_agent_keygen = DEFAULT_TEEP_AGENT_KEYGEN;
+        }
+    }
 
 
     UsefulBuf_MAKE_STACK_UB(cbor_recv_buf, MAX_RECEIVE_BUFFER_SIZE);
@@ -459,11 +471,29 @@ int main(int argc, char * const argv[])
 
     // Create signing and verification keys.
     teep_mechanism_t mechanism_sign;
-    result = teep_key_init_es256_key_pair(teep_agent_es256_private_key, teep_agent_es256_public_key, NULLUsefulBufC, &mechanism_sign.key);
-    if (result != TEEP_SUCCESS) {
-        printf("main : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
-        return EXIT_FAILURE;
+
+    if (strcmp(teep_agent_keygen, "yes") == 0){
+        result = teep_generate_es256_key_pair(&mechanism_sign.key, NULLUsefulBufC);
+        if (result != TEEP_SUCCESS) {
+            printf("main : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
+            return EXIT_FAILURE;
+        }
+    }else if (strcmp(teep_agent_keygen, "no") == 0)
+    {
+        result = teep_key_init_es256_key_pair(teep_agent_es256_private_key, teep_agent_es256_public_key, NULLUsefulBufC, &mechanism_sign.key);
+        if (result != TEEP_SUCCESS) {
+            printf("main : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
+            return EXIT_FAILURE;
+        }
+    }else{
+        printf("mail: teep_agent_keygen option is incorrect.");
+        return EXIT_FAILURE;   
     }
+
+
+    return 0;
+
+
 
     //setting tam_es256_public_key
     teep_mechanism_t mechanism_verify;
@@ -504,11 +534,11 @@ int main(int argc, char * const argv[])
         case TEEP_TYPE_QUERY_REQUEST:
             printf("[TEEP Broker] < Received QueryRequest.\n");
             TEEP_DEBUG_QUERY((const teep_query_request_t *)&recv_message, 2, 2);
-            result = create_query_response_or_error((const teep_query_request_t *)&recv_message, msg_buf, app_name, profile_arg, &send_message);
+            result = create_query_response_or_error((const teep_query_request_t *)&recv_message, msg_buf, app_name, profile_arg, &mechanism_sign.key, &send_message);
             break;
         case TEEP_TYPE_UPDATE:
             printf("[TEEP Broker] < Received UpdateMessage.\n");
-            TEEP_DEBUG_UPDATE((const teep_update_t *)&recv_message, 2, 2, tam_public_key); 
+            TEEP_DEBUG_UPDATE((const teep_update_t *)&recv_message, 2, 2,tam_es256_public_key); 
             if (status == WAITING_QUERY_REQUEST) {
                 printf("main : Received Update message without QueryRequest.\n");
                 goto interval;

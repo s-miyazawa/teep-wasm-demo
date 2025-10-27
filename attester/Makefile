@@ -28,8 +28,9 @@ SRCS = \
 	src/teep_examples_cose.c \
 	src/teep_create_evidence.c \
 	src/teep_http_client.c \
+	src/teep_generate_key_pair.c \
 	src/suit_examples_common.c \
-	src/suit_manifest_process.c
+	src/suit_manifest_process.c 
 
 LDWRAP = \
 	-Xlinker --wrap=suit_store_callback \
