@@ -191,22 +191,19 @@ teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
     QCBOREncodeContext context;
 
     /* Initialize for signing */
-    //teep_mechanism_t mechanism_sign;
     teep_err_t          result;
-
-/*
-    result = teep_set_mechanism_from_cose_key(attester_es256_cose_key_private, NULLUsefulBufC, &mechanism_sign);
+    teep_mechanism_t mechanism_sign;
+    result = teep_key_init_es256_key_pair(key_pair->private_key, key_pair->public_key, key_pair->kid, &mechanism_sign.key);
     if (result != TEEP_SUCCESS) {
-        printf("create_evidence_generic : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
+        printf("main : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
         return EXIT_FAILURE;
     }
-*/
+
     t_cose_sign1_sign_init(&sign_ctx, 0, T_COSE_ALGORITHM_ES256);
-    t_cose_sign1_set_signing_key(&sign_ctx, key_pair->cose_key, key_pair->kid);
+    t_cose_sign1_set_signing_key(&sign_ctx, mechanism_sign.key.cose_key, mechanism_sign.key.kid);
     
     /* encode the header */
     QCBOREncode_Init(&context, buf);
-
     enum t_cose_err_t t_cose_result = t_cose_sign1_encode_parameters(&sign_ctx, &context);
     if (t_cose_result != T_COSE_SUCCESS) {
         return TEEP_ERR_SIGNING_FAILED;
@@ -220,18 +217,10 @@ teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
     //cnf/8: {/ COSE_Key /1:{/kty/1:2, /crv/-1:1, /x/-2:h'...', /y/-3:h'...'},/kid/3:h'...'}
     int64_t kty = 2; // EC2
     int64_t crv = 1; // P-256
-    UsefulBuf thumbprint={.ptr = NULL, .len = SHA256_DIGEST_LENGTH};
     unsigned char public_key_x[32];
     unsigned char public_key_y[32];
     memcpy(public_key_x, key_pair->public_key+1, 32);
     memcpy(public_key_y, key_pair->public_key+33, 32);
-
-    thumbprint.ptr = malloc(thumbprint.len);
-    result = teep_calc_cose_key_thumbprint(attester_es256_cose_key_private, thumbprint);
-    if (result != TEEP_SUCCESS) {
-        printf("create_evidence_generic : Failed to calc cose key thumbprint. %s(%d)\n", teep_err_to_str(result), result);
-        return result;
-    }
 
 
     QCBOREncode_OpenMapInMapN(&context, CNF); // open cnf map
@@ -241,7 +230,7 @@ teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
     QCBOREncode_AddBytesToMapN(&context, X_COORDINATE, UsefulBuf_FROM_BYTE_ARRAY_LITERAL(public_key_x)); // x
     QCBOREncode_AddBytesToMapN(&context, Y_COORDINATE, UsefulBuf_FROM_BYTE_ARRAY_LITERAL(public_key_y)); // y 
     QCBOREncode_CloseMap(&context); // close cose_key map
-    QCBOREncode_AddBytesToMapN(&context, KEY_ID, (UsefulBufC){.ptr = thumbprint.ptr, .len = thumbprint.len}); // kid       
+    QCBOREncode_AddBytesToMapN(&context, KEY_ID, key_pair->kid); // kid       
     QCBOREncode_CloseMap(&context); // close cnf map
     
     /* eat_nonce */
@@ -318,8 +307,7 @@ teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
         return TEEP_ERR_UNEXPECTED_ERROR;
     }
 
-    //teep_free_key(&mechanism_sign.key);
-    free(thumbprint.ptr);
+    teep_free_key(&mechanism_sign.key);
     return TEEP_SUCCESS;
 }
 

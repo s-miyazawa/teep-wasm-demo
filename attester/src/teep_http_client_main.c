@@ -260,7 +260,6 @@ out:
         err_code_contains |= TEEP_ERR_CODE_UNSUPPORTED_CIPHER_SUITES;
         goto error;
     }
-
     
     if (query_request->data_item_requested.attestation) {
         if (strcmp(profile_arg, "psa-eat") == 0) {
@@ -473,7 +472,7 @@ int main(int argc, char * const argv[])
     teep_mechanism_t mechanism_sign;
 
     if (strcmp(teep_agent_keygen, "yes") == 0){
-        result = teep_generate_es256_key_pair(&mechanism_sign.key, NULLUsefulBufC);
+        result = teep_generate_es256_key_pair(&mechanism_sign.key);
         if (result != TEEP_SUCCESS) {
             printf("main : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
             return EXIT_FAILURE;
@@ -485,13 +484,16 @@ int main(int argc, char * const argv[])
             printf("main : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
             return EXIT_FAILURE;
         }
+        result = teep_genearte_kid(&mechanism_sign.key);
+        if (result != TEEP_SUCCESS) {
+            printf("main : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
+            return EXIT_FAILURE;
+        }
+
     }else{
         printf("mail: teep_agent_keygen option is incorrect.");
         return EXIT_FAILURE;   
     }
-
-
-    return 0;
 
 
 

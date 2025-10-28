@@ -1,8 +1,52 @@
 #include "teep_generate_key_pair.h"
 
+#define COSE_KEY_THUMBPRINT_BUFFER_SIZE (11+66+66)
+
+/*!
+    \brief      Genearte a KID and store it in key_pair->kid
+
+    \param[in,out]  key_pair         key pair.
+
+    \return     This returns one of error codes defined by \ref teep_err_t;
+ */
+teep_err_t teep_genearte_kid(teep_key_t *key_pair){
+    
+    teep_err_t          result;
+    QCBOREncodeContext encode_context;
+    UsefulBufC cose_key_bytes;
+   
+    UsefulBuf_MAKE_STACK_UB(buf, COSE_KEY_THUMBPRINT_BUFFER_SIZE);
+
+    QCBOREncode_Init(&encode_context, buf);
+    QCBOREncode_OpenMap(&encode_context);
+    QCBOREncode_AddInt64ToMapN(&encode_context, TEEP_COSE_KTY, TEEP_COSE_KTY_EC2);
+    QCBOREncode_AddInt64ToMapN(&encode_context, TEEP_COSE_CRV, TEEP_COSE_CRV_P256);
+    QCBOREncode_AddBytesToMapN(&encode_context, TEEP_COSE_X, (UsefulBufC){.ptr = key_pair->public_key+1, .len = 32});
+    QCBOREncode_AddBytesToMapN(&encode_context, TEEP_COSE_Y, (UsefulBufC){.ptr = key_pair->public_key+33, .len = 32});
+    QCBOREncode_CloseMap(&encode_context);
+    QCBOREncode_Finish(&encode_context, &cose_key_bytes);
+
+    key_pair->kid.len = SHA256_DIGEST_LENGTH;
+    key_pair->kid.ptr  = malloc(SHA256_DIGEST_LENGTH);
+    result = teep_generate_sha256(cose_key_bytes, key_pair->kid);
+    if (result != TEEP_SUCCESS) {
+        printf("create_evidence_generic : Failed to calc cose key thumbprint. %s(%d)\n", teep_err_to_str(result), result);
+        return result;
+    }
+
+    return result;
+}
 
 
-teep_err_t teep_generate_es256_key_pair(teep_key_t *key_pair, UsefulBufC kid) {
+
+/*!
+    \brief      Generate key pair and set them to pair_key.
+
+    \param[in,out]  key_pair         key pair.
+
+    \return     This returns one of error codes defined by \ref teep_err_t;
+ */
+teep_err_t teep_generate_es256_key_pair(teep_key_t *key_pair) {
     teep_err_t ret = TEEP_ERR_UNEXPECTED_ERROR;
 
     EVP_PKEY_CTX *pctx = NULL;
@@ -41,23 +85,34 @@ teep_err_t teep_generate_es256_key_pair(teep_key_t *key_pair, UsefulBufC kid) {
     pub_len = EC_POINT_point2oct(group, pub_point, POINT_CONVERSION_UNCOMPRESSED,
                                 pub_bytes, sizeof(pub_bytes), NULL);
 
-    ret = teep_key_init_es256_key_pair(priv_bytes, pub_bytes, kid, key_pair);
-    
-    if (ret != TEEP_SUCCESS) {
-        printf("create_evidence_generic : Failed to init es256 key pair. %s(%d)\n", teep_err_to_str(ret), ret);
+
+    /* set the public key to key pair */
+    key_pair->private_key = malloc(PRIME256V1_PRIVATE_KEY_LENGTH);
+    memcpy(key_pair->private_key, priv_bytes, PRIME256V1_PRIVATE_KEY_LENGTH);
+    key_pair->private_key_len = PRIME256V1_PRIVATE_KEY_LENGTH;
+    key_pair->public_key = malloc(PRIME256V1_PUBLIC_KEY_LENGTH);
+    memcpy(key_pair->public_key, pub_bytes, PRIME256V1_PUBLIC_KEY_LENGTH);
+    key_pair->public_key_len = PRIME256V1_PUBLIC_KEY_LENGTH;
+    key_pair->cose_algorithm_id = T_COSE_ALGORITHM_ES256;
+
+
+
+    ret = teep_genearte_kid(key_pair);
+    if(ret != TEEP_SUCCESS){
+        printf("create_evidence_generic : Failed to calc cose key thumbprint. %s(%d)\n", teep_err_to_str(ret), ret);
         return ret;
     }
+    
 
-
-
+/*
     UsefulBuf thumbprint={.ptr = NULL, .len = SHA256_DIGEST_LENGTH};
     thumbprint.ptr = malloc(thumbprint.len);
-    ret = teep_calc_cose_key_thumbprint((UsefulBufC){.ptr = key_pair->cose_key.key.ptr, .len = NULL}  , thumbprint);
+    ret = teep_calc_cose_key_thumbprint((UsefulBufC){.ptr = key_pair->cose_key, .len = NULL}  , thumbprint);
     if (ret != TEEP_SUCCESS) {
         printf("create_evidence_generic : Failed to calc cose key thumbprint. %s(%d)\n", teep_err_to_str(ret), ret);
         return ret;
     }
-
+*/
 
     ret = TEEP_SUCCESS;
 
