@@ -3,7 +3,7 @@
 #include "teep_create_evidence.h"
 
 #include "attester_es256_cose_key_private.h"
-#include "teep_agent_es256_key_for_psa.h"
+#include "trust_anchor_es256_key_for_psa.h"
 
 
 
@@ -67,7 +67,7 @@ teep_err_t create_evidence_psa(const teep_query_request_t *query_request,
     /* Initialize for signing */
     teep_mechanism_t mechanism_sign;
     teep_err_t          result;
-    result = teep_key_init_es256_key_pair(attester_es256_private_key, attester_es256_evidence_public_key, NULLUsefulBufC, &mechanism_sign.key);
+    result = teep_key_init_es256_key_pair(trust_anchor_es256_private_key, trust_anchor_es256_public_key, NULLUsefulBufC, &mechanism_sign.key);
     if (result != TEEP_SUCCESS) {
         printf("main : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
         return EXIT_FAILURE;
@@ -193,7 +193,7 @@ teep_err_t create_evidence_generic(const teep_query_request_t *query_request,
     /* Initialize for signing */
     teep_err_t          result;
     teep_mechanism_t mechanism_sign;
-    result = teep_key_init_es256_key_pair(key_pair->private_key, key_pair->public_key, key_pair->kid, &mechanism_sign.key);
+    result = teep_key_init_es256_key_pair(trust_anchor_es256_private_key, trust_anchor_es256_public_key, NULLUsefulBufC, &mechanism_sign.key);
     if (result != TEEP_SUCCESS) {
         printf("main : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
         return EXIT_FAILURE;

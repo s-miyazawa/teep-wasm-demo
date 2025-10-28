@@ -46,7 +46,7 @@ teep_err_t teep_genearte_kid(teep_key_t *key_pair){
 
     \return     This returns one of error codes defined by \ref teep_err_t;
  */
-teep_err_t teep_generate_es256_key_pair(teep_key_t *key_pair) {
+teep_err_t teep_generate_es256_key_pair(teep_mechanism_t *key_pair) {
     teep_err_t ret = TEEP_ERR_UNEXPECTED_ERROR;
 
     EVP_PKEY_CTX *pctx = NULL;
@@ -73,7 +73,6 @@ teep_err_t teep_generate_es256_key_pair(teep_key_t *key_pair) {
 
     ec_key = EVP_PKEY_get1_EC_KEY(pkey);
     if (!ec_key) goto err;
-
     group = EC_KEY_get0_group(ec_key);
     pub_point = EC_KEY_get0_public_key(ec_key);
     priv_bn = EC_KEY_get0_private_key(ec_key);
@@ -87,33 +86,26 @@ teep_err_t teep_generate_es256_key_pair(teep_key_t *key_pair) {
 
 
     /* set the public key to key pair */
-    key_pair->private_key = malloc(PRIME256V1_PRIVATE_KEY_LENGTH);
-    memcpy(key_pair->private_key, priv_bytes, PRIME256V1_PRIVATE_KEY_LENGTH);
-    key_pair->private_key_len = PRIME256V1_PRIVATE_KEY_LENGTH;
-    key_pair->public_key = malloc(PRIME256V1_PUBLIC_KEY_LENGTH);
-    memcpy(key_pair->public_key, pub_bytes, PRIME256V1_PUBLIC_KEY_LENGTH);
-    key_pair->public_key_len = PRIME256V1_PUBLIC_KEY_LENGTH;
-    key_pair->cose_algorithm_id = T_COSE_ALGORITHM_ES256;
+    ret = teep_key_init_es256_key_pair(priv_bytes, pub_bytes, NULLUsefulBufC, &key_pair->key);
+    if(ret != TEEP_SUCCESS){
+        printf("create_evidence_generic : Failed to create cose key. %s(%d)\n", teep_err_to_str(ret), ret);
+        return ret;
+    }
 
+    key_pair->key.private_key = malloc(SECP384R1_PRIVATE_KEY_LENGTH);
+    memcpy(key_pair->key.private_key, priv_bytes,SECP384R1_PRIVATE_KEY_LENGTH);
+    key_pair->key.private_key_len = SECP384R1_PRIVATE_KEY_LENGTH;
+    key_pair->key.public_key = malloc(PRIME256V1_PUBLIC_KEY_LENGTH);
+    memcpy(key_pair->key.public_key, pub_bytes, PRIME256V1_PUBLIC_KEY_LENGTH);
+    key_pair->key.public_key_len = PRIME256V1_PUBLIC_KEY_LENGTH;
 
-
-    ret = teep_genearte_kid(key_pair);
+    ret = teep_genearte_kid(&key_pair->key);
     if(ret != TEEP_SUCCESS){
         printf("create_evidence_generic : Failed to calc cose key thumbprint. %s(%d)\n", teep_err_to_str(ret), ret);
         return ret;
     }
+
     
-
-/*
-    UsefulBuf thumbprint={.ptr = NULL, .len = SHA256_DIGEST_LENGTH};
-    thumbprint.ptr = malloc(thumbprint.len);
-    ret = teep_calc_cose_key_thumbprint((UsefulBufC){.ptr = key_pair->cose_key, .len = NULL}  , thumbprint);
-    if (ret != TEEP_SUCCESS) {
-        printf("create_evidence_generic : Failed to calc cose key thumbprint. %s(%d)\n", teep_err_to_str(ret), ret);
-        return ret;
-    }
-*/
-
     ret = TEEP_SUCCESS;
 
 err:

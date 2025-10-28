@@ -14,6 +14,7 @@
 #include "teep_examples_common.h"
 #include "teep_http_client.h"
 #include "teep_create_evidence.h"
+#include "teep_generate_key_pair.h"
 #include "debug_print.h"
 
 #include "csuit/suit_manifest_process.h"
@@ -472,21 +473,21 @@ int main(int argc, char * const argv[])
     teep_mechanism_t mechanism_sign;
 
     if (strcmp(teep_agent_keygen, "yes") == 0){
-        result = teep_generate_es256_key_pair(&mechanism_sign.key);
+        result = teep_generate_es256_key_pair(&mechanism_sign);
         if (result != TEEP_SUCCESS) {
-            printf("main : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
+            printf("main : Failed to create key pair. %s(%d)\n", teep_err_to_str(result), result);
             return EXIT_FAILURE;
         }
     }else if (strcmp(teep_agent_keygen, "no") == 0)
     {
         result = teep_key_init_es256_key_pair(teep_agent_es256_private_key, teep_agent_es256_public_key, NULLUsefulBufC, &mechanism_sign.key);
         if (result != TEEP_SUCCESS) {
-            printf("main : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
+            printf("main : Failed to set key pair. %s(%d)\n", teep_err_to_str(result), result);
             return EXIT_FAILURE;
         }
         result = teep_genearte_kid(&mechanism_sign.key);
         if (result != TEEP_SUCCESS) {
-            printf("main : Failed to create t_cose key pair. %s(%d)\n", teep_err_to_str(result), result);
+            printf("main : Failed to create kid. %s(%d)\n", teep_err_to_str(result), result);
             return EXIT_FAILURE;
         }
 
