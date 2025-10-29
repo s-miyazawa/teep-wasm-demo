@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2025 SECOM CO., LTD. All Rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #include <stdio.h>
 #include <teep/teep_message_print.h>
 #include "teep_create_evidence.h"

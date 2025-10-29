@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2020-2023 SECOM CO., LTD. All Rights reserved.
+ * Copyright (c) 2025 SECOM CO., LTD. All Rights reserved.
  *
  * SPDX-License-Identifier: BSD-2-Clause
- *
  */
 
 #ifndef TRUST_ANCHOR_PRIME256V1_COSE_KEY_PUBLIC_H
