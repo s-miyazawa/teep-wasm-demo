@@ -1,4 +1,8 @@
-
+/*
+ * Copyright (c) 2025 SECOM CO., LTD. All Rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
 
 #ifndef TEEP_GENERATE_KEY_PAIR_H
 #define TEEP_GENERATE_KEY_PAIR_H

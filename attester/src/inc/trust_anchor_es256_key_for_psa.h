@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2025 SECOM CO., LTD. All Rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #ifndef TEEP_AGENT_PSA_KEY_H
 #define TEEP_AGENT_PSA_KEY_H
 const unsigned char trust_anchor_es256_private_key[] = {

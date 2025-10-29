@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2025 SECOM CO., LTD. All Rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #include "teep_generate_key_pair.h"
 
 #define COSE_KEY_THUMBPRINT_BUFFER_SIZE (11+66+66)

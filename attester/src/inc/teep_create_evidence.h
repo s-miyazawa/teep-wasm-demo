@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2025 SECOM CO., LTD. All Rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 // create_evidence.h
 #ifndef CREATE_EVIDENCE_H
 #define CREATE_EVIDENCE_H
