@@ -1,7 +1,9 @@
-# Copyright (c) 2020 SECOM CO., LTD. All Rights reserved.
-#
+# -----------------------------------------------------------------------------
+# Copyright (c) 2025 SECOM CO., LTD. All Rights reserved.
+# 
 # SPDX-License-Identifier: BSD-2-Clause
-#
+# -----------------------------------------------------------------------------
+
 
 PREFIX  ?= /usr/local
 BINDIR  ?= $(PREFIX)/bin
