@@ -66,6 +66,9 @@ teep_err_t teep_generate_es256_key_pair(teep_mechanism_t *key_pair) {
     unsigned char pub_bytes[65]; // 0x04 + X(32) + Y(32)
     size_t pub_len = sizeof(pub_bytes);
 
+    unsigned char *priv_buf = NULL;
+    unsigned char *pub_buf = NULL;
+
     memset(priv_bytes, 0, sizeof(priv_bytes));
     memset(pub_bytes, 0, sizeof(pub_bytes));
 
@@ -98,13 +101,30 @@ teep_err_t teep_generate_es256_key_pair(teep_mechanism_t *key_pair) {
         return ret;
     }
 
-    key_pair->key.private_key = malloc(SECP384R1_PRIVATE_KEY_LENGTH);
-    memcpy(key_pair->key.private_key, priv_bytes,SECP384R1_PRIVATE_KEY_LENGTH);
-    key_pair->key.private_key_len = SECP384R1_PRIVATE_KEY_LENGTH;
+    priv_buf = malloc(PRIME256V1_PRIVATE_KEY_LENGTH);
+    if(priv_buf == NULL){
+        ret = TEEP_ERR_NO_MEMORY;
+        goto err;
+    }
+    memcpy(priv_buf, priv_bytes,PRIME256V1_PRIVATE_KEY_LENGTH);
+    key_pair->key.private_key = priv_buf;
+    key_pair->key.private_key_len = PRIME256V1_PRIVATE_KEY_LENGTH;
+
+    pub_buf = malloc(PRIME256V1_PUBLIC_KEY_LENGTH);
+    if(pub_buf == NULL){
+        ret = TEEP_ERR_NO_MEMORY;
+        goto err;
+    }
+    memcpy(pub_buf, pub_bytes, PRIME256V1_PUBLIC_KEY_LENGTH);
+    key_pair->key.public_key = pub_buf;
+    key_pair->key.public_key_len = PRIME256V1_PUBLIC_KEY_LENGTH;
+
+/*
+    key_pair->key.private_key_len = PRIME256V1_PRIVATE_KEY_LENGTH;
     key_pair->key.public_key = malloc(PRIME256V1_PUBLIC_KEY_LENGTH);
     memcpy(key_pair->key.public_key, pub_bytes, PRIME256V1_PUBLIC_KEY_LENGTH);
     key_pair->key.public_key_len = PRIME256V1_PUBLIC_KEY_LENGTH;
-
+*/
     ret = teep_genearte_kid(&key_pair->key);
     if(ret != TEEP_SUCCESS){
         printf("create_evidence_generic : Failed to calc cose key thumbprint. %s(%d)\n", teep_err_to_str(ret), ret);
@@ -118,5 +138,9 @@ err:
     EC_KEY_free(ec_key);
     EVP_PKEY_free(pkey);
     EVP_PKEY_CTX_free(pctx);
+    if(priv_buf!=NULL) free(priv_buf);
+    if(priv_buf!=NULL) free(pub_buf);
+
+
     return ret;
 }
