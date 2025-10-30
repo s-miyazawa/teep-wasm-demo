@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2025 SECOM CO., LTD. All Rights reserved.
+#
+# SPDX-License-Identifier: BSD-2-Clause
+#
+
 CONCATENATED_SUIT_CDDL       := suit-manifest.cddl
 SUIT_MANIFEST_CDDL           := draft-ietf-suit-manifest.cddl
 SUIT_TRUST_DOMAINS_CDDL      := draft-ietf-suit-trust-domains.cddl
