@@ -387,7 +387,7 @@ teep_err_t get_teep_message(const char *tam_url,
 
 
 void usage(const char *progname) {
-    fprintf(stderr, "Usage: %s install <app_name> [--url <url> | -u <url>] [--profile <profile> | -p <profile>]\n", progname);
+    fprintf(stderr, "Usage: %s install <app_name> [--url <url> | -u <url>] [--profile <profile> | -p <profile>] [--teep_agent_keygen <'yes' or 'no'> | -t <'yes' or 'no'>   ]\n", progname);
     exit(EXIT_FAILURE);
 }
 

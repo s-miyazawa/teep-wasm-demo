@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+#include <stdbool.h>
+
 #include "teep_generate_key_pair.h"
 
 #define COSE_KEY_THUMBPRINT_BUFFER_SIZE (11+66+66)
@@ -68,6 +70,8 @@ teep_err_t teep_generate_es256_key_pair(teep_mechanism_t *key_pair) {
 
     unsigned char *priv_buf = NULL;
     unsigned char *pub_buf = NULL;
+    bool private_key_allocated = false;
+    bool public_key_allocated = false;
 
     memset(priv_bytes, 0, sizeof(priv_bytes));
     memset(pub_bytes, 0, sizeof(pub_bytes));
@@ -98,7 +102,7 @@ teep_err_t teep_generate_es256_key_pair(teep_mechanism_t *key_pair) {
     ret = teep_key_init_es256_key_pair(priv_bytes, pub_bytes, NULLUsefulBufC, &key_pair->key);
     if(ret != TEEP_SUCCESS){
         printf("create_evidence_generic : Failed to create cose key. %s(%d)\n", teep_err_to_str(ret), ret);
-        return ret;
+        goto err;
     }
 
     priv_buf = malloc(PRIME256V1_PRIVATE_KEY_LENGTH);
@@ -106,9 +110,11 @@ teep_err_t teep_generate_es256_key_pair(teep_mechanism_t *key_pair) {
         ret = TEEP_ERR_NO_MEMORY;
         goto err;
     }
-    memcpy(priv_buf, priv_bytes,PRIME256V1_PRIVATE_KEY_LENGTH);
+    memcpy(priv_buf, priv_bytes, PRIME256V1_PRIVATE_KEY_LENGTH);
     key_pair->key.private_key = priv_buf;
     key_pair->key.private_key_len = PRIME256V1_PRIVATE_KEY_LENGTH;
+    private_key_allocated = true;
+    priv_buf = NULL; /* ownership moved to key_pair->key */
 
     pub_buf = malloc(PRIME256V1_PUBLIC_KEY_LENGTH);
     if(pub_buf == NULL){
@@ -118,28 +124,43 @@ teep_err_t teep_generate_es256_key_pair(teep_mechanism_t *key_pair) {
     memcpy(pub_buf, pub_bytes, PRIME256V1_PUBLIC_KEY_LENGTH);
     key_pair->key.public_key = pub_buf;
     key_pair->key.public_key_len = PRIME256V1_PUBLIC_KEY_LENGTH;
+    public_key_allocated = true;
+    pub_buf = NULL; /* ownership moved to key_pair->key */
 
-/*
-    key_pair->key.private_key_len = PRIME256V1_PRIVATE_KEY_LENGTH;
-    key_pair->key.public_key = malloc(PRIME256V1_PUBLIC_KEY_LENGTH);
-    memcpy(key_pair->key.public_key, pub_bytes, PRIME256V1_PUBLIC_KEY_LENGTH);
-    key_pair->key.public_key_len = PRIME256V1_PUBLIC_KEY_LENGTH;
-*/
     ret = teep_genearte_kid(&key_pair->key);
     if(ret != TEEP_SUCCESS){
         printf("create_evidence_generic : Failed to calc cose key thumbprint. %s(%d)\n", teep_err_to_str(ret), ret);
-        return ret;
+        goto err;
     }
 
     
     ret = TEEP_SUCCESS;
 
+    goto cleanup;
+
 err:
+    if (private_key_allocated && key_pair->key.private_key != NULL) {
+        free(key_pair->key.private_key);
+        key_pair->key.private_key = NULL;
+        key_pair->key.private_key_len = 0;
+    }
+    if (public_key_allocated && key_pair->key.public_key != NULL) {
+        free(key_pair->key.public_key);
+        key_pair->key.public_key = NULL;
+        key_pair->key.public_key_len = 0;
+    }
+    if (key_pair->key.kid.ptr != NULL) {
+        free(key_pair->key.kid.ptr);
+        key_pair->key.kid.ptr = NULL;
+        key_pair->key.kid.len = 0;
+    }
+
+cleanup:
     EC_KEY_free(ec_key);
     EVP_PKEY_free(pkey);
     EVP_PKEY_CTX_free(pctx);
     if(priv_buf!=NULL) free(priv_buf);
-    if(priv_buf!=NULL) free(pub_buf);
+    if(pub_buf!=NULL) free(pub_buf);
 
 
     return ret;
