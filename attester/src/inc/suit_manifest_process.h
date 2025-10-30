@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2025 SECOM CO., LTD. All Rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #ifndef SUIT_CONDITION_CALLBACK_H_
 #define SUIT_CONDITION_CALLBACK_H_
 
