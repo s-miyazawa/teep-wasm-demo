@@ -225,13 +225,118 @@ $ ./test-verify.sh
 result: {"ear.verifier-id":{"build":"0.0.2510+b8cd07b","developer":"Veraison Project"},"eat_nonce":"OTQ4Rjg4NjBEMTNBNDYzRThFCg==","eat_profile":"tag:github.com,2023:veraison/ear","iat":1760106976,"submods":{"generic-eat":{"ear.appraisal-policy-id":"policy:generic-eat","ear.status":"contraindicated","ear.trustworthiness-vector":{"configuration":99,"executables":99,"file-system":99,"hardware":99,"instance-identity":99,"runtime-opaque":99,"sourced-data":99,"storage-opaque":99},"ear.veraison.policy-claims":{"problem":"no trust anchor for evidence"}}}}
 ```
 
-## Step 3: Register Handlers for Endorsements and Reference Values
+## Step 3: Define Reference Values and Endorsements with CoRIM
 
-You need to provide important handlers:
-- `Decode()` to `endorsement_handler.go`
-  - `RefValExtractor` and `TaExtractor` for scheme-specific callback functions for `UnsignedCorimDecoder()` and `SignedCorimDecoder()`
-- `SynthKeysFromRefValue()` and `SynthKeysFromTrustAnchor()` to `store_handler.go`
-  - the extracted Reference Value and Trust Anchor will be stored into the key-value store
+[corim-generic-eat-measurements.rediag](../testvector/rats/corim/corim-generic-eat-measurements.rediag) is one example to provide Reference Values for instance `h'0198F50A4FF6C05861C8860D13A638EA'`:
+```
+{
+    reference-value: {
+        version: ["1.3.4",1],
+        digest: [SHA-256, h'DEADBEEF...'],
+        name: "TEEP Agent"
+    },
+    verification-pem-key: "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj...\n-----END PUBLIC KEY-----"
+}
+```
+
+The full CoRIM in diagnostic notation format is described below.
+You can convert and check it with `diag2cbor.rb < corim-generic-eat-measurements.rediag > corim-generic-eat-measurements.cbor && cddl ../../cddl/corim.cddl validate corim-generic-eat-measurements.cbor && cddl` (it displays nothing on success).
+
+```
+/ unsigned corim / 501({
+    / id / 0: h'b144156aa8d111f0b4e21fea72631d14' / random UUID /,
+    / tags / 1: [
+        / concise-mid-tag / 506(<< {
+            / language / 0: "en-GB",
+            / tag-identity / 1: {
+                / rag-id / 0: h'36A995CCA8D211F0A51F07E758AF6331' / random UUID /
+            },
+            / entities / 2: [
+                {
+                    / entity-name / 0: "ACME",
+                    / reg-id / 1: 32("https://acme.example"),
+                    / role / 2: [
+                        0, / tag-creator /
+                        1, / creator /
+                        2 / signer /
+                    ]
+                }
+            ],
+            / triples / 4: {
+                / reference-triples / 0: [
+                    / reference-triple-record / [
+                        / ref-env: / {
+                            / class is absent /
+                            / instance / 1: 37(h'0198F50A4FF6C05861C8860D13A638EA')
+                        },
+                        / ref-claims: / [
+                            / measurement-map / {
+                                / mkey is absent /
+                                / mval / 1: {
+                                    / version / 0: {
+                                        / version / 0: "1.3.4",
+                                        / version-scheme / 1: 1 / Multipartnumeric /
+                                    },
+                                    / digests / 2: [
+                                        [
+                                            / alg / 1 / sha-256 in IANA Named Information /,
+                                            / val / h'DEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF'
+                                        ]
+                                    ],
+                                    / name / 11: "TEEP Agent"
+                                }
+                            }
+                        ]
+                    ]
+                ]
+            }
+        } >>),
+        / concise-mid-tag / 506(<< {
+            / language / 0: "en-GB",
+            / tag-identity / 1: {
+                / rag-id / 0: h'36A995CCA8D211F0A51F07E758AF6331'
+            },
+            / entities / 2: [
+                {
+                    / entity-name / 0: "ACME",
+                    / reg-id / 1: 32("https://acme.example"),
+                    / role / 2: [
+                        0, / tag-creator /
+                        1, / creator /
+                        2 / signer /
+                    ]
+                }
+            ],
+            / triples / 4: {
+                / attest-key-triples / 3: [
+                    / attest-key-triple-record / [
+                        / environment: / {
+                            / class is absent /
+                            / instance / 1: 37(h'0198F50A4FF6C05861C8860D13A638EA')
+                        },
+                        / key-list: / [
+                            / tagged-pkix-base64-key-type / 554("-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEMKBCTNIcKUSDii11ySs3526iDZ8A\niTo7Tu6KPAqv7D7gS2XpJFbZiItSs3m9+9Ue6GnvHw/GW2ZZaVtszggXIw==\n-----END PUBLIC KEY-----")
+                        ]
+                    ]
+                ]
+            }
+        } >>)
+    ],
+    / profile / 3: 32("http://example.com/corim/profile")
+})
+```
+
+## Step 4: Register Handlers for Endorsements and Reference Values
+
+You need to implement important handlers:
+- `endorsement_handler.go` (and `corim_extractor.go`) converting CoRIM data to internal struct
+  - `RefValExtractor`: extracts Reference Value in CoRIM [Reference Value Triple](https://datatracker.ietf.org/doc/html/draft-ietf-rats-corim-09#name-reference-values-triple) to `[]handler.Endorsement`
+  - `TaExtractor`: extracts Trust Anchor from CoRIM [Attest Key Triple](https://datatracker.ietf.org/doc/html/draft-ietf-rats-corim-09#name-attest-key-triple) to `handler.Endorsement`
+- `store_handler.go` to store the extracted Reference Value and Trust Anchor will be stored into the key-value store
+  - `SynthKeysFromRefValue()`: 
+  - `SynthKeysFromTrustAnchor()`: 
+
+- `
 
 ```sh
 $ curl -X POST --data-binary "@../testvector/prebuilt/corim-generic-eat.cbor" -H 'Content-Type: application/corim-unsigned+cbor; profile="http://example.com/corim/profile"' --insecure https://localhost:9443/endorsement-provisioning/v1/submit
