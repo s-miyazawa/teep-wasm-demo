@@ -1,0 +1,31 @@
+{
+  e'profile-label': "https://arm.com/psa/2.0.0",
+  e'psa-client-id-key': 1,
+  e'psa-lifecycle-key': 12288,
+  e'psa-implementation-id-key': 'acme-implementation-id-000000001',
+  e'boot-seed-label': h'DEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF',
+  / NOTE: e'psa-hardware-version': 1234567890123 is not defined /
+  e'psa-software-components-key': [
+    {
+      / measurement-type / 1: "BL",
+      / measurement-value / 2:  h'87428FC522803D31065E7BCE3CF03FE475096631E5E07BBD7A0FDE60C4CF25C7',
+      / version / 4: "2.1.0"
+      / signer-id / 5: h'ACBB11C7E4DA217205523CE4CE1A245AE1A239AE3C6BFD9E7871F7E5D8BAE86B',
+    },
+    {
+      / measurement-type / 1: "PRoT",
+      / measurement-value / 2: h'0263829989B6FD954F72BAAF2FC64BC2E2F01D692D4DE72986EA808F6E99813F',
+      / version / 4: "1.3.5"
+      / signer-id / 5: h'ACBB11C7E4DA217205523CE4CE1A245AE1A239AE3C6BFD9E7871F7E5D8BAE86B',
+    },
+    {
+      / measurement-type / 1: "ARoT",
+      / measurement-value / 2: h'A3A5E715F0CC574A73C3F9BEBB6BC24F32FFD5B67B387244C2C909DA779A1478',
+      / version / 4: "0.1.4"
+      / signer-id / 5: h'ACBB11C7E4DA217205523CE4CE1A245AE1A239AE3C6BFD9E7871F7E5D8BAE86B',
+    }
+  ],
+  e'nonce-label': h'414A7C174141B3D0E9A1D28AF31520F0D42299FEAC4007DED89D68AE6CD92F19',
+  e'ueid-label' / psa-instance-id /: h'01CEEBAE7B8927A3227E5303CF5E0F1F7B34BB542AD7250AC03FBCDE36EC2F1508',
+  e'psa-verification-service-indicator-key': "https://psa-verifier.org"
+}

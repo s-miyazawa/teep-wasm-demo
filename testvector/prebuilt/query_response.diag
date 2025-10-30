@@ -1,0 +1,19 @@
+/ COSE_Sign1_Tagged / 18([
+  / protected: / << {
+    / alg / 1 : -9 / ESP256 /
+  } >>,
+  / unprotected: / {
+  },
+  / payload: / << [
+    / type: / 2 / TEEP-TYPE-QueryResponse /,
+    / options: / {
+      / attestation-payload / 7 : h'd28443a10126a05901d7a9190109781968747470733a2f2f61726d2e636f6d2f7073612f322e302e3019095a0119095b19300019095c582061636d652d696d70'..,
+      / requested-tc-list / 14 : [
+        {
+          / component-id / 16 : [ 'app.wasm' ]
+        }
+      ]
+    }
+  ] >>,
+  / signature: / h'5b0cd89a2da1398c011d142754888b5be5b58137e6db4cf4dad02f8e06cc0670b0b4ffd8b1181bb03e71268006de020d5003464d3f54d000925f84c777d2394d'
+])

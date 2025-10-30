@@ -1,0 +1,15 @@
+/ COSE_Sign1_Tagged / 18([
+  / protected: / << {
+    / alg / 1 : -9 / ESP256 /
+  } >>,
+  / unprotected: / {
+  },
+  / payload: / << [
+    / type: / 3 / TEEP-TYPE-Update /,
+    / options: / {
+      / manifest-list / 10 : [ h'a3025873825824822f5820908fbba882a122e06de6fa8adb5a6b7d8fd013629061537c1726c818395a3195584ad28443a10128a0f658406ad09c951fc7a52b75'.. ],
+      / token / 20 : h'0011223344556677'
+    }
+  ] >>,
+  / signature: / h'38c3e738be0b60b50883aea22aa4a05e55c2492a41d20d86494020ca038b816ff64ccacbee469b84042491d3c973a33768994724f28c8c64c8cf49553feb5110'
+])

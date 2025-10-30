@@ -1,0 +1,4 @@
+*.hdiag
+*.gdiag
+*.cbor
+*.cose

@@ -1,0 +1,155 @@
+- [Secure Software Provisioning with TEEP \& VERAISON](#secure-software-provisioning-with-teep--veraison)
+  - [Objectives](#objectives)
+  - [Architecture](#architecture)
+  - [How to Run](#how-to-run)
+    - [Setup](#setup)
+    - [Run VERAISON](#run-veraison)
+    - [A. Provision TEE Device with Generic EAT Evidence](#a-provision-tee-device-with-generic-eat-evidence)
+    - [B. Provision TEE Device with PSA Attestation Token](#b-provision-tee-device-with-psa-attestation-token)
+    - [(Optional) Run Step by Step with TEEP Agent](#optional-run-step-by-step-with-teep-agent)
+  - [Next Plan](#next-plan)
+
+# Secure Software Provisioning with TEEP & VERAISON
+
+This repository hosts running code and docs of the hackathon project at IETF124.
+
+## Objectives
+- Provides mature implementations of [TEEP Protocol](https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol) combined with [SUIT Manifest Processor](https://datatracker.ietf.org/doc/html/draft-ietf-suit-manifest) and [RATS EAT](https://datatracker.ietf.org/doc/html/rfc9711) & [EAR](https://datatracker.ietf.org/doc/html/draft-ietf-rats-ear) implementations
+- Uses [VERAISON](https://github.com/veraison) as the background-check model Verifier for the Trusted Application Manager (TAM), enabling the TAM
+  - to entrust VERAISON to verify the Evidence provided with QueryResponse message from TEEP Agent,
+  - to authenticate all the TEEP messages from TEEP Agent with the key in confirmation claim (cnf) of the Attestation Result, and
+  - to select appropriate Trusted Component(s) for the TEE Device to be installed and run
+
+## Architecture
+
+> [!TIP]
+> You can click to jump the messages and the components.
+
+```mermaid
+flowchart TD
+  subgraph TEEP Protocol
+    attester([TEE Device: Attester])
+    click attester "https://github.com/s-miyazawa/teep-wasm-demo/tree/main/attester"
+
+    relying_party([TAM: Relying Party])
+    click relying_party "https://github.com/s-miyazawa/teep-wasm-demo/tree/main/tam"
+  end
+
+
+  attester -- 1. <a href="https://github.com/s-miyazawa/teep-wasm-demo/blob/main/testvector/prebuilt/query_response.diag">QueryResponse</a> with an <a href="https://github.com/s-miyazawa/teep-wasm-demo/blob/main/testvector/prebuilt/psa_token.diag">EAT Evidence</a> --> relying_party
+  relying_party -- 4. <a href="https://github.com/s-miyazawa/teep-wasm-demo/blob/main/testvector/prebuilt/update.diag">Update</a> with a <a href="https://github.com/s-miyazawa/teep-wasm-demo/blob/main/testvector/prebuilt/manifest.diag">SUIT Manifest</a> --> attester
+
+  relying_party -- 2. <a href="https://github.com/s-miyazawa/teep-wasm-demo/blob/main/testvector/prebuilt/psa_token.diag">Evidence</a> --> verifier
+  verifier -- 3. <a href="https://github.com/s-miyazawa/teep-wasm-demo/blob/main/testvector/prebuilt/eat_attestation_result.txt">Attestation Result</a> --> relying_party
+
+  verifier([VERAISON: Verifier])
+  click verifier "https://github.com/s-miyazawa/teep-wasm-demo/tree/main/veraison"
+```
+
+The details are explained here:
+- [Architecture and Message flow](./doc/README.md)
+- [TAM HTTP endpoint](./doc/TAM.md)
+- [VERAISON HTTP endpoints](./doc/VERAISON.md)
+
+## How to Run
+
+### Setup
+
+For docker environment on Ubuntu, run these commands.
+```sh
+sudo apt install git docker.io jq docker-buildx
+sudo usermod -a -G docker $USER
+su - $USER # or re-login
+
+git clone --recursive https://github.com/s-miyazawa/teep-wasm-demo
+cd teep-wasm-demo/
+make -C veraison/services docker-deploy
+```
+
+You can deploy VERAISON also in other environments, see [VERAISON deployments/docker](https://github.com/veraison/services/tree/main/deployments/docker).
+
+### Run VERAISON
+
+```sh
+$ cd teep-wasm-demo/
+
+# run and initialize VERAISON Verifier
+$ source ./veraison/services/deployments/docker/env.bash
+$ veraison start
+$ veraison clear-stores
+$ ./veraison/services/end-to-end/end-to-end-docker provision
+$ curl -X POST --data-binary "@./testvector/prebuilt/corim-generic-eat-measurements.cbor" -H 'Content-Type: application/corim-unsigned+cbor; profile="http://example.com/corim/profile"' --insecure https://localhost:9443/endorsement-provisioning/v1/submit
+```
+
+### A. Provision TEE Device with Generic EAT Evidence
+
+TODO: What is Generic EAT?
+- digeest of TEE environment is measured and compared against Reference Value
+  - yet the digest is not actual one
+- the TAM can dynamically trust the TEEP Agent's key with key confirmation claim 
+
+```sh
+$ docker compose up
+```
+
+> [!TIP]
+> You can check the VERAISON logs with following command:
+> `$ veraison logs && tail -n30 veraison-logs/*.log`
+
+### B. Provision TEE Device with PSA Attestation Token
+
+TODO: What is PSA Attestation Token?
+- there is no room for key confirmation claim in the token, so the TAM must have the pre-shared TEEP Agent's key
+
+```sh
+$ TAM4WASM_CHALLENGE_CONTENT_TYPE=application/psa-attestation-token PROFILE=psa docker compose up
+```
+
+### (Optional) Run Step by Step with TEEP Agent
+
+```sh
+$ cd teep-wasm-demo/
+
+# run TAM in background
+$ docker compose up -d container_tam
+
+# run and enter the TEEP HTTP Client container
+$ docker compose up container_agent /bin/bash
+```
+
+In the contaienr terminal,
+
+```sh
+$ ls -la ./
+[no files exists]
+
+$ teep_wasm_get install app.wasm
+[TEEP Broker] > POST http://container_tam:8080/tam {empty}
+[TEEP Broker] < TEEP Received QueryRequest.
+[TEEP Agent] parsed TEEP QueryRequest message
+[TEEP Agent] generate EAT Evidence with challenge h'414A7C174141B3D0E9A1D28AF31520F0D42299FEAC4007DED89D68AE6CD92F19'
+[TEEP Agent] generate QueryResponse with attestation-payload h'D28443A10126A05901D7A...'
+[TEEP Broker] > POST http://container_tam:8080/tam {QueryResponse}
+[TEEP Broker] < TEEP Update message
+[TEEP Agent] parsed TEEP Update message
+[TEEP Agent] process SUIT Manifest h'A2025873825824822F...'
+[SUIT Manifest Processor] Store : to ['./manifest.app.wasm.0.suit']
+[SUIT Manifest Processor] Store : to ['./app.wasm']
+[TEEP Broker] > HTTP POST http://container_tam:8080/tam {Success}
+[TEEP Broker] The TAM terminated the connection
+
+$ ls -la ./
+app.wasm
+manifest.app.wasm.0.suit
+
+$ iwasm app.wasm
+Hello, world!
+```
+
+> [!TIP]
+> You can check the background TAM output with following command:
+> `$ docker compose logs container_tam`
+
+## Next Plan
+
+- Use actual TEE

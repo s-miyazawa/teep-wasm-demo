@@ -1,0 +1,7 @@
+[
+    / type: / e'TEEP-TYPE-update',
+    / options: / {
+        e'token': h'0011223344556677',
+        e'manifest-list': [ ref'app.wasm.envelope.cbor.bin.hdiag' ]
+    }
+]
