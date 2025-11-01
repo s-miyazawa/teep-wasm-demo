@@ -12,6 +12,11 @@ import (
 	"path/filepath"
 	"sort"
 	"strconv"
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"encoding/hex"
+    "math/big"
+
 
 	"github.com/fxamacker/cbor/v2"
 	"github.com/veraison/go-cose"
@@ -100,6 +105,8 @@ func newHandler(logger *log.Logger, disableCOSE bool, verifier *challengeClient)
 	}, nil
 }
 
+
+
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
@@ -124,6 +131,11 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if msgType == teepTypeQueryResponse {
 		h.logQueryResponseCBOR(payload)
+		/* verify signature */		
+		if err := verifyQueryResponse(body); err != nil {
+			h.logger.Printf("query-response verification failed: %v", err)
+			return
+		}
 	}
 
 	resp := h.pickResponse(msgType)
@@ -132,6 +144,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	h.logger.Printf("Received message type %s -> sent %s.", msgType.String(), resp.describe())
 }
+
 
 func (h *handler) logQueryResponseCBOR(payload []byte) {
 	if len(payload) == 0 {
@@ -173,6 +186,8 @@ func (h *handler) logQueryResponseCBOR(payload []byte) {
 		h.logger.Printf("failed to save attestation payload: %v", err)
 		return
 	}
+
+
 
 	h.logger.Printf("Saved attestation payload to %s (%d bytes).", attestationPayloadPath, len(attestation))
 }
@@ -268,6 +283,47 @@ var defaultHeaders = map[string]string{
 	"Referrer-Policy":         "no-referrer",
 }
 
+
+func mustBigIntFromHex(s string) *big.Int{
+    b, err := hex.DecodeString(s)
+    if err != nil {
+        panic(err)
+    }
+    return new(big.Int).SetBytes(b)
+}
+
+func verifyQueryResponse(raw []byte) error {
+	var pub = &ecdsa.PublicKey{
+    Curve: elliptic.P256(),
+    X:     mustBigIntFromHex("5886cd61dd875862e5aaa820e7a15274c968a9bc96048ddcace32f50c3651ba3"),
+    Y:     mustBigIntFromHex("9eed8125e932cd60c0ead3650d0a485cf726d378d1b016ed4298b2961e258f1b"),
+	}
+
+	verifier, err := cose.NewVerifier(cose.AlgorithmES256, pub)
+    if err != nil {
+		fmt.Errorf("verifyQueryResponse: cose.NewVerifier err")
+    }
+
+	// cose sign1
+	var sign1 cose.Sign1Message
+	if err := sign1.UnmarshalCBOR(raw); err == nil {
+		if err := sign1.Verify(nil, verifier); err != nil {
+			return fmt.Errorf("sign1 verification: %w", err)
+		}
+		return nil
+	}
+	// cose sign
+	var sign cose.SignMessage
+	if err := sign.UnmarshalCBOR(raw); err == nil {
+		if err := sign.Verify(nil, verifier); err != nil {
+			return fmt.Errorf("sign verification: %w", err)
+		}
+		return nil
+	}
+	return nil
+}
+
+
 func detectTeepMessage(raw []byte) (teepMessageType, []byte) {
 	if len(raw) == 0 {
 		return teepTypeUnknown, nil
@@ -290,6 +346,7 @@ func detectTeepMessage(raw []byte) (teepMessageType, []byte) {
 			return msgType, payload
 		}
 	}
+
 
 	if msgType, ok := extractTeepType(raw); ok {
 		return msgType, bytes.Clone(raw)
