@@ -1,5 +1,11 @@
 #!/bin/bash
 
+#
+# Copyright (c) 2025 SECOM CO., LTD. All Rights reserved.
+#
+# SPDX-License-Identifier: BSD-2-Clause
+#
+
 ### vvv EDIT HERE vvv
 MEDIA_TYPE='application/eat-cwt; profile="urn:ietf:rfc:rfc9711"'
 BINARY=../testvector/prebuilt/eat_evidence_measurements.attester.es256.cose

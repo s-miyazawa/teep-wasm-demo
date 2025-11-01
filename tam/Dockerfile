@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2025 SECOM CO., LTD. All Rights reserved.
+#
+# SPDX-License-Identifier: BSD-2-Clause
+#
+
 FROM golang:1.25.3-alpine AS build
 
 WORKDIR /src

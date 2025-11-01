@@ -29,21 +29,21 @@ This repository hosts running code and docs of the hackathon project at IETF124.
 flowchart TD
   subgraph TEEP Protocol
     attester([TEE Device: Attester])
-    click attester "https://github.com/kentakayama/ietf124/tree/main/attester"
+    click attester "https://github.com/s-miyazawa/teep-wasm-demo/tree/main/attester"
 
     relying_party([TAM: Relying Party])
-    click relying_party "https://github.com/kentakayama/ietf124/tree/main/tam"
+    click relying_party "https://github.com/s-miyazawa/teep-wasm-demo/tree/main/tam"
   end
 
 
-  attester -- 1. <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/query_response.diag">QueryResponse</a> with an <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/psa_token.diag">EAT Evidence</a> --> relying_party
-  relying_party -- 4. <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/update.diag">Update</a> with a <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/manifest.diag">SUIT Manifest</a> --> attester
+  attester -- 1. <a href="https://github.com/s-miyazawa/teep-wasm-demo/blob/main/testvector/prebuilt/query_response.diag">QueryResponse</a> with an <a href="https://github.com/s-miyazawa/teep-wasm-demo/blob/main/testvector/prebuilt/psa_token.diag">EAT Evidence</a> --> relying_party
+  relying_party -- 4. <a href="https://github.com/s-miyazawa/teep-wasm-demo/blob/main/testvector/prebuilt/update.diag">Update</a> with a <a href="https://github.com/s-miyazawa/teep-wasm-demo/blob/main/testvector/prebuilt/manifest.diag">SUIT Manifest</a> --> attester
 
-  relying_party -- 2. <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/psa_token.diag">Evidence</a> --> verifier
-  verifier -- 3. <a href="https://github.com/kentakayama/ietf124/blob/main/testvector/prebuilt/eat_attestation_result.txt">Attestation Result</a> --> relying_party
+  relying_party -- 2. <a href="https://github.com/s-miyazawa/teep-wasm-demo/blob/main/testvector/prebuilt/psa_token.diag">Evidence</a> --> verifier
+  verifier -- 3. <a href="https://github.com/s-miyazawa/teep-wasm-demo/blob/main/testvector/prebuilt/eat_attestation_result.txt">Attestation Result</a> --> relying_party
 
   verifier([VERAISON: Verifier])
-  click verifier "https://github.com/kentakayama/ietf124/tree/main/veraison"
+  click verifier "https://github.com/s-miyazawa/teep-wasm-demo/tree/main/veraison"
 ```
 
 The details are explained here:
@@ -61,8 +61,8 @@ sudo apt install git docker.io jq docker-buildx
 sudo usermod -a -G docker $USER
 su - $USER # or re-login
 
-git clone --recursive https://github.com/kentakayama/ietf124
-cd ietf124/
+git clone --recursive https://github.com/s-miyazawa/teep-wasm-demo
+cd teep-wasm-demo/
 make -C veraison/services docker-deploy
 ```
 
@@ -71,7 +71,7 @@ You can deploy VERAISON also in other environments, see [VERAISON deployments/do
 ### Run VERAISON
 
 ```sh
-$ cd ietf124/
+$ cd teep-wasm-demo/
 
 # run and initialize VERAISON Verifier
 $ source ./veraison/services/deployments/docker/env.bash
@@ -108,7 +108,7 @@ $ TAM4WASM_CHALLENGE_CONTENT_TYPE=application/psa-attestation-token PROFILE=psa 
 ### (Optional) Run Step by Step with TEEP Agent
 
 ```sh
-$ cd ietf124/
+$ cd teep-wasm-demo/
 
 # run TAM in background
 $ docker compose up -d container_tam
