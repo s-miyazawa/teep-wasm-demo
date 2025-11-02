@@ -16,7 +16,8 @@
 	url = https://github.com/kentakayama/libteep
 [submodule "veraison/services"]
 	path = veraison/services
-	url = https://github.com/veraison/services
+	url = https://github.com/kentakayama/services
+	branch = tmp-ref-eat-relative
 [submodule "testvector/cddl/eat"]
 	path = testvector/cddl/eat
 	url = https://github.com/ietf-rats-wg/eat
@@ -48,3 +49,7 @@
 [submodule "testvector/cddl/draft-psa-token"]
 	path = testvector/cddl/draft-psa-token
 	url = https://github.com/thomas-fossati/draft-psa-token
+[submodule "veraison/eat"]
+	path = veraison/eat
+	url = https://github.com/kentakayama/eat
+	branch = follow-rfc9711
