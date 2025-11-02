@@ -18,14 +18,11 @@ import (
 	"path/filepath"
 	"sort"
 	"strconv"
-<<<<<<< HEAD
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"encoding/hex"
     "math/big"
 
-=======
->>>>>>> 548737dd722b09eff2df97d691b33187554d9399
 
 	"github.com/fxamacker/cbor/v2"
 	"github.com/veraison/go-cose"
