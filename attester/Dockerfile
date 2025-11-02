@@ -27,11 +27,8 @@ WORKDIR /root/ietf124-teep-attester
 RUN make 
 RUN make install
 
-#WORKDIR /root/ietf124-teep-attester/tests
 WORKDIR /tmp
 COPY .bash_history /root/.bash_history
-ENV TAM_URL=http://container_tam:8080/tam
 ENV PROFILE=generic
 
-CMD sh -c "./tam_server.sh>/dev/null & sleep 1 && teep_wasm_get install app.wasm"
-
+CMD sh -c "/root/ietf124-teep-attester/tests/tam_server.sh > /dev/null & sleep 1 && teep_wasm_get install app.wasm"

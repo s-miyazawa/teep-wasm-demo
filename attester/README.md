@@ -32,57 +32,74 @@ The TEEP Attester uses the following libraries.
 
 
 
-## Getting started
+## Running with Docker
 
 ### Prerequisites
 
-- Docker is required for the sample build flow. (See [README](../README.md).)
-- To run this program as part of the complete architecture, please refer to the [README](../README.md).
+- Docker is required for the sample build flow. (See [../README](../README.md).)
 
 
-### Run TAM Mock Server
-- The TAM mock server listens on port 8080 and serves `app.wasm`. Start it before running the attester client so that the Attester can fetch the application payload.
-- Stop the mock server with `Ctrl+C` when finished.
+### Build
 
-```
-host$ cd tests
-host$ ./tam_server.sh
+```bash
+$ docker build -t teep-attester .
 ```
 
+### Run
 
-
-### Attester Client
-- After launching the TAM mock server, run `teep_wasm_get install app.wasm` from the attester directory so the binary fetches `app.wasm` from the mock endpoint.
-- The address `http://172.17.0.1:8080/tam` corresponds to the Docker host. Verify your environment settings and modify this address as appropriate.
-
-
+```bash
+$ docker run -t teep-attester:latest
 ```
-host$ docker build -t teep-attester .
-host$ docker run -it teep-attester:latest bash
+
+### Run Step by Step
+
+```bash
+$ docker run -it teep-attester:latest bash
 
 (container)$ ls -la # nothing appears
-(container)$ teep_wasm_get install app.wasm -u http://172.17.0.1:8080/tam
+(container)$ /root/ietf124-teep-attester/tests/tam_server.sh > /dev/null &
+(container)$ teep_wasm_get install app.wasm -u http://localhost:8080/tam
 (container)$ ls -la # appears "app.wasm" and "manifest.app.wasm.0.suit"
 (container)$ iwasm app.wasm 
 ```
 
-- If you want to run the program using Docker only, execute the following command. In this configuration, the TAM mock server runs in the background, and then the TEEP Agent is executed.
+If you run the TAM in host environment (referring [Run TAM Server](#run-tam-server)), you may specify the TAM URL with `teep_wasm_get install app.wasm -u http://172.17.0.1:8080/tam` for example.
+
+## Running Natively
+
+### Prerequisites
+
+- OpenSSL, C compiler, make are required
+
+### Build Attester Client
+
+> [!WARNING]
+> Make sure you cloned this repository recursively. Otherwise, `git submodule update --init --recursive` before running.
+
+```bash
+$ make
+```
+
+> [!NOTE]
+> In addition to building the attester (see the [Attester Client section](#build-attester-client)), you may install the `teep_wasm_get` command with `make install`.
+
+### Run TAM Server
+
+In the [tam](../tam) directory, `make run-tam-server` to start the TAM.
+You can terminate it with `Ctrl+C`.
+
+Instead, you can run the mock TAM server with `./tests/tam_server.sh` in this directory.
+It just replies prebuilt TEEP messages of the TAM without parsing the message from attester.
+
+
+### Run Attester Client
+- After launching the TAM server, run `make run` from the attester directory to fetch `app.wasm` from the TAM server.
+
+
+## CLI Options
 
 ```
-host$ docker build -t teep-attester .
-host$ docker run teep-attester:latest 
-```
-
-
-
-
-
-## Running & CLI Options
-- After building the attester (see the [Attester Client section](#attester-client)), you can use the `teep_wasm_get` command located in `/usr/bin/` to install the application.
-
-
-```
-Usage: ./teep_wasm_get install <application_name> [--tam-url <url>]
+Usage: teep_wasm_get install <application_name> [--tam-url <url>]
 ```
 
 - `install`: Currently supported mode that requests the TAM to provision the selected application.

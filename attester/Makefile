@@ -13,6 +13,8 @@ BINDIR_BIN := $(BUILDDIR)/bin
 LIBDIR     := $(BUILDDIR)/lib
 THIRD_PARTY_STAMP := $(LIBDIR)/.third_party_built
 
+WASM_APP ?= app.wasm
+
 CFLAGS = -Wall -g
 LDFLAGS = -L$(LIBDIR) -lteep -lcsuit -lt_cose -lqcbor -lcurl -lm
 INC = \
@@ -84,7 +86,7 @@ $(THIRD_PARTY_STAMP): | $(LIBDIR)
 	touch $@
 
 run: $(BIN)
-	$(BIN) $(ARGS)
+	$(BIN) install $(WASM_APP) $(ARGS)
 
 install: $(BIN)
 	install -d $(DESTDIR)$(BINDIR)
