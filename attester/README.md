@@ -41,7 +41,7 @@ Docker is required for the sample build process. (See [README](../README.md).) \
 To run this program as part of the complete architecture, please refer to the [README](../README.md).
 
 ```
-host$ git clone --recursive https://github.com/kentakayama/ietf124.git
+host$ git clone --recursive https://github.com/s-miyazawa/teep-wasm-demo.git
 host$ cd /path/to/ietf124/attester
 ```
 
