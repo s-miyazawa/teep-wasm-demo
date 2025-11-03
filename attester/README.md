@@ -42,7 +42,7 @@ To run this program as part of the complete architecture, please refer to the [R
 
 ```
 host$ git clone --recursive https://github.com/s-miyazawa/teep-wasm-demo.git
-host$ cd /path/to/ietf124/attester
+host$ cd /path/to/teep-wasm-demo/attester
 ```
 
 ### Run TAM Mock Server
@@ -50,7 +50,7 @@ host$ cd /path/to/ietf124/attester
 - Stop the mock server with `Ctrl+C` when finished.
 
 ```
-host$ cd /path/to/ietf124/attester/tests
+host$ cd /path/to/teep-wasm-demo/attester/tests
 host$ ./tam_server.sh
 ```
 
@@ -69,7 +69,7 @@ The Docker-based method is recommended for first-time users or for quickly runni
 
 
 ```
-host$ cd /path/to/ietf124/attester
+host$ cd /path/to/teep-wasm-demo/attester
 host$ docker build -t teep-attester .
 host$ docker run -it teep-attester:latest bash
 
@@ -105,7 +105,7 @@ host$ make
 host$ sudo make install   # installs iwasm under /usr/local/bin
 
 # fetch submodules and build
-host$ cd /path/to/ietf124/attester
+host$ cd /path/to/teep-wasm-demo/attester
 host$ make
 host$ sudo make install  # installs teep_wasm_get under /usr/local/bin
 
