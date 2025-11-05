@@ -153,3 +153,7 @@ Hello, world!
 ## Next Plan
 
 - Use actual TEE
+
+## Acknowledgement
+
+This work was supported by JST K Program Grant Number JPMJKP24U4, Japan.
