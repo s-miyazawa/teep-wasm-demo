@@ -49,7 +49,3 @@
 [submodule "testvector/cddl/draft-psa-token"]
 	path = testvector/cddl/draft-psa-token
 	url = https://github.com/thomas-fossati/draft-psa-token
-[submodule "veraison/eat"]
-	path = veraison/eat
-	url = https://github.com/kentakayama/eat
-	branch = follow-rfc9711
