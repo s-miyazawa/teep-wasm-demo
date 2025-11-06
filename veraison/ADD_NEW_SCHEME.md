@@ -1,20 +1,22 @@
-# Adding a Scheme for your Profile
+# How Do We Added the Generic EAT Scheme to VERAISON
 
 > [!NOTE]
 > You can try the generic-eat scheme with https://github.com/kentakayama/services which is forked from https://github.com/veraison/services .
 > In this article, some of the essence are described.
 
-## Step1: Register your Scheme to VERAISON
+## Step 1: Register A Scheme to VERAISON
+
+First of all, we needed to specify the following items for our new attestation scheme.
+They MUST NOT conflict with existing schemes.
 
 item | example definition 
 --|--
-SchemeName | `generic-eat`
+SchemeName | `GENERIC_EAT` for external output and `generic-eat` for internal code
 Profile | [`The Constrained Device Standard Profile`](https://www.rfc-editor.org/rfc/rfc9711.html#name-the-constrained-device-stan)
-its identifier | `urn:ietf:rfc:rfc9711`
+Its Identifier | `urn:ietf:rfc:rfc9711`
 Media Type for your Evidence Profile | `application/eat+cwt`
 
-
-Then, make a directory for your profile (`scheme/generic-eat`) and
+Then, make a directory for the profile (`scheme/generic-eat`) and
 
 ```go
 /* scheme/generic-eat/scheme.go */
@@ -27,6 +29,8 @@ var EvidenceMediaTypes = []string{
 ```
 
 ```makefile
+# scheme/generic-eat/Makefile
+
 .DEFAULT_GOAL := test
 
 GOPKG := github.com/veraison/services/scheme/generic-eat
@@ -79,6 +83,7 @@ func (s EvidenceHandler) ValidateEvidenceIntegrity(
 	trustAnchors []string,
 	endorsements []string,
 ) error {
+    // No integrity validation implemented
 	return nil
 }
 
@@ -88,7 +93,7 @@ func (s EvidenceHandler) AppraiseEvidence(
 ) (*ear.AttestationResult, error) {
 	result := handler.CreateAttestationResult(SchemeName)
 
-	// always "affirming"
+	// return "affirming" for any evidence as an initial implementation
 	appraisal := result.Submods[SchemeName]
 	*appraisal.Status = ear.TrustTierAffirming
 
@@ -96,7 +101,7 @@ func (s EvidenceHandler) AppraiseEvidence(
 }
 ```
 
-Add your scheme to be built
+Add the scheme to be built.
 ```diff
 diff --git a/scheme/Makefile b/scheme/Makefile
 index c3336e1..19c5164 100644
@@ -140,7 +145,7 @@ References
 - [RFC 9782: Entity Attestation Token (EAT) Media Types](https://www.rfc-editor.org/rfc/rfc9782.html)
 - [draft-ietf-rats-ar4si: Attestation Results for Secure Interactions](https://datatracker.ietf.org/doc/html/draft-ietf-rats-ar4si)
 
-## Step2: Post Evidence
+## Step 2: Post Evidence
 
 Since we do not provide any Trust Anchors nor Endorsements, the verification should fail.
 However, let's check that our shceme is regiested.
@@ -218,14 +223,16 @@ echo "result: ${RESULT_PAYLOAD}"
 To run this script, we use [cbor-diag](https://rubygems.org/gems/cbor-diag/) to extract `/ eat_evidence / 10: h'NONCE'` from CBOR/COSE evidence.
 Instead, you can pass the `NONCE` variable like `NONCE=OTQ4Rjg4NjBEMTNBNDYzRThFCg== ./test-verify.sh` .
 
-You will see a result
+You will see following result:
 
 ```sh
 $ ./test-verify.sh
-result: {"ear.verifier-id":{"build":"0.0.2510+b8cd07b","developer":"Veraison Project"},"eat_nonce":"OTQ4Rjg4NjBEMTNBNDYzRThFCg==","eat_profile":"tag:github.com,2023:veraison/ear","iat":1760106976,"submods":{"generic-eat":{"ear.appraisal-policy-id":"policy:generic-eat","ear.status":"contraindicated","ear.trustworthiness-vector":{"configuration":99,"executables":99,"file-system":99,"hardware":99,"instance-identity":99,"runtime-opaque":99,"sourced-data":99,"storage-opaque":99},"ear.veraison.policy-claims":{"problem":"no trust anchor for evidence"}}}}
+result: {"ear.verifier-id":{"build":"0.0.2510+b8cd07b","developer":"Veraison Project"},"eat_nonce":"OTQ4Rjg4NjBEMTNBNDYzRThFCg==","eat_profile":"tag:github.com,2023:veraison/ear","iat":1760106976,"submods":{"GENERIC_EAT":{"ear.appraisal-policy-id":"policy:GENERIC_EAT","ear.status":"contraindicated","ear.trustworthiness-vector":{"configuration":99,"executables":99,"file-system":99,"hardware":99,"instance-identity":99,"runtime-opaque":99,"sourced-data":99,"storage-opaque":99},"ear.veraison.policy-claims":{"problem":"no trust anchor for evidence"}}}}
 ```
 
-## Step 3: Define Reference Values and Endorsements with CoRIM
+As you can see, the verification result shows `"no trust anchor for evidence"` because we did not provide any Trust Anchors nor Endorsements for this evidence.
+
+## Step 3: Provide Reference Values and Endorsements with CoRIM
 
 [corim-generic-eat-measurements.rediag](../testvector/rats/corim/corim-generic-eat-measurements.rediag) is one example to provide Reference Values for instance `h'0198F50A4FF6C05861C8860D13A638EA'`:
 ```
@@ -328,15 +335,16 @@ You can convert and check it with `diag2cbor.rb < corim-generic-eat-measurements
 
 ## Step 4: Register Handlers for Endorsements and Reference Values
 
-You need to implement important handlers:
+Before sending the CoRIM file, you need to implement its handlers:
 - `endorsement_handler.go` (and `corim_extractor.go`) converting CoRIM data to internal struct
-  - `RefValExtractor`: extracts Reference Value in CoRIM [Reference Value Triple](https://datatracker.ietf.org/doc/html/draft-ietf-rats-corim-09#name-reference-values-triple) to `[]handler.Endorsement`
-  - `TaExtractor`: extracts Trust Anchor from CoRIM [Attest Key Triple](https://datatracker.ietf.org/doc/html/draft-ietf-rats-corim-09#name-attest-key-triple) to `handler.Endorsement`
-- `store_handler.go` to store the extracted Reference Value and Trust Anchor will be stored into the key-value store
-  - `SynthKeysFromRefValue()`: 
-  - `SynthKeysFromTrustAnchor()`: 
+  - `RefValExtractor`: extracts Reference Value in CoRIM [Reference Value Triple](https://datatracker.ietf.org/doc/html/draft-ietf-rats-corim-09#name-reference-values-triple) to `[]handler.Endorsement` in form of `[Scheme: "GENERIC_EAT", Type: ReferenceValue, Attributes: {"digests": [h'DEADBEEF...'], ...}]`
+  - `TaExtractor`: extracts Trust Anchor from CoRIM [Attest Key Triple](https://datatracker.ietf.org/doc/html/draft-ietf-rats-corim-09#name-attest-key-triple) to `handler.Endorsement` in form of `{"instance-id": UUID(0198...), "ak-pub": "-----BEGIN PUBLIC KEY-----\n..."}`
+- `store_handler.go` to return the look up keys used for setting/getting the Reference Value and Trust Anchor to/from key-value store
+  - `SynthKeysFromRefValue()`: return the keys for Reference Value from CoRIM, e.g. `GENERIC_EAT://0/0198f50a-4ff6-c058-61c8-860d13a638ea/refval`
+  - `SynthKeysFromTrustAnchor()`: return the keys for Trust Anchor from CoRIM, e.g. `GENERIC_EAT://0/0198f50a-4ff6-c058-61c8-860d13a638ea/ta`
+  - `GetRefValIDs()`: return the keys for Reference Value from Evidence
+  - `GetTrustAnchorIDs()`: return the keys for Trust Anchor from Evidence
 
-- `
 
 ```sh
 $ curl -X POST --data-binary "@../testvector/prebuilt/corim-generic-eat.cbor" -H 'Content-Type: application/corim-unsigned+cbor; profile="http://example.com/corim/profile"' --insecure https://localhost:9443/endorsement-provisioning/v1/submit
@@ -373,7 +381,14 @@ ENDORSEMENTS:
 POLICIES:
 -------------
 
+```
 
+## Step 5: Register Handlers for Endorsements and Reference Values
+
+Now, you can run the verification again.
+Compare to the results in [Step 2](#step-2-post-evidence), you will see the attestation result is now "affirming".
+
+```sh
 $ ./test-verify.sh
 result: {"ear.verifier-id":{"build":"N/A","developer":"Veraison Project"},"eat_nonce":"OTQ4Rjg4NjBEMTNBNDYzRThFCg==","eat_profile":"tag:github.com,2023:veraison/ear","iat":1761181365,"submods":{"GENERIC_EAT":{"ear.appraisal-policy-id":"policy:GENERIC_EAT","ear.status":"affirming","ear.trustworthiness-vector":{"configuration":0,"executables":0,"file-system":0,"hardware":0,"instance-identity":0,"runtime-opaque":0,"sourced-data":0,"storage-opaque":0}}}}
 evidence: 18([<< {1: -7} >>, {}, << {8: {1: {1: 2, -1: 1, -2: h'5886CD61DD875862E5AAA820E7A15274C968A9BC96048DDCACE32F50C3651BA3', -3: h'9EED8125E932CD60C0EAD3650D0A485CF726D378D1B016ED4298B2961E258F1B'}, 3: h'E96788B10B1610ABE478F9CE8DCFE2304C0911DD8CFEADDE25EC30CCB5A7B5AF'}, 10: h'948F8860D13A463E8E', 256: h'0198F50A4FF6C05861C8860D13A638EA', 258: h'894823', 259: h'549DCECC8B987C737B44E40F7C635CE8', 260: ["1.3.4", 1], 265: "urn:ietf:rfc:rfc9711"} >>, h'316C3C092BEDF27520CBAD7791E13C6F5F5D94CDB997C3EA3A90F1FBAABA8FE3B930D8D4B6B4434AF577A75A128806FAC94F0054D9AB6F5629E261F6A75CEF6F'])
