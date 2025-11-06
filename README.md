@@ -22,6 +22,10 @@ This repository hosts running code and docs of the hackathon project at IETF124.
 
 ## Architecture
 
+![TEEP & RATS VERAISON Architecture](./img/hackathon-architecture.png)
+
+## Exchanged Messages
+
 > [!TIP]
 > You can click to jump the messages and the components.
 
@@ -83,10 +87,15 @@ $ curl -X POST --data-binary "@./testvector/prebuilt/corim-generic-eat-measureme
 
 ### A. Provision TEE Device with Generic EAT Evidence
 
-TODO: What is Generic EAT?
-- digeest of TEE environment is measured and compared against Reference Value
-  - yet the digest is not actual one
-- the TAM can dynamically trust the TEEP Agent's key with key confirmation claim 
+The term `Generic EAT` is our coined word, which implies that this verification scheme is designed to accept any EAT-based Evidence.
+This is not intended for commercial use because it is not practical to verify too much flexible Evidence, but for reference implementation use for EAT-based protocol designers.
+
+In this demo, the digest of the TEE environment is measured and stored using [EAT Measured Component](https://datatracker.ietf.org/doc/html/draft-ietf-rats-eat-measured-component), and it is compared with Reference Value.
+In initial state, the digest is not actual one taken by the hardware-backed attester such as TPM, Intel SGX Quoting Enclave, etc.
+
+When the TEEP Agent (in Target Environment inside the TEE) requests the Attesting Environment to create Evidence, it passes the its public key.
+The Attesting Environment generates the Evidence which included measureent of the TEEP Agent and the WasmRuntime, as well as the public key of the TEEP Agent.
+After the verification by VERAISON, the TAM can trust the public key and verify the message from the TEEP Agent.
 
 ```sh
 $ docker compose up
@@ -98,8 +107,8 @@ $ docker compose up
 
 ### B. Provision TEE Device with PSA Attestation Token
 
-TODO: What is PSA Attestation Token?
-- there is no room for key confirmation claim in the token, so the TAM must have the pre-shared TEEP Agent's key
+PSA Attestation Token is standardized with [RFC 9783](https://datatracker.ietf.org/doc/html/rfc9783), which is a profile of EAT carrying the Evidence of the Target Environment.
+Since there is no room for key confirmation claim in the token, the TAM must have the pre-shared TEEP Agent's key.
 
 ```sh
 $ TAM4WASM_CHALLENGE_CONTENT_TYPE=application/psa-attestation-token PROFILE=psa docker compose up
