@@ -174,7 +174,8 @@ Hello, world!
 ## Next Plan
 
 - Use real TEE such as Intel SGX, Intel TDX, AMD SEV, Arm TrustZone, combining with TPM, etc.
-- Update the 
+- Update an old WasmApp to newer one, since current implementation supports installation only
+- Propose a plugin interface for customizable Attestation Results to VERAISON, e.g. JSON/CBOR output, JWT/CWT signing key, additional claims, etc.
 
 ## Acknowledgement
 
