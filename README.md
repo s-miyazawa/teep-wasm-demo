@@ -14,15 +14,26 @@
 This repository hosts running code and docs of the hackathon project at IETF124.
 
 ## Objectives
-- Provides mature implementations of [TEEP Protocol](https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol) combined with [SUIT Manifest Processor](https://datatracker.ietf.org/doc/html/draft-ietf-suit-manifest) and [RATS EAT](https://datatracker.ietf.org/doc/html/rfc9711) & [EAR](https://datatracker.ietf.org/doc/html/draft-ietf-rats-ear) implementations
-- Uses [VERAISON](https://github.com/veraison) as the background-check model Verifier for the Trusted Application Manager (TAM), enabling the TAM
-  - to entrust VERAISON to verify the Evidence provided with QueryResponse message from TEEP Agent,
-  - to authenticate all the TEEP messages from TEEP Agent with the key in confirmation claim (cnf) of the Attestation Result, and
-  - to select appropriate Trusted Component(s) for the TEE Device to be installed and run
+
+We set a goal of this project; **Run a WasmApp only on an attested WasmRuntime**
+
+In order to aciheve this goal, we implemented programs based on the TEEP and RATS documents
+- to evaluate whether TEEP (TEE Provisioning) Protocol incorporating Remote Attestation is practically viable by using VERAISON as a Verifier
+- to share feedback to the RATS documents and VERAISON from the perspective of TEEP utilizing RATS
+
+## Outcomes
+
+- We provide mature implementations of [TEEP Protocol](https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol) combined with [SUIT Manifest Processor](https://datatracker.ietf.org/doc/html/draft-ietf-suit-manifest), [RATS EAT](https://datatracker.ietf.org/doc/html/rfc9711), [EAT Measured Component](https://datatracker.ietf.org/doc/html/draft-ietf-rats-eat-measured-component) and [EAT Attestation Results (EAR)](https://datatracker.ietf.org/doc/html/draft-ietf-rats-ear)
+- We've shared feedback on the TEEP and RATS mailing list based on the findings during hackathon
 
 ## Architecture
 
 ![TEEP & RATS VERAISON Architecture](./img/hackathon-architecture.png)
+
+- [VERAISON](https://github.com/veraison) is used as the background-check model Verifier for the Trusted Application Manager (TAM), enabling the TAM
+  - entrusting VERAISON to verify the Evidence provided with QueryResponse message from TEEP Agent,
+  - authenticating all the TEEP messages from TEEP Agent with the key in confirmation claim (cnf) of the Attestation Result, and
+  - choosing the appropriate Trusted Component (a WasmApp) for the TEE Device to be installed and run
 
 ## Exchanged Messages
 
@@ -161,7 +172,8 @@ Hello, world!
 
 ## Next Plan
 
-- Use actual TEE
+- Use real TEE such as Intel SGX, Intel TDX, AMD SEV, Arm TrustZone, combining with TPM, etc.
+- Update the 
 
 ## Acknowledgement
 
