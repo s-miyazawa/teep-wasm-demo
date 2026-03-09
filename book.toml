@@ -2,6 +2,7 @@
 title = "TEEP Wasm Demo Overview"
 authors = ["ZENBA Kazuki"]
 language = "en"
+src = "doc"
 
 [preprocessor.plantuml]
 plantuml-cmd = "plantuml"
