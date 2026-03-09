@@ -1,4 +1,3 @@
 # Summary
 
 - [Purpose](./purpose.md)
-

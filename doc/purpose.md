@@ -120,7 +120,7 @@ TEE middleware for Intel SGX.
 ### AttesTAM
 
 Trusted Application Manager (TAM) server supporting TEEP over HTTP.
-- Stores and distributes the trusted component.  
+- Stores and distributes the trusted component.
 - Manages the distribution status of the trusted components to TAWS.
 - Interacts with security service provider via admin console.
 - Interacts with TAWS using TEEP protocol.
@@ -159,4 +159,3 @@ Web application for operating AttesTAM.
 |Relying Party|AttesTAM|
 |Relying Party Owner|Security Service Provider|
 |Verifier|VERAISON|
-
