@@ -1,29 +1,28 @@
 #
-# Copyright (c) 2025 SECOM CO., LTD. All Rights reserved.
+# Copyright (c) 2026 SECOM CO., LTD. All Rights reserved.
 #
 # SPDX-License-Identifier: BSD-2-Clause
 #
 
 services:
   container_tam:
-    build: ./tam
+    build: ./AttesTAM
     environment:
-      - TAM4WASM_CHALLENGE_SERVER=https://host.docker.internal:8443
-      - TAM4WASM_CHALLENGE_CONTENT_TYPE=${TAM4WASM_CHALLENGE_CONTENT_TYPE:-application/eat-cwt; profile="urn:ietf:rfc:rfc9711"}
+      - ATTESTAM_CHALLENGE_SERVER=https://host.docker.internal:8443
+      - ATTESTAM_INSECURE_DEMO_MODE=true
+    ports:
+      - "9090:9090"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
       - tam-attester-net
 
   container_attester:
-    build: ./attester
+    build: ./taws
     environment:
-      - TAM_URL=http://container_tam:8080/tam
-      - PROFILE=${PROFILE:-generic}
-    working_dir:
-      /tmp
-    command: >
-      sh -c "sleep 1 && set -x && teep_wasm_get install app.wasm && ls && iwasm app.wasm"
+      - TAWS_TAM_URL=http://container_tam:8080/tam
+    ports:
+      - "8181:8181"
     depends_on:
       - container_tam
     networks:

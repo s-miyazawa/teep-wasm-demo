@@ -1,0 +1,32 @@
+/ COSE_Sign1_Tagged / 18([
+  / protected: / << {
+    / alg / 1 : -9 / ESP256 /
+  } >>,
+  / unprotected: / {
+    / kid / 4: h'C770EC535D8C949586324ADAF2DDFFB76B1A852DFA52E19C80F7440EC163BEEA'
+  },
+  / payload: / << [
+    / type: / 1 / TEEP-TYPE-QueryRequest /,
+    / options: / {
+      / challenge / 2 : h'414A7C174141B3D0E9A1D28AF31520F0D42299FEAC4007DED89D68AE6CD92F19'
+    },
+    / supported-teep-cipher-suites: / [
+      [
+        [
+          / mechanism: / 18 / COSE_Sign1 /,
+          / algorithm-id: / -9 / ESP256 /
+        ]
+      ]
+    ],
+    / supported-suit-cose-profiles: / [
+      [
+        -16 / SHA-256 /,
+        -9 / ESP256 /,
+        -29 / ECDH-ES+A128KW /,
+        1 / A128GCM /
+      ]
+    ],
+    / data-item-requested: / 1 / attestation /
+  ] >>,
+  / signature: / h'E7ECD191BFD584170CFE914031E07A2DC78405BB7EC8BB8176B480AF376CBDB507F3D2A62CB7D879918EDADFB0270F4CC7FC0C3332446D55068392C96BDA7A5A'
+])

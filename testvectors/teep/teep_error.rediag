@@ -1,0 +1,42 @@
+[
+    / type: / e'TEEP-TYPE-error',
+    / options: / {
+        e'token': h'0011223344556677',
+        e'suit-reports': [
+            <<
+                {
+                    e'suit-reference': [
+                        / suit-report-manifest-uri: / "",
+                        / suit-report-manifest-digest: / [
+                            e'cose-alg-sha-256',
+                            h'6658EA560262696DD1F13B782239A064DA7C6C5CBAF52FDED428A6FC83C7E5AF'
+                        ]
+                    ],
+                    e'suit-report-records': [
+                        / system-property-claims = / {
+                            e'system-component-id': ['app.wasm'],
+                            e'suit-parameter-image-size': 65132
+                        }
+                    ],
+                    e'suit-report-result': {
+                        e'suit-report-result-code': -1,
+                        e'suit-report-result-record': [
+                            / suit-record-manifest-id: / [],
+                            / suit-record-manifest-section: / e'suit-payload-fetch',
+                            / suit-record-section-offset: / 16 / at suit-condition-image-match' /,
+                            / suit-record-component-index: / 0,
+                            / suit-record-properties: / {
+                                e'suit-parameter-image-digest': << [
+                                    e'cose-alg-sha-256',
+                                    h'21D2E4B19E44C1906E58050577922D604C204CCC2FD2CB977FEE8ED56B62FD30' / a bit different from app.wasm /
+                                ] >>
+                            }
+                        ],
+                        e'suit-report-result-reason': e'suit-report-reason-condition-failed'
+                    }
+                }
+            >>
+        ]
+    },
+    e'ERR_MANIFEST_PROCESSING_FAILED'
+]

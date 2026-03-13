@@ -1,0 +1,11 @@
+[
+    / type: / e'TEEP-TYPE-query-response',
+    / options: / {
+        e'attestation-payload': ref'psa_token_evidence.attester.es256.cose.bin.hdiag',
+        e'requested-tc-list': [
+            {
+                e'component-id': [ 'app.wasm' ]
+            }
+        ]
+    }
+]

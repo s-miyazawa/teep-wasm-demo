@@ -1,0 +1,16 @@
+/ COSE_Sign1_Tagged / 18([
+  / protected: / << {
+    / alg / 1: -9 / ESP256 /
+  } >>,
+  / unprotected: / {
+    / kid / 4: h'E96788B10B1610ABE478F9CE8DCFE2304C0911DD8CFEADDE25EC30CCB5A7B5AF'
+  },
+  / payload: / << [
+    / type: / 6 / TEEP-TYPE-teep-error /,
+    / oprions: / {
+      / token / 20: h'0011223344556677'
+    },
+    / err-code: / 1 / ERR_PERMANENT_ERROR /
+  ] >>,
+  / signature: / h'F08AC24A4F0121E337BB4769C34E0F814C7DFC6B07871BF71B1A9D8200005C7A358385E56208003A2FBE1AD0C39A645CCBA45D70BD92721D1F91951C62835F4D'
+])

@@ -1,0 +1,45 @@
+{
+  / claims for validity /
+  / eat_nonce / 10: h'948F8860D13A463E8E',
+
+  / claims for matching corresponding Reference Values /
+  / ueid / 256: h'016275696c64696e672d6465762d313233',
+
+  / claims to be compared with corresponding Referene Values /
+  / measurements / 273: [
+    [
+      / content-type: / 600 / TBD1, application measured-component+cbor /,
+      / content-format: / << / measured-component / {
+        / id / 1: [
+          / name: / "TEEP Agent",
+          / version: / [
+            "1.3.4",
+            1 / multipartnumeric /
+          ]
+        ],
+        / measurement / 2: [
+          / alg: / 1 / sha-256 /,
+          / val: / h'DEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF'
+        ]
+      } >>
+    ]
+  ],
+
+  / claims to be trusted by the Relying Party /
+  / cnf / 8: {
+    / COSE_Key / 1: {
+      / kty / 1: 2 / EC2 /,
+      / kid / 2: ref'cosekey.digest.hdiag',
+      / alg / 3: -9 / ESP256 /,
+      / crv / -1: 1 / P-256 /,
+      / x / -2: h'BE7C56993F71114534C2F4A4F4E4606784FA9D9635E122BC8A490B2E11FEB932',
+      / y / -3: h'81696B42C3BE1B244CC03BCA97F0CE75E2D93ADA1CE556629227F10A8C2C5B29'
+    }
+  },
+
+  / additional claims /
+  / oemid / 258: h'894823', / IEEE OUI format OEM ID /
+  / hwmodel / 259: h'549DCECC8B987C737B44E40F7C635CE8' / Hash of chip model name /,
+  / hwversion / 260: ["1.3.4", 1 / multipartnumeric /],
+  / eat_profile / 265: "urn:ietf:rfc:rfc9711"
+}
