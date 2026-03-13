@@ -16,10 +16,10 @@
 	url = https://github.com/kentakayama/services
 	branch = tmp-ref-eat-relative
 [submodule "testvector/cddl/eat"]
-	path = testvector/cddl/eat
+	path = testvectors/cddl/eat
 	url = https://github.com/ietf-rats-wg/eat
 [submodule "testvector/cddl/draft-ietf-rats-corim"]
-	path = testvector/cddl/draft-ietf-rats-corim
+	path = testvectors/cddl/draft-ietf-rats-corim
 	url = https://github.com/ietf-rats-wg/draft-ietf-rats-corim
 [submodule "attester/third_party/QCBOR"]
 	path = attester/third_party/QCBOR
@@ -35,5 +35,5 @@
 	path = attester/third_party/libteep
 	url = https://github.com/kentakayama/libteep
 [submodule "testvector/cddl/draft-psa-token"]
-	path = testvector/cddl/draft-psa-token
+	path = testvectors/cddl/draft-psa-token
 	url = https://github.com/thomas-fossati/draft-psa-token
