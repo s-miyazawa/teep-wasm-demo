@@ -1,0 +1,2 @@
+assets/manifest/yolov8.wasm.0.envelope.cbor filter=lfs diff=lfs merge=lfs -text
+assets/manifest/yolov8.wasm.1.envelope.cbor filter=lfs diff=lfs merge=lfs -text
