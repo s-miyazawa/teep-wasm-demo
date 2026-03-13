@@ -1,8 +1,12 @@
 [book]
-title = "TEEP Wasm Demo Overview"
+title = "IETF125 TEEP Wasm Demo Overview"
 authors = ["ZENBA Kazuki"]
 language = "en"
 src = "doc"
+
+[output.html]
+git-repository-url = "https://github.com/s-miyazawa/teep-wasm-demo"
+git-repository-icon = "fab-github"
 
 [preprocessor.plantuml]
 plantuml-cmd = "plantuml"
