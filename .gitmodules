@@ -11,9 +11,6 @@
 [submodule "cddl/draft-psa-token"]
 	path = testvector/cddl/draft-psa-token
 	url = https://github.com/thomas-fossati/draft-psa-token
-[submodule "testvector/libteep"]
-	path = testvector/libteep
-	url = https://github.com/kentakayama/libteep
 [submodule "veraison/services"]
 	path = veraison/services
 	url = https://github.com/kentakayama/services
@@ -37,15 +34,6 @@
 [submodule "attester/third_party/libteep"]
 	path = attester/third_party/libteep
 	url = https://github.com/kentakayama/libteep
-[submodule "testvector/QCBOR"]
-	path = testvector/QCBOR
-	url = https://github.com/laurencelundblade/QCBOR
-[submodule "testvector/t_cose"]
-	path = testvector/t_cose
-	url = https://github.com/kentakayama/t_cose
-[submodule "testvector/libcsuit"]
-	path = testvector/libcsuit
-	url = https://github.com/kentakayama/libcsuit
 [submodule "testvector/cddl/draft-psa-token"]
 	path = testvector/cddl/draft-psa-token
 	url = https://github.com/thomas-fossati/draft-psa-token
