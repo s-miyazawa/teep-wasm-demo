@@ -1,14 +1,14 @@
-# Secure Wasm Application Provisioning with TEEP & RATS
+# Secure Wasm Application Provisioning with TEEP and RATS
 
-This repository contains the code and documentation for the IETF 125 hackathon demo.
+This repository contains the code and documentation for a demo that provisions a Wasm application to a TEE device using TEEP, with **device trust established through RATS-based remote attestation**.
 
-The goals of this project are:
+The demo is built from three runtime components:
 
-- **To establish trust in the TEEP Agent's public key via Remote Attestation**
-- To implement the Trusted Component to run on a Wasm runtime so that it can support multiple CPU architectures
-- To help users understand the intended usage by providing actual applications and consoles
+- `TAWS`: the TEEP Agent and web console running the Wasm workload in Intel SGX simulation mode
+- `AttesTAM`: the Trusted Application Manager and administrator console
+- `VERAISON`: the Verifier used during attestation
 
-See [doc/introduction.md](./doc/introduction.md) for detailed information.
+For the full background and use case, start with [doc/introduction.md](./doc/introduction.md).
 
 ## Architecture
 
@@ -38,54 +38,168 @@ flowchart LR
     Agent -->|Wasm binary| WAMR
     VERAISON -->|Attestation Result| AttesTAM
 ```
-- TAWS Console image
+
+TAWS Console:
 ![TAWS image](doc/img/taws-image.png)
-- AttesTAM Console image
+
+AttesTAM Console:
 ![AttesTAM image](doc/img/attestam-image.png)
+
+## Components
+
+- `docker-compose.yaml`: launches the demo containers for `TAWS` and `AttesTAM`
+- `veraison/services`: builds and runs the local VERAISON deployment used for attestation
+- `taws/scripts/prepare_sgx_base_image.sh`: prepares the SGX SDK base image required by the TAWS Docker build
+- `assets/manifest`: contains the model manifests uploaded from the AttesTAM Console during the demo
+- `assets/demo-images`: contains the sample input image used by the detector demo
+- `testvectors/prebuilt`: contains the prebuilt CoRIM binary used to provision VERAISON
+
+## Prerequisites
+
+The documented flow has been tested on:
+
+- CPU: Intel
+- OS: Ubuntu 24.04
+- Container runtime: Docker Engine with Buildx
+- Shell: `bash`
+
+Install the required packages:
+
+```sh
+sudo apt install bash make git docker.io docker-buildx jq
+sudo systemctl enable --now docker
+sudo usermod -a -G docker "$USER"
+newgrp docker
+```
+
+> [!IMPORTANT]
+> Use the native Ubuntu `docker.io` package, not the Snap package.
 
 ## Quick Start
 
-### Test Environment
+### 1. Clone the repository
 
-- CPU: Intel (required)
-- OS: Ubuntu 24.04
-- Container runtime: Docker
-
-### Setup Overview
-
-- Clone this repository
 ```sh
-git clone --recursive https://github.com/s-miyazawa/teep-wasm-demo.git
+git clone --recursive https://github.com/s-miyazawa/teep-wasm-demo
+cd teep-wasm-demo
 ```
-- Build and provision
+
+### 2. Build and start VERAISON
+
+This prepares the Verifier deployment and starts its containers.
+
 ```sh
-cd teep-wasm-demo/
-./taws/scripts/prepare_sgx_base_image.sh
 make -C veraison/services docker-deploy
-source deployments/docker/env.bash
-veraison start
-docker compose build
-curl -X POST --data-binary "@./testvectors/prebuilt/corim-generic-eat-measurements.cbor" -H 'Content-Type: application/corim-unsigned+cbor; profile="http://example.com/corim/profile"' --insecure https://localhost:9443/endorsement-provisioning/v1/submit
+source ./veraison/services/deployments/docker/env.bash
+veraison status
 ```
-- Start the demo
+
+### 3. Prepare the TAWS SGX base image
+
+This downloads Intel SGX build dependencies and creates the `sgx_sample_deb` image used by the TAWS Docker build.
+
+```sh
+./taws/scripts/prepare_sgx_base_image.sh
+```
+
+### 4. Build the demo containers
+
+```sh
+docker compose build
+```
+
+> [!NOTE]
+> Initial setup can take 10 minutes or more because VERAISON, SGX dependencies, and the demo containers are all built locally.
+
+### 5. Provision VERAISON endorsements
+
+This uploads the prebuilt CoRIM used by the attestation flow from `testvectors/prebuilt`.
+
+```sh
+curl -X POST \
+  --data-binary "@./testvectors/prebuilt/corim-generic-eat-measurements.cbor" \
+  -H 'Content-Type: application/corim-unsigned+cbor; profile="http://example.com/corim/profile"' \
+  --insecure \
+  https://localhost:9443/endorsement-provisioning/v1/submit
+```
+
+### 6. Start the demo services
+
+This starts `AttesTAM` and `TAWS`.
+
 ```sh
 docker compose up
 ```
-- Open the TAWS and AttesTAM consoles in a browser.
-  - TAWS Console: http://127.0.0.1:8181
-  - AttesTAM Console: http://127.0.0.1:9090
 
-See [doc/scenario.md](./doc/scenario.md) for how to run the demo scenario.
+Leave this command running while you use the web consoles.
 
-## Documentation
+### 7. Install the initial model
 
-Start here for the overview, then move into `doc/` for details:
+1. Open the AttesTAM Console at `http://localhost:9090`.
+2. Click `Register TC`, choose `assets/manifest/yolov8.wasm.0.envelope.cbor`, and click `Upload`.
+3. Confirm the console shows `Upload complete.`.
+4. Open the TAWS Console at `http://localhost:8181`.
+5. Click `Activate (TEEP)` to establish trust in the TEEP Agent key through attestation.
+6. Click `Install (TEEP)` to download and install `yolov8.wasm`.
+7. Upload or drag in the sample image [`assets/demo-images/surveillance.jpg`](./assets/demo-images/surveillance.jpg).
+8. Click `Run detector`. This may take 10 seconds or more.
+
+### 8. Update the model
+
+1. Return to the AttesTAM Console.
+2. Upload `assets/manifest/yolov8.wasm.1.envelope.cbor`.
+3. Confirm the upload completes successfully.
+4. Return to the TAWS Console.
+5. Click `Install (TEEP)` again to install the newer model version.
+6. Run the detector again with the same sample image. This may take 10 seconds or more.
+
+For the complete end-to-end story and expected results, see [doc/scenario.md](./doc/scenario.md).
+
+### 9. Terminate
+
+You can confirm that docker containers are running.
+
+```sh
+$ docker ps --format "{{.Image}}"
+teep-wasm-demo-container_attester
+teep-wasm-demo-container_tam
+veraison/management
+veraison/verification
+veraison/provisioning
+veraison/vts
+veraison/keycloak
+```
+
+Then, terminate Demo and VERAISON containers with:
+
+```sh
+docker compose down
+
+veraison stop
+veraison clear-stores # optional
+```
+
+You can confirm that docker containers are not running.
+
+```sh
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+```
+
+## Next Plan
+
+- Use Intel SGX Enclave with real hardware to use DCAP Remote Attestation
+- Propose a plugin interface for customizable Attestation Results to VERAISON, e.g. JSON/CBOR output, JWT/CWT signing key, additional claims, etc.
+
+## More Documentation
 
 - [Introduction](./doc/introduction.md)
 - [Background](./doc/background.md)
 - [Scenario](./doc/scenario.md)
-- [Links to Subsystem Documentation](./doc/link.md)
+- [Links to subsystem documentation](./doc/link.md)
 - [Terminology](./doc/terminology.md)
+- [AttesTAM documentation](./AttesTAM/README.md)
+- [TAWS documentation](./taws/README.md)
 
 ## Acknowledgments
 
