@@ -1,0 +1,11 @@
+[
+    / type: / e'TEEP-TYPE-query-response',
+    / options: / {
+        e'attestation-payload': ref'eat_evidence_measurements.attester.es256.cose.bin.hdiag',
+        e'requested-tc-list': [
+            {
+                e'component-id': [ 'app.wasm' ]
+            }
+        ]
+    }
+]

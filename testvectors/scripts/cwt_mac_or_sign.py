@@ -8,7 +8,7 @@
 
 import argparse
 import json
-from cwt import COSE, COSEKey, COSEMessage
+from cwt import COSE, COSEKey, COSEMessage, COSEKeyParams
 
 parser = argparse.ArgumentParser(description="Generate COSE_Mac0 or COSE_Sign1 binary without payload")
 parser.add_argument("plaintext_payload", help="input filename to be MACed/signed")
@@ -22,7 +22,18 @@ with open(args.plaintext_payload, "rb") as f:
 
 with open(args.jwk, "r") as f:
     key_jwk = json.loads(f.read())
+
 key = COSEKey.from_jwk(key_jwk)
+if "kid-in-hex" in key_jwk:
+    key = COSEKey.new({
+        COSEKeyParams.KTY: key.kty,
+        COSEKeyParams.ALG: key.alg,
+        COSEKeyParams.KID: bytes.fromhex(key_jwk["kid-in-hex"]),
+        COSEKeyParams.CRV: key._crv,
+        COSEKeyParams.X: key._x,
+        COSEKeyParams.Y: key._y,
+        COSEKeyParams.D: key._d,
+    })
 
 sender = COSE.new(alg_auto_inclusion=True, kid_auto_inclusion=True)
 encoded = sender.encode(

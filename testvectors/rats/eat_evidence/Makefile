@@ -19,6 +19,12 @@ CDDL_FILE=../../cddl/eat-payload.cddl
 # load generic rules
 include ../../scripts/common.mk
 
+cosekey.digest.hdiag: cosekey.cbor
+
+eat_evidence.gdiag: cosekey.digest.hdiag
+
+eat_evidence_measurements.gdiag: cosekey.digest.hdiag
+
 .PHONY: test
 test: $(EAT_EVIDENCE_CBORS) $(CDDL_FILE)
 	@for EAT_CBOR in $(EAT_EVIDENCE_CBORS); do \
@@ -30,5 +36,13 @@ test: $(EAT_EVIDENCE_CBORS) $(CDDL_FILE)
 		fi; \
 	done
 
+.PHONY: install
+install: $(EAT_EVIDENCE)
+	@for EAT in $(EAT_EVIDENCE); do \
+		echo cp $$EAT ../../prebuilt/; \
+		cp $$EAT ../../prebuilt/; \
+	done
+
 .PHONY: clean
 clean: common-clean
+

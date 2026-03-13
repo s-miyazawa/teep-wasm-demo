@@ -1,5 +1,7 @@
 {
     "kty": "EC",
+    "kid": "yp418jsrUl+0/IP1ErDcrErCnkV+hzpdanMT9xaQszw=",
+    "kid-in-hex": "CA9E35F23B2B525FB4FC83F512B0DCAC4AC29E457E873A5D6A7313F71690B33C",
     "crv": "P-256",
     "alg": "ESP256",
     "x": "hJaBGq4LqqvSYVcYnuzaJr6qi/Ebbz/m4rVlnIXbwK0=",

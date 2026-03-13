@@ -3,7 +3,7 @@
   / eat_nonce / 10: h'948F8860D13A463E8E',
 
   / claims for matching corresponding Reference Values /
-  / ueid / 256: h'0198F50A4FF6C05861C8860D13A638EA',
+  / ueid / 256: h'016275696c64696e672d6465762d313233',
 
   / claims to be compared with corresponding Referene Values /
   / measurements / 273: [
@@ -29,11 +29,12 @@
   / cnf / 8: {
     / COSE_Key / 1: {
       / kty / 1: 2 / EC2 /,
+      / kid / 2: ref'cosekey.digest.hdiag',
+      / alg / 3: -9 / ESP256 /,
       / crv / -1: 1 / P-256 /,
-      / x / -2: h'5886CD61DD875862E5AAA820E7A15274C968A9BC96048DDCACE32F50C3651BA3',
-      / y / -3: h'9EED8125E932CD60C0EAD3650D0A485CF726D378D1B016ED4298B2961E258F1B'
-    },
-    / kid / 3: h'E96788B10B1610ABE478F9CE8DCFE2304C0911DD8CFEADDE25EC30CCB5A7B5AF' / Calculated with RFC 9679 manner /
+      / x / -2: h'BE7C56993F71114534C2F4A4F4E4606784FA9D9635E122BC8A490B2E11FEB932',
+      / y / -3: h'81696B42C3BE1B244CC03BCA97F0CE75E2D93ADA1CE556629227F10A8C2C5B29'
+    }
   },
 
   / additional claims /

@@ -22,7 +22,9 @@ TEST_COMMAND=$(RUBYDEBUG) cddl $(CDDL_FILE) validate
 
 TC_SIGNER_ESP256_SIGN_KEY=${SCRIPTS_DIR}/tc-signer-esp256-priv.jwk
 TAM_ESP256_SIGN_KEY=${SCRIPTS_DIR}/tam-esp256-priv.jwk
+TAM_ES256_SIGN_KEY=${SCRIPTS_DIR}/tam-es256-priv.jwk
 AGENT_ESP256_SIGN_KEY=${SCRIPTS_DIR}/agent-esp256-priv.jwk
+AGENT_ES256_SIGN_KEY=${SCRIPTS_DIR}/agent-es256-priv.jwk
 ATTESTER_ES256_SIGN_KEY=${SCRIPTS_DIR}/attester-es256-priv.jwk
 
 # generate the cddl file
@@ -54,16 +56,22 @@ $(CDDL_FILE):
 
 # generate COSE_Sign1 binary
 %.tc-signer.esp256.cose: %.cbor
-	python3 ${SCRIPTS_DIR}/cwt-mac-or-sign.py $< ${TC_SIGNER_ESP256_SIGN_KEY} $@ --detached
+	python3 ${SCRIPTS_DIR}/cwt_mac_or_sign.py $< ${TC_SIGNER_ESP256_SIGN_KEY} $@ --detached
 
 %.tam.esp256.cose: %.cbor
-	python3 ${SCRIPTS_DIR}/cwt-mac-or-sign.py $< ${TAM_ESP256_SIGN_KEY} $@ --no-detached
+	python3 ${SCRIPTS_DIR}/cwt_mac_or_sign.py $< ${TAM_ESP256_SIGN_KEY} $@ --no-detached
+
+%.tam.es256.cose: %.cbor
+	python3 ${SCRIPTS_DIR}/cwt_mac_or_sign.py $< ${TAM_ES256_SIGN_KEY} $@ --no-detached
 
 %.agent.esp256.cose: %.cbor 
-	python3 ${SCRIPTS_DIR}/cwt-mac-or-sign.py $< ${AGENT_ESP256_SIGN_KEY} $@ --no-detached
+	python3 ${SCRIPTS_DIR}/cwt_mac_or_sign.py $< ${AGENT_ESP256_SIGN_KEY} $@ --no-detached
+
+%.agent.es256.cose: %.cbor
+	python3 ${SCRIPTS_DIR}/cwt_mac_or_sign.py $< ${AGENT_ES256_SIGN_KEY} $@ --no-detached
 
 %.attester.es256.cose: %.cbor
-	python3 ${SCRIPTS_DIR}/cwt-mac-or-sign.py $< ${ATTESTER_ES256_SIGN_KEY} $@ --no-detached
+	python3 ${SCRIPTS_DIR}/cwt_mac_or_sign.py $< ${ATTESTER_ES256_SIGN_KEY} $@ --no-detached
 
 # generate byte string diag from a binary
 %.bin.hdiag:

@@ -26,11 +26,11 @@ CONCATENATED_CORIM_CDDL      := corim.cddl
 cat-cddl: $(CONCATENATED_SUIT_CDDL) $(CONCATENATED_TEEP_CDDL) $(CONCATENATED_PSA_TOKEN_CDDL) $(CONCATENATED_EAT_PAYLOAD_CDDL) $(CONCATENATED_CORIM_CDDL)
 
 $(CONCATENATED_SUIT_CDDL): $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_UPDATE_MANAGEMENT_CDDL) $(SUIT_ENCRYPTED_PAYLOADS_CDDL) $(SUIT_REPORT_CDDL) $(SUIT_MTI_CDDL) $(COSWID_CDDL) $(COSE_CDDL)
-	cat $^ > $@
+	echo "suit_manifest_cddl_start = SUIT_Envelope / SUIT_Envelope_Tagged / SUIT_Report_Unprotected / SUIT_Report_Protected" > $@
+	cat $^ >> $@
 
 $(SUIT_MANIFEST_CDDL):
-	curl https://raw.githubusercontent.com/suit-wg/manifest-spec/master/draft-ietf-suit-manifest.cddl | \
-	sed -e 's/SUIT_start = SUIT_Envelope_Tagged/SUIT_start = SUIT_Envelope \/ SUIT_Envelope_Tagged/' > $@
+	curl https://raw.githubusercontent.com/suit-wg/manifest-spec/master/draft-ietf-suit-manifest.cddl > $@
 
 $(SUIT_TRUST_DOMAINS_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/suit-multiple-trust-domains/main/draft-ietf-suit-trust-domains.cddl -o $@
@@ -45,6 +45,7 @@ $(SUIT_ENCRYPTED_PAYLOADS_CDDL):
 
 $(SUIT_REPORT_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/suit-report/main/draft-ietf-suit-report.cddl -o $@
+	sed -i -e 's/$$$$SUIT_Report_Extensions/* $$$$SUIT_Report_Extensions/' -e 's/$$$$SUIT_Record_Extensions/* $$$$SUIT_Record_Extensions/' $@
 
 $(SUIT_MTI_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/suit-mti/main/draft-ietf-suit-mti.cddl -o $@

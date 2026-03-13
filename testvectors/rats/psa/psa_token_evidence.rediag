@@ -1,9 +1,10 @@
 {
-  e'profile-label': "https://arm.com/psa/2.0.0",
+  e'profile-label': "http://arm.com/psa/2.0.0",
   e'psa-client-id-key': 1,
   e'psa-lifecycle-key': 12288,
   e'psa-implementation-id-key': 'acme-implementation-id-000000001',
-  e'boot-seed-label': h'DEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF',
+  2397: h'DEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF',
+  / NOTE: e'boot-seed-label' is 268, but veraison accepts 2397 /
   / NOTE: e'psa-hardware-version': 1234567890123 is not defined /
   e'psa-software-components-key': [
     {

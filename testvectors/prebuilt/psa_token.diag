@@ -5,11 +5,11 @@
   / unprotected: / {
   },
   / payload: / << {
-    / eat_profile / 265 : "https://arm.com/psa/2.0.0",
+    / eat_profile / 265 : "http://arm.com/psa/2.0.0",
     / psa-client-id / 2394 : 1,
     / psa-lifecycle / 2395 : 12288,
     / psa-implementation-id / 2396 : 'acme-implementation-id-000000001',
-    / boot-seed / 268 : h'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+    / psa-boot-seed / 2397 : h'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
     / psa-software-components / 2399 : [ {
         / measurement-type / 1 : "BL",
         / measurement-value / 2 : h'87428fc522803d31065e7bce3cf03fe475096631e5e07bbd7a0fde60c4cf25c7',
@@ -30,5 +30,5 @@
     / psa-instance-id / 256 : h'01ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508',
     / psa-verification-service-indicator / 2400 : "https://psa-verifier.org"
   } >>,
-  / signature: / h'c5f88f9ef3603487f2842b74b3271f317a76ac7ab023a0ed496fdcde01d6c895608c8288058e2a68c1d0b0f55b83bf1b5c31cb5b52d8864cb825463d028ff8e5'
+  / signature: / h'8fe3f82dd4195df3deb2a8549dc6b0e76a3fbab7c2b4c7a96bd28ee7256d4bbc6eb4309e69fdc45d6f64ec228555ac144031dc1b41ebd82eb3cf2c28aeac5e0c'
 ])

@@ -1,0 +1,15 @@
+/ COSE_Sign1_Tagged / 18([
+  / protected: / << {
+    / alg / 1: -9 / ESP256 /
+  } >>,
+  / unprotected: / {
+    / kid / 4: h'E96788B10B1610ABE478F9CE8DCFE2304C0911DD8CFEADDE25EC30CCB5A7B5AF'
+  },
+  / payload: / << [
+    / type: / 5 / TEEP-TYPE-teep-success /,
+    / options: / {
+      / token / 20: h'0011223344556677'
+    }
+  ] >>,
+  / signature: / h'D2B29C73238CCC457EB125FE5717CEE1B6206D89F8951C8464A12F88551634D660A48759638FA81B7CFFBC79E21E6D1E7966E8FA68AC5BFEB36D31A8AC714A66'
+])
