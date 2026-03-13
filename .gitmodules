@@ -37,3 +37,9 @@
 [submodule "testvector/cddl/draft-psa-token"]
 	path = testvectors/cddl/draft-psa-token
 	url = https://github.com/thomas-fossati/draft-psa-token
+[submodule "AttesTAM"]
+	path = AttesTAM
+	url = https://github.com/kentakayama/AttesTAM
+[submodule "taws"]
+	path = taws
+	url = https://github.com/yuma-nishi/taws
