@@ -1,0 +1,74 @@
+name: Check Large Files
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-large-files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Ensure the PR diff between base and head can be inspected reliably
+
+      - name: Find large files in this PR
+        id: find_large_files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Threshold for a single file (1 MiB)
+          max_single_size=$((1 * 1024 * 1024))
+
+          # Threshold for the total size of added/modified files (10 MiB)
+          max_total_size=$((10 * 1024 * 1024))
+
+          # Get the PR base/head SHAs
+          base_sha="${{ github.event.pull_request.base.sha }}"
+          head_sha="${{ github.event.pull_request.head.sha }}"
+
+          total_size=0
+          too_large_files=""
+
+          # Check files that are added or modified in the final state of the PR.
+          # For each file, use its final size in the checked-out working tree.
+          while IFS= read -r -d '' f; do
+            if [ -f "$f" ]; then
+              size=$(wc -c < "$f")
+              total_size=$((total_size + size))
+
+              if [ "$size" -gt "$max_single_size" ]; then
+                too_large_files="${too_large_files}"$'\n'"- ${f} (${size} bytes)"
+              fi
+            fi
+          done < <(git diff --diff-filter=AM --name-only -z "$base_sha...$head_sha")
+
+          echo "total_size=$total_size" >> "$GITHUB_OUTPUT"
+          {
+            echo "too_large_files<<EOF"
+            echo "${too_large_files}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Fail if any file is too large
+        if: steps.find_large_files.outputs.too_large_files != ''
+        run: |
+          echo "❌ The following files exceed 1 MiB:"
+          echo "${{ steps.find_large_files.outputs.too_large_files }}"
+          echo ""
+          echo "Please review CONTRIBUTING.md before pushing large files."
+          echo "If the file is genuinely required, consider Git LFS and explain the reason in the pull request."
+          exit 1
+
+      - name: Fail if total size exceeds limit
+        if: steps.find_large_files.outputs.total_size > 10485760
+        run: |
+          echo "❌ The total size of added/modified files exceeds 10 MiB."
+          echo "Total size: ${{ steps.find_large_files.outputs.total_size }} bytes"
+          echo ""
+          echo "Please review CONTRIBUTING.md before pushing large files."
+          echo "If the files are genuinely required, consider Git LFS and explain the reason in the pull request."
+          exit 1
