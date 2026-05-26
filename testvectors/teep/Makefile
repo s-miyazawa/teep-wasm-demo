@@ -16,6 +16,10 @@ QUERY_RESPONSE_EAT=query_response_eat
 QUERY_RESPONSE_EAT_CBOR=$(QUERY_RESPONSE_EAT).cbor
 QUERY_RESPONSE_EAT_COSE=$(QUERY_RESPONSE_EAT).agent.esp256.cose
 
+QUERY_RESPONSE_QUOTE3=query_response_quote3
+QUERY_RESPONSE_QUOTE3_CBOR=$(QUERY_RESPONSE_QUOTE3).cbor
+QUERY_RESPONSE_QUOTE3_COSE=$(QUERY_RESPONSE_QUOTE3).agent.esp256.cose
+
 UPDATE0=update0
 UPDATE0_CBOR=$(UPDATE0).cbor
 UPDATE0_COSE=$(UPDATE0).tam.esp256.cose
@@ -32,8 +36,8 @@ TEEP_ERROR=teep_error
 TEEP_ERROR_CBOR=$(TEEP_ERROR).cbor
 TEEP_ERROR_COSE=$(TEEP_ERROR).agent.esp256.cose
 
-TARGET_CBORS=$(QUERY_REQUEST_CBOR) $(QUERY_RESPONSE_PSA_CBOR) $(QUERY_RESPONSE_EAT_CBOR) $(UPDATE0_CBOR) $(UPDATE1_CBOR) $(TEEP_SUCCESS_CBOR) $(TEEP_ERROR_CBOR)
-TARGET_COSES=$(QUERY_REQUEST_COSE) $(QUERY_RESPONSE_PSA_COSE) $(QUERY_RESPONSE_EAT_COSE) $(UPDATE0_COSE) $(UPDATE1_COSE) $(TEEP_SUCCESS_COSE) $(TEEP_ERROR_COSE)
+TARGET_CBORS=$(QUERY_REQUEST_CBOR) $(QUERY_RESPONSE_PSA_CBOR) $(QUERY_RESPONSE_EAT_CBOR) $(QUERY_RESPONSE_QUOTE3_CBOR) $(UPDATE0_CBOR) $(UPDATE1_CBOR) $(TEEP_SUCCESS_CBOR) $(TEEP_ERROR_CBOR)
+TARGET_COSES=$(QUERY_REQUEST_COSE) $(QUERY_RESPONSE_PSA_COSE) $(QUERY_RESPONSE_EAT_COSE) $(QUERY_RESPONSE_QUOTE3_COSE) $(UPDATE0_COSE) $(UPDATE1_COSE) $(TEEP_SUCCESS_COSE) $(TEEP_ERROR_COSE)
 
 .PRECIOUS: $(TARGET_CBORS)
 
@@ -59,7 +63,7 @@ include ../scripts/common.mk
 
 psa_token_evidence.attester.es256.cose.bin.hdiag: ../rats/psa/psa_token_evidence.attester.es256.cose
 
-$(QUERY_RESPONSE_PSA_CBOR): psa_token_evidence.attester.es256.cose.bin.hdiag
+$(QUERY_RESPONSE_PSA).gdiag: psa_token_evidence.attester.es256.cose.bin.hdiag
 
 ../rats/eat_evidence/eat_evidence_measurements.attester.es256.cose:
 	$(MAKE) -C ../rats/eat_evidence/ eat_evidence_measurements.attester.es256.cose
@@ -68,19 +72,26 @@ eat_evidence_measurements.attester.es256.cose.bin.hdiag: ../rats/eat_evidence/ea
 
 $(QUERY_RESPONSE_EAT_CBOR): eat_evidence_measurements.attester.es256.cose.bin.hdiag
 
+../rats/sgx_quote3/sgx-quote3-teep-bundle.cbor:
+	$(MAKE) -C ../rats/sgx_quote3/ sgx-quote3-teep-bundle.cbor
+
+sgx-quote3-teep-bundle.cbor.bin.hdiag: ../rats/sgx_quote3/sgx-quote3-teep-bundle.cbor
+
+$(QUERY_RESPONSE_QUOTE3).gdiag: sgx-quote3-teep-bundle.cbor.bin.hdiag
+
 ../manifest/text0/text.0.envelope.cbor:
 	$(MAKE) -C ../manifest/text0/ text.0.envelope.cbor
 
 text.0.envelope.cbor.bin.hdiag: ../manifest/text0/text.0.envelope.cbor
 
-$(UPDATE0_CBOR): text.0.envelope.cbor.bin.hdiag
+$(UPDATE0).gdiag: text.0.envelope.cbor.bin.hdiag
 
 ../manifest/text1/text.1.envelope.cbor:
 	$(MAKE) -C ../manifest/text1/ text.1.envelope.cbor
 
 text.1.envelope.cbor.bin.hdiag: ../manifest/text1/text.1.envelope.cbor
 
-$(UPDATE1_CBOR): text.1.envelope.cbor.bin.hdiag
+$(UPDATE1).gdiag: text.1.envelope.cbor.bin.hdiag
 
 .PHONY: test
 test: $(TARGET_CBORS) $(CDDL_FILE)

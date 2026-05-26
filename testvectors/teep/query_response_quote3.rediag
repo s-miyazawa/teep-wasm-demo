@@ -1,0 +1,12 @@
+[
+    / type: / e'TEEP-TYPE-query-response',
+    / options: / {
+        e'attestation-payload-format': "application/sgx-quote3-teep-bundle",
+        e'attestation-payload': ref'sgx-quote3-teep-bundle.cbor.bin.hdiag',
+        e'requested-tc-list': [
+            {
+                e'component-id': [ 'app.wasm' ]
+            }
+        ]
+    }
+]
