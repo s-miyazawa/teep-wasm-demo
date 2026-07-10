@@ -66,7 +66,7 @@ The documented flow has been tested on:
 Install the required packages:
 
 ```sh
-sudo apt install bash make git docker.io docker-buildx jq
+sudo apt install bash make git git-lfs docker.io docker-buildx jq
 sudo systemctl enable --now docker
 sudo usermod -a -G docker "$USER"
 newgrp docker
@@ -76,6 +76,13 @@ newgrp docker
 > Use the native Ubuntu `docker.io` package, not the Snap package.
 
 ## Quick Start
+
+### 0. Install Git LFS
+
+```sh
+git lfs install
+
+```
 
 ### 1. Clone the repository
 
