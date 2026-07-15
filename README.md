@@ -101,24 +101,28 @@ source ./veraison/services/deployments/docker/env.bash
 veraison status
 ```
 
-### 3. Prepare the TAWS SGX base image
 
-This downloads Intel SGX build dependencies and creates the `sgx_sample_deb` image used by the TAWS Docker build.
+### 3. Build the demo containers
+
+Standard SGX/PCCS:
 
 ```sh
-./taws/scripts/prepare_sgx_base_image.sh
+export TAWS_DCAP_PROVIDER=pccs
+export PCCS_API_KEY=...
+docker compose build
 ```
 
-### 4. Build the demo containers
+Azure SGX VM:
 
 ```sh
+export TAWS_DCAP_PROVIDER=azure
 docker compose build
 ```
 
 > [!NOTE]
 > Initial setup can take 10 minutes or more because VERAISON, SGX dependencies, and the demo containers are all built locally.
 
-### 5. Provision VERAISON endorsements
+### 4. Provision VERAISON endorsements
 
 This uploads the prebuilt CoRIM used by the attestation flow from `testvectors/prebuilt`.
 
@@ -130,7 +134,7 @@ curl -X POST \
   https://localhost:9443/endorsement-provisioning/v1/submit
 ```
 
-### 6. Start the demo services
+### 5. Start the demo services
 
 This starts `AttesTAM` and `TAWS`.
 
@@ -140,7 +144,7 @@ docker compose up
 
 Leave this command running while you use the web consoles.
 
-### 7. Install the initial model
+### 6. Install the initial model
 
 1. Open the AttesTAM Console at `http://localhost:9090`.
 2. Click `Register TC`, choose `assets/manifest/yolov8.wasm.0.envelope.cbor`, and click `Upload`.
@@ -151,7 +155,7 @@ Leave this command running while you use the web consoles.
 7. Upload or drag in the sample image [`assets/demo-images/surveillance.jpg`](./assets/demo-images/surveillance.jpg).
 8. Click `Run detector`. This may take 10 seconds or more.
 
-### 8. Update the model
+### 7. Update the model
 
 1. Return to the AttesTAM Console.
 2. Upload `assets/manifest/yolov8.wasm.1.envelope.cbor`.
@@ -162,7 +166,7 @@ Leave this command running while you use the web consoles.
 
 For the complete end-to-end story and expected results, see [doc/scenario.md](./doc/scenario.md).
 
-### 9. Terminate
+### 8. Terminate
 
 You can confirm that docker containers are running.
 
