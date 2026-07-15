@@ -27,14 +27,14 @@ The TAM Administrator registers the corresponding Trusted Components and inspect
 
 ## IETF 125 and IETF 126 Environments
 
-The IETF 125 demo used Intel SGX simulation mode. The IETF 126 track deploys TAWS on an SGX-capable Azure VM so that the TEEP Agent environment and Wasm workload execute using real SGX hardware.
+The IETF 125 demo used Intel SGX simulation mode. The IETF 126 track deployed TAWS on an SGX-capable Azure VM so that the TEEP Agent environment and Wasm workload executed using real SGX hardware.
 
-The final demo documentation will record:
+The demonstrated Azure flow covers the following results, which should remain part of the demo record:
 
 - Azure VM type and operating-system version;
 - SGX driver, runtime, and device configuration;
 - how hardware mode is verified;
-- confirmation that the implemented DCAP Quote3 path produced Evidence in the demo environment;
+- confirmation that the DCAP Quote3 path produced Evidence in the demo environment;
 - confirmation that AttesTAM's embedded Intel QVL backend verified the SGX Quote against Intel collateral;
 - how the TEEP Agent key is bound to the attested environment.
 

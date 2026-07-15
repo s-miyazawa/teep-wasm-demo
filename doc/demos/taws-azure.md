@@ -2,7 +2,7 @@
 
 This track provisions and updates a YOLOv8 Wasm application through TAWS running on an SGX-capable Azure VM. The build and run commands on this page follow the documentation and Dockerfile in the TAWS submodule pinned by this repository.
 
-> **Environment status:** The TAWS and AttesTAM build procedures are defined. The final IETF 126 report must still record the Azure VM details and the end-to-end Intel QVL result observed in the demo environment.
+> **Environment status:** The IETF 126 Azure demo exercised TAWS in SGX hardware mode and completed end-to-end DCAP Evidence verification with AttesTAM's embedded Intel QVL backend. Retain the exact Azure VM, software-version, and verification outputs with the final demo artifacts.
 
 ## Participants and Components
 
@@ -220,7 +220,7 @@ Record the following outputs from the final demo environment:
 - the result of AttesTAM's `report_data`, `raw-report-data`, challenge, and Agent-key binding checks;
 - the resulting TEEP Agent trust or activation decision.
 
-TAWS implements DCAP Evidence generation and AttesTAM implements the matching Intel QVL backend, but the final IETF 126 report must still record that the complete TAWS and AttesTAM path succeeded in the demonstrated Azure environment.
+The complete TAWS and AttesTAM path was demonstrated in the IETF 126 Azure environment. Retain the outputs above so that hardware execution, Evidence generation, Intel QVL verification, challenge and Agent-key binding, and the resulting trust decision remain independently reviewable.
 
 ### 9. Stop the Demo
 

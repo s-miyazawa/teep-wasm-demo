@@ -2,7 +2,7 @@
 
 This track demonstrates a portable Wasm TEEP Agent and command-oriented Trusted Wasm Apps on a Jetson Orin Nano Super Developer Kit using OP-TEE.
 
-> **Source status:** TWEP-SYSTEM is currently in a private development repository. The commands on this page follow the latest unmerged Jetson demo branch and the validated IETF 126 runbook. Repository URLs and clone instructions will be added after publication.
+> **Source status:** TWEP-SYSTEM is included as the `twep-system` submodule, pinned from the `docs/jetson-twep-demo-setup` branch. The source repository is currently private, so submodule initialization requires access permission. Its URL will be updated when the repository moves to the public account.
 
 > **Security status:** This is a fixture-backed development demonstration. It exercises an AttesTAM challenge, Generic EAT Evidence, an external VERAISON `affirming` result, Update, Success, installation, and execution. It does not claim production-grade final verified mode.
 

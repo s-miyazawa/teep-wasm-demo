@@ -5,7 +5,7 @@ The IETF 126 TEEP Wasm Demo explores secure Wasm application provisioning with T
 The demo has two independent, complementary tracks:
 
 - **TAWS on an Azure VM with Intel SGX** moves the original TEEP Agent implementation from SGX simulation mode to real SGX hardware.
-- **TWEP-SYSTEM on NVIDIA Jetson with OP-TEE** introduces a second TEEP Agent implementation designed to keep the TEEP Agent and Trusted Wasm Apps portable across TEE platforms.
+- **TWEP-SYSTEM on NVIDIA Jetson with OP-TEE** introduces a second TEEP Agent implementation that separates portable TEEP and application logic from its OP-TEE-specific backend.
 
 Both tracks use AttesTAM as the Trusted Application Manager and Relying Party. AttesTAM selects an embedded Intel QVL backend for the TAWS SGX Quote3 bundle and an external VERAISON verifier for other Evidence formats. The tracks share the protocol architecture, but they use different device-side implementations, user interfaces, workloads, and deployment environments.
 
@@ -14,9 +14,9 @@ Both tracks use AttesTAM as the Trusted Application Manager and Relying Party. A
 The IETF 126 work has two main goals:
 
 1. Demonstrate TAWS and its Wasm workload in an enclave on real Intel SGX hardware.
-2. Demonstrate a portable architecture in which platform-specific TEE behavior is separated from the TEEP Agent and Trusted Wasm Apps.
+2. Demonstrate an architecture designed for portability by separating platform-specific TEE behavior from the TEEP Agent and Trusted Wasm Apps.
 
-These goals address different questions. The TAWS track asks how the existing SGX-oriented implementation behaves on hardware. The TWEP-SYSTEM track asks how much of the TEEP and application logic can remain unchanged when the underlying TEE platform changes.
+These goals address different questions. The TAWS track asks how the existing SGX-oriented implementation behaves on hardware. The TWEP-SYSTEM track demonstrates an architecture that separates portable TEEP and application logic from the OP-TEE-specific backend. Porting and validating the implementation on other TEE platforms remain future work.
 
 ## Two Independent Demo Tracks
 
@@ -33,8 +33,8 @@ The complete setup and operation procedures are therefore documented separately:
 
 This book separates demonstrated behavior from work that is still in progress. In particular:
 
-- running code in an SGX hardware enclave does not by itself prove that DCAP Evidence was verified end to end;
-- a platform backend listed as an architecture target is not necessarily a completed or security-validated port;
+- the IETF 126 TAWS track demonstrated both execution in an SGX hardware enclave and end-to-end DCAP Evidence verification by AttesTAM; these are recorded separately because hardware enclave execution and remote attestation verification are distinct checks;
+- a platform backend listed as future porting work is not a completed or security-validated port;
 - TWEP-SYSTEM's fixture-backed Generic EAT flow on Jetson has been demonstrated through an external VERAISON `affirming` result, but remains distinct from production-grade final verified mode.
 
-See [Implementation Status](./status.md) for the current distinction between demonstrated, implemented, in-progress, and design-target capabilities.
+See [Implementation Status](./status.md) for the current distinction between demonstrated, implemented, in-progress, and future-work capabilities.
