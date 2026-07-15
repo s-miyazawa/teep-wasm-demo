@@ -62,7 +62,7 @@ For IETF 126, the main device path uses a Jetson Orin Nano Super Developer Kit w
 
 The Jetson basic port is complete for the demonstrated scope. Direct TA smoke tests, public C ABI tests, and the normal `twep-cli` / `twepd` E2E path have run on the physical device. HelloWorld, CalcAdd, and NegaPosi have all executed through the TrustZone backend and TA-local WAMR.
 
-SGX, Keystone, and other TEE backends remain architecture targets unless listed as demonstrated in [Implementation Status](../status.md).
+Porting TWEP-SYSTEM to SGX, Keystone, and other TEE architectures is future work. These platforms are not currently claimed as completed or security-validated ports.
 
 ## Runtime Separation
 
@@ -109,4 +109,4 @@ The result shows that challenge freshness, Evidence forwarding, `cnf.key` bindin
 
 Final verified mode must replace development keys with device-specific or manufacturing-provisioned keys, add Jetson and OP-TEE identity claims, enforce corresponding VERAISON policy, protect the TEEP and SUIT trust anchors, and integrate the complete TEEP/COSE/SUIT and Catalog promotion policy. That mode is still under development.
 
-The TWEP-SYSTEM source repository will be linked after it is moved to a public GitHub account.
+TWEP-SYSTEM is included as the `twep-system` submodule, currently pinned from the private `docs/jetson-twep-demo-setup` branch. The submodule URL will be updated when the source repository moves to the public GitHub account.
