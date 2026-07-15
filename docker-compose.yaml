@@ -12,9 +12,13 @@ services:
     image: attestam-sgx
     environment:
       ATTESTAM_INSECURE_DEMO_MODE: "true"
-      ADMIN_CONSOLE_PORT: "9090"
-      ADMIN_CONSOLE_TAM_API_BASE: http://127.0.0.1:8080/
-    network_mode: host
+      ATTESTAM_CHALLENGE_SERVER: https://host.docker.internal:8443
+    ports:
+      - "9090:9090"
+    networks:
+      - tam-attester-net
+    extra_hosts:
+      - host.docker.internal:host-gateway
     tty: true
 
   container_attester:
@@ -24,16 +28,20 @@ services:
         TAWS_DCAP_PROVIDER: ${TAWS_DCAP_PROVIDER:-pccs}
     image: taws:${TAWS_DCAP_PROVIDER:-pccs}
     environment:
-      TAWS_DCAP_PROVIDER: ${TAWS_DCAP_PROVIDER:-pccs}
-      TAWS_TAM_URL: http://localhost:8080/tam
-      TAWS_LOG_LEVEL: info
+      TAWS_TAM_URL: http://container_tam:8080/tam
       PCCS_API_KEY: ${PCCS_API_KEY:-}
       PCCS_PROXY: ${PCCS_PROXY:-}
       PCCS_CACHING_MODE: ${PCCS_CACHING_MODE:-}
     devices:
       - /dev/sgx_enclave:/dev/sgx_enclave
       - /dev/sgx_provision:/dev/sgx_provision
-    tty: true
-    network_mode: host
+    ports:
+      - "8181:8181"
+    networks:
+      - tam-attester-net
     depends_on:
       - container_tam
+    tty: true
+
+networks:
+  tam-attester-net:
