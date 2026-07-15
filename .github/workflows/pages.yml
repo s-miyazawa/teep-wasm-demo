@@ -28,6 +28,7 @@ jobs:
       - name: Install mdBook tools
         run: |
           cargo install mdbook --locked
+          cargo install mdbook-mermaid --version 0.17.0 --locked
           cargo install mdbook-plantuml --locked
 
       - name: Install PlantUML and Graphviz
