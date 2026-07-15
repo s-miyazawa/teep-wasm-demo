@@ -7,7 +7,7 @@ src = "doc"
 [output.html]
 git-repository-url = "https://github.com/s-miyazawa/teep-wasm-demo"
 git-repository-icon = "fab-github"
-additional-js = ["mermaid.min.js", "mermaid-init.js"]
+additional-js = ["mermaid-init.js"]
 
 [preprocessor]
 
