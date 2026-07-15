@@ -1,5 +1,5 @@
 [book]
-title = "IETF125 TEEP Wasm Demo Overview"
+title = "IETF 126 TEEP Wasm Demo"
 authors = ["ZENBA Kazuki"]
 language = "en"
 src = "doc"
@@ -7,6 +7,9 @@ src = "doc"
 [output.html]
 git-repository-url = "https://github.com/s-miyazawa/teep-wasm-demo"
 git-repository-icon = "fab-github"
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
 
-[preprocessor.plantuml]
-plantuml-cmd = "plantuml"
+[preprocessor]
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"

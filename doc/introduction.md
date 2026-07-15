@@ -1,101 +1,40 @@
 # Introduction
 
-This demo shows a building security service provider provisioning a Wasm-based anomaly detection model to a building security device using TEEP, with device trust established through RATS-based remote attestation.
+The IETF 126 TEEP Wasm Demo explores secure Wasm application provisioning with TEEP and device trust establishment through RATS-based remote attestation.
 
-| Console | Role | Screenshot |
-| -- | -- | -- |
-| TAWS Console | Used by the building owner to activate the device, install the model, and run detection. | ![TAWS Console](img/taws-image.png) |
-| AttesTAM Console | Used by the security service provider to register and manage trusted components and devices. | ![AttesTAM Console](img/attestam-image.png) |
+The demo has two independent, complementary tracks:
 
-## Use Case and Security Concern
-The specific situation is as follows:
+- **TAWS on an Azure VM with Intel SGX** moves the original TEEP Agent implementation from SGX simulation mode to real SGX hardware.
+- **TWEP-SYSTEM on NVIDIA Jetson with OP-TEE** introduces a second TEEP Agent implementation designed to keep the TEEP Agent and Trusted Wasm Apps portable across TEE platforms.
 
-- Use case
-  - A security service provider offers security devices that detect intrusions by installing equipment in customers' buildings.
-  - The building security devices embed a proprietary anomaly detection model that identifies suspicious persons from surveillance camera footage.
-- Security concern
-  - The security service provider is concerned about model leakage and tampering, and wants to protect the model by using a TEE.
+Both tracks use AttesTAM as the Trusted Application Manager and Relying Party. AttesTAM selects an embedded Intel QVL backend for the TAWS SGX Quote3 bundle and an external VERAISON verifier for other Evidence formats. The tracks share the protocol architecture, but they use different device-side implementations, user interfaces, workloads, and deployment environments.
 
-The operational flow demonstrated in this project is described in [Demo Scenario](./scenario.md).
+## Goals
 
-The following use case diagram shows interactions between the building owner and security service provider in the demo system.
+The IETF 126 work has two main goals:
 
-```plantuml
-@startuml demo-usecase-operation
-left to right direction
-skinparam actorStyle awesome
-title Demo Use Case
+1. Demonstrate TAWS and its Wasm workload in an enclave on real Intel SGX hardware.
+2. Demonstrate a portable architecture in which platform-specific TEE behavior is separated from the TEEP Agent and Trusted Wasm Apps.
 
-actor "Building Owner" as A_DeviceUser
-actor "Security Service Provider" as A_ServiceProvider
+These goals address different questions. The TAWS track asks how the existing SGX-oriented implementation behaves on hardware. The TWEP-SYSTEM track asks how much of the TEEP and application logic can remain unchanged when the underlying TEE platform changes.
 
-rectangle "Demo System" as G_System {
-  package "Device Functions" {
-    usecase "Activate Device" as U_DeviceActivate
-    usecase "Install and Update Anomaly Detection Model" as U_CheckUpdate
-    usecase "Use Anomaly Detection Model" as U_DeviceUse
-  }
-  package "TAM Functions" {
-    usecase "Register TC to TAM" as U_TCRegister
-    usecase "Distribute TC to Device" as U_TCInstall
-    usecase "List Managed Devices" as U_ListDevices
-    usecase "List Managed TCs" as U_ListTCs
-    usecase "Verify Device" as U_DeviceAttest
-  }
-}
+## Two Independent Demo Tracks
 
-A_DeviceUser -- U_DeviceActivate
-A_DeviceUser -- U_CheckUpdate
-A_DeviceUser -- U_DeviceUse
-U_DeviceActivate ..> U_DeviceAttest : <<include>>
-U_CheckUpdate ..> U_TCInstall : <<include>>
-A_ServiceProvider -up- U_TCRegister
-A_ServiceProvider -up- U_ListDevices
-A_ServiceProvider -up- U_ListTCs
-@enduml
-```
+The tracks are not interchangeable front ends for the same workload.
 
-## Architecture of the demo system
+The TAWS track uses a browser-based console and provisions a YOLOv8 object-detection Wasm application. The TWEP-SYSTEM track uses `twep-cli` and initially demonstrates command-line Trusted Wasm Apps such as HelloWorld, CalcAdd, and NegaPosi.
 
-The following diagram shows the architecture of the demo system.
+The complete setup and operation procedures are therefore documented separately:
 
-```plantuml
-@startuml demo-architecture
-left to right direction
-skinparam actorStyle awesome
-title Demo Architecture
+- [TAWS on an Azure VM with Intel SGX](./demos/taws-azure.md)
+- [TWEP-SYSTEM on NVIDIA Jetson with OP-TEE](./demos/twep-jetson.md)
 
-actor "Building Owner" as User
-actor "Security Service Provider" as Admin
+## Documentation Scope
 
-rectangle "TAWS" as TawsSystem {
-  component "TAWS Core" as Taws
-  component "TAWS Console" as UserConsole
-}
-rectangle "AttesTAM" as AttestamSystem {
-  component "AttesTAM Core" as Tam
-  component "AttesTAM Console" as AdminConsole
-}
-rectangle "VERAISON" as Verifier
+This book separates demonstrated behavior from work that is still in progress. In particular:
 
-User --> UserConsole : Web access
-Admin --> AdminConsole : Web access
-UserConsole <--> Taws : HTTP
-Taws <-left-> Tam : TEEP protocol over HTTP
-AdminConsole <--> Tam : HTTP
-Tam <--> Verifier : HTTP
-@enduml
-```
+- running code in an SGX hardware enclave does not by itself prove that DCAP Evidence was verified end to end;
+- a platform backend listed as an architecture target is not necessarily a completed or security-validated port;
+- TWEP-SYSTEM's fixture-backed Generic EAT flow on Jetson has been demonstrated through an external VERAISON `affirming` result, but remains distinct from production-grade final verified mode.
 
-- `TAWS` is a TEEP agent for Intel SGX.
-- `AttesTAM` is a TAM (Trusted Application Manager).
-- `VERAISON` is the verifier used for attestation.
-
-## Related Repositories
-
-- [teep-wasm-demo](https://github.com/s-miyazawa/teep-wasm-demo)
-  - Repository for the IETF 125 hackathon demo
-- [AttesTAM](https://github.com/kentakayama/AttesTAM)
-  - Repository for AttesTAM and the AttesTAM Console
-- [TAWS](https://github.com/yuma-nishi/taws)
-  - Repository for TAWS and the TAWS Console
+See [Implementation Status](./status.md) for the current distinction between demonstrated, implemented, in-progress, and design-target capabilities.
