@@ -1,7 +1,15 @@
 # Summary
 
 - [Introduction](./introduction.md)
+- [What Is New for IETF 126](./ietf126.md)
 - [Background](./background.md)
-- [Scenario](./scenario.md)
-- [Links to Subsystem Documentation](./link.md)
+- [Common Architecture](./architecture.md)
+- [TEEP Agent Implementations](./implementations.md)
+  - [TAWS](./implementations/taws.md)
+  - [TWEP-SYSTEM](./implementations/twep-system.md)
+- [Running the Demos](./scenario.md)
+  - [TAWS on an Azure VM with Intel SGX](./demos/taws-azure.md)
+  - [TWEP-SYSTEM on NVIDIA Jetson with OP-TEE](./demos/twep-jetson.md)
+- [Implementation Status](./status.md)
 - [Terminology](./terminology.md)
+- [Links to Subsystem Documentation](./link.md)

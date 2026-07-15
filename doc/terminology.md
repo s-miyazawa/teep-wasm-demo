@@ -1,78 +1,89 @@
 # Terminology
 
-## Actor and Subsystem
+## Common Actors and Components
 
-### Building Owner
+### Device User
 
-Uses the security service for building protection.
-- Activate the building security device.
-- Use the anomaly detection model.
-- Update the anomaly detection model.
+A person who operates a TEE Device through the device-side user interface. The TAWS track uses the TAWS Console; the TWEP-SYSTEM track uses `twep-cli`.
 
-### Security Service Provider
+### TAM Administrator
 
-A company that provides building security services.
-- Manage the building security device.
-- Manage the AttesTAM.
-- Develop and register the anomaly detection model in AttesTAM.
+A person or operational role that manages AttesTAM. The TAM Administrator registers Trusted Components and inspects managed devices through the AttesTAM Console or administration APIs.
 
-### Building Security Device
+This generic role replaces use-case-specific names such as Security Service Provider in the common architecture.
 
-A security device that executes the anomaly detection model.
-- Operated from the TAWS Console by the building owner.
-- TAWS is installed during manufacturing.
-- The anomaly detection model is not installed until activation.
+### TEE Device
 
-### Anomaly Detection Model
+A device containing or using a Trusted Execution Environment and participating in the TEEP protocol.
 
-Object detection Wasm application based on YOLOv8.
+### Trusted Component
 
-### TAWS
+Software and associated metadata managed through TEEP. In this project, Trusted Components include Wasm applications and, for TWEP-SYSTEM, its Catalog.
 
-TEE middleware for Intel SGX.
-- Installs, updates, and executes Wasm applications in the TEE.
-- Interacts with the building owner via the TAWS Console.
-- Interacts with AttesTAM using TEEP protocol.
+### Trusted Wasm App
 
-### AttesTAM
+A Trusted Component implemented as a Wasm application and executed by WAMR.
 
-Trusted Application Manager (TAM) server supporting TEEP over HTTP.
-- Stores and distributes trusted components.
-- Manages the distribution status of the trusted components to TAWS.
-- Interacts with the security service provider via the AttesTAM Console.
-- Interacts with TAWS using TEEP protocol.
+In the TWEP-SYSTEM documentation, a Wasm Trusted App is distinct from an OP-TEE `.ta` binary. The demo provisions Wasm payloads into the TWEP Catalog and application cache; it does not use AttesTAM to install OP-TEE `.ta` files into the platform TA directory.
+
+### TEEP Agent
+
+The device-side component that processes TEEP messages and manages Trusted Components. TAWS and TWEP-SYSTEM provide different implementations.
+
+### TEEP Broker
+
+The device-side component that transports TEEP messages between the TEEP Agent and AttesTAM.
+
+### AttesTAM Core
+
+The Trusted Application Manager server. It distributes Trusted Components over TEEP and acts as the Relying Party in the attestation flow.
+
+### AttesTAM Console / Administration APIs
+
+The AttesTAM Console is a browser-oriented backend-for-frontend. It calls the SUIT Manifest Service API and TEEP Agent Service API and converts their CBOR records into browser-oriented JSON and HTML responses. These administration interfaces are separate from the device-facing TEEP-over-HTTP endpoint at `/tam`.
 
 ### VERAISON
 
-Attestation verification software built by Project VERAISON.
+External attestation verification software used for Evidence formats other than AttesTAM's SGX Quote3 TEEP bundle.
 
-### TAWS Console
+### Intel QVL
 
-Web application for operating TAWS.
+Intel DCAP Quote Verification Library. AttesTAM embeds an experimental Intel QVL backend for SGX Quote3 TEEP bundles and manages the collateral supplied to it.
 
-### AttesTAM Console
+### TAWS
 
-Web application for operating AttesTAM.
+The first TEEP Agent implementation in this project. The IETF 126 track deploys it on an Azure VM with Intel SGX.
 
-## TEEP and RATS Terminology Correspondence
+### TWEP-SYSTEM
 
-### TEEP
+The second TEEP Agent implementation. It implements the TEEP Agent and general Trusted Wasm Apps as portable Wasm applications. The IETF 126 track targets NVIDIA Jetson with OP-TEE.
 
-|TEEP|Demo|
-|--|--|
-|TEE|Intel SGX|
-|Trusted Component|Anomaly Detection Model|
-|TAM|AttesTAM|
-|TEEP Agent<br>TEEP Broker|TAWS|
-|Device|Building Security Device|
-|Device User|Building Owner|
-|Device Administrator|Security Service Provider|
+### WAMR
 
-### RATS
+Wasm Micro Runtime, used to load and execute the Wasm applications in both tracks.
 
-|RATS|Demo|
-|--|--|
-|Attester|Building Security Device|
-|Relying Party|AttesTAM|
-|Relying Party Owner|Security Service Provider|
-|Verifier|VERAISON|
+## TEEP Correspondence
+
+| TEEP term | Common demo role | TAWS track | TWEP-SYSTEM track |
+| --- | --- | --- | --- |
+| TEE | Trusted execution environment | Intel SGX | OP-TEE / Arm TrustZone |
+| Trusted Component | Managed software component | YOLOv8 Wasm application | Catalog and command-oriented Trusted Wasm Apps |
+| TAM | Trusted Application Manager | AttesTAM Core | AttesTAM Core |
+| TEEP Agent | Device-side lifecycle manager | TAWS TEEP Agent | TEEP Agent Wasm application |
+| TEEP Broker | Device-side transport | TAWS broker | TWEP-SYSTEM rich-OS broker path |
+| Device | TEE Device | Azure VM with Intel SGX | NVIDIA Jetson with OP-TEE |
+| Device User | Device operator | TAWS Console user | `twep-cli` user |
+| TAM Administrator | TAM operator | AttesTAM administrator | AttesTAM administrator |
+
+## RATS Correspondence
+
+| RATS term | Demo role |
+| --- | --- |
+| Attester | TEE Device and its attestation-producing environment |
+| Relying Party | AttesTAM Core |
+| Relying Party Owner | Organization operating AttesTAM |
+| Verifier | External VERAISON or the Intel QVL backend embedded in AttesTAM |
+| Evidence | Attestation data generated for the selected device path |
+| Attestation Result | Verifier output consumed by AttesTAM |
+
+The exact Attester boundary and Evidence format must be documented separately for each implementation.

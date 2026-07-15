@@ -1,71 +1,47 @@
-# Scenario
+# Running the Demos
 
-This section describes the end-to-end scenario demonstrated by this project.
+The IETF 126 project contains two independent demo tracks. Their setup and operation procedures are documented separately because they use different hardware, user interfaces, and workloads.
 
-## 1. Initial deployment of the building security device
+## Choose a Track
 
-This scenario covers provisioning a newly installed device and deploying the initial anomaly detection model.
+### TAWS on an Azure VM with Intel SGX
 
-### 1.1. Register the first anomaly detection model
+Choose this track to demonstrate:
 
-- Operation
-  - In the Register TC page of AttesTAM Console, the security service provider uploads [yolov8.0.wasm](assets/manifest/yolov8.wasm.0.envelope.cbor).
+- TAWS on real Intel SGX hardware;
+- browser-based device activation and application management;
+- initial installation and update of a YOLOv8 Wasm application;
+- the attestation path demonstrated by the Azure deployment.
 
-- Result
-  - In the Register TC page of AttesTAM Console, `Upload complete` is displayed.
-  - In the View Managed TCs page of AttesTAM Console, `yolov8.wasm: ver0` appears.
+Continue to [TAWS on an Azure VM with Intel SGX](./demos/taws-azure.md).
 
-### 1.2. Activate the building security device
+### TWEP-SYSTEM on NVIDIA Jetson with OP-TEE
 
-- Operation
-  - In TAWS Console, the building owner clicks the `Activate (TEEP)` button.
+Choose this track to demonstrate:
 
-- Result
-  - In TAWS Console, `The device has been activated. You can install the app.` is displayed.
-  - In the View Managed Devices page of AttesTAM Console, a new device entry appears.
+- a TEEP Agent implemented as a portable Wasm application;
+- execution on NVIDIA Jetson with OP-TEE;
+- command-oriented Trusted Wasm Apps through `twep-cli`;
+- a fixture-backed AttesTAM challenge-response and VERAISON Generic EAT appraisal;
+- installation and execution through a resident `twepd` daemon.
 
-### 1.3. Install the first anomaly detection model
+Continue to [TWEP-SYSTEM on NVIDIA Jetson with OP-TEE](./demos/twep-jetson.md).
 
-- Operation
-  - In TAWS Console, the building owner clicks the `Install (TEEP)` button.
+## Common TAM Administration
 
-- Result
-  - In TAWS Console, `Install Successed` is displayed.
-  - In the View Managed Devices page of AttesTAM Console, `yolov8.wasm: ver0` appears in this device's detail area.
+Both tracks require a TAM Administrator to prepare the Trusted Components required by the selected scenario.
 
-### 1.4. Run the first anomaly detection model
+The administrator uses the AttesTAM Console or the SUIT Manifest Service and TEEP Agent Service APIs to:
 
-- Operation
-  - In TAWS Console, the building owner drags and drops the [sample image](assets/demo-images/surveillance.jpg) and clicks the `Run detector` button.
+1. register a Trusted Component and its SUIT manifest;
+2. inspect registered Trusted Components;
+3. inspect devices that have contacted AttesTAM;
+4. confirm installation or update status.
 
-- Result
-  - In TAWS Console, rectangles are displayed around objects in the image.
+The exact artifact names differ between the tracks. The TAWS track uses the YOLOv8 artifacts in this repository. The TWEP-SYSTEM track uses its own Catalog and application component identifiers.
 
-## 2. Update of the anomaly detection model
+The Console is a browser-oriented BFF for the administration APIs. Its current implementation does not authenticate or authorize Console users, so expose port 9090 only through a controlled local route or tunnel.
 
-This scenario covers distributing a newer model version to an already deployed device.
+## Previous Simulation Demo
 
-### 2.1. Register the new anomaly detection model
-
-- Operation
-  - In the Register TC page of AttesTAM Console, the security service provider uploads [yolov8.1.wasm](assets/manifest/yolov8.wasm.1.envelope.cbor).
-
-- Result
-  - In the View Managed TCs page of AttesTAM Console, `yolov8.wasm: ver1` appears.
-
-### 2.2. Update the anomaly detection model to new version
-
-- Operation
-  - In TAWS Console, the building owner clicks the `Install (TEEP)` button.
-
-- Result
-  - In TAWS Console, `Install Successed` is displayed.
-  - In the View Managed Devices page of AttesTAM Console, `yolov8.wasm: ver1` appears in this device's detail area.
-
-### 2.3. Run the new anomaly detection model
-
-- Operation
-  - In TAWS Console, the building owner drags and drops the [sample image](assets/demo-images/surveillance.jpg) and clicks the `Run detector` button.
-
-- Result
-  - In TAWS Console, rectangles and object estimation results are displayed around objects in the image.
+The complete IETF 125 TAWS flow in SGX simulation mode remains available from the [`ietf125` tag](https://github.com/s-miyazawa/teep-wasm-demo/tree/ietf125).
