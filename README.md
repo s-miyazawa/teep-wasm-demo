@@ -101,24 +101,24 @@ source ./veraison/services/deployments/docker/env.bash
 veraison status
 ```
 
-### 3. Choose the TAWS DCAP provider
+### 3. Prepare the TAWS SGX base image
 
-TAWS builds provider-specific dependencies when the demo services are started in
-step 5. Use `--build` there whenever the provider changes.
-
-For a standard SGX host, TAWS uses its local PCCS service. Obtain an Intel PCS
-API key and pass it only through the environment; do not save the key in this repository.
+This downloads Intel SGX build dependencies and creates the `sgx_sample_deb` image used by the TAWS Docker build.
 
 ```sh
-PCCS_API_KEY=...
+./taws/scripts/prepare_sgx_base_image.sh
 ```
 
-For an Azure SGX VM, use `TAWS_DCAP_PROVIDER=azure` in the step 5 command.
+### 4. Build the demo containers
+
+```sh
+docker compose build
+```
 
 > [!NOTE]
 > Initial setup can take 10 minutes or more because VERAISON, SGX dependencies, and the demo containers are all built locally.
 
-### 4. Provision VERAISON endorsements
+### 5. Provision VERAISON endorsements
 
 This uploads the prebuilt CoRIM used by the attestation flow from `testvectors/prebuilt`.
 
@@ -130,28 +130,17 @@ curl -X POST \
   https://localhost:9443/endorsement-provisioning/v1/submit
 ```
 
-### 5. Build and start the demo services
+### 6. Start the demo services
 
-This starts `AttesTAM` and `TAWS`. Build with the appropriate DCAP provider:
-
-> [!WARNING]
-> AttesTAM runs in insecure demo mode for local evaluation. It uses a public demo private key and must not be used in production.
-
-Standard SGX/PCCS:
+This starts `AttesTAM` and `TAWS`.
 
 ```sh
-PCCS_API_KEY=... docker compose up --build
-```
-
-Azure SGX VM:
-
-```sh
-TAWS_DCAP_PROVIDER=azure docker compose up --build
+docker compose up
 ```
 
 Leave this command running while you use the web consoles.
 
-### 6. Install the initial model
+### 7. Install the initial model
 
 1. Open the AttesTAM Console at `http://localhost:9090`.
 2. Click `Register TC`, choose `assets/manifest/yolov8.wasm.0.envelope.cbor`, and click `Upload`.
@@ -162,7 +151,7 @@ Leave this command running while you use the web consoles.
 7. Upload or drag in the sample image [`assets/demo-images/surveillance.jpg`](./assets/demo-images/surveillance.jpg).
 8. Click `Run detector`. This may take 10 seconds or more.
 
-### 7. Update the model
+### 8. Update the model
 
 1. Return to the AttesTAM Console.
 2. Upload `assets/manifest/yolov8.wasm.1.envelope.cbor`.
@@ -173,7 +162,7 @@ Leave this command running while you use the web consoles.
 
 For the complete end-to-end story and expected results, see [doc/scenario.md](./doc/scenario.md).
 
-### 8. Terminate
+### 9. Terminate
 
 You can confirm that docker containers are running.
 
