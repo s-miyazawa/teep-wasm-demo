@@ -109,4 +109,4 @@ The result shows that challenge freshness, Evidence forwarding, `cnf.key` bindin
 
 Final verified mode must replace development keys with device-specific or manufacturing-provisioned keys, add Jetson and OP-TEE identity claims, enforce corresponding VERAISON policy, protect the TEEP and SUIT trust anchors, and integrate the complete TEEP/COSE/SUIT and Catalog promotion policy. That mode is still under development.
 
-TWEP-SYSTEM is included as the `twep-system` submodule, currently pinned from the private `docs/jetson-twep-demo-setup` branch. The submodule URL will be updated when the source repository moves to the public GitHub account.
+TWEP-SYSTEM is included as the [`twep-system` submodule](https://github.com/s-miyazawa/twep-system), currently pinned from the `docs/jetson-twep-demo-setup` branch.

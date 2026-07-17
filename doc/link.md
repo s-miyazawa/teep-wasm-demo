@@ -24,4 +24,7 @@
 
 ## TWEP-SYSTEM
 
-TWEP-SYSTEM is included as the `twep-system` submodule, pinned from the `docs/jetson-twep-demo-setup` branch. The source repository currently requires private access and is being prepared for publication under a public GitHub account. Update the submodule URL and add public README and design-documentation links after the move.
+- [Repository](https://github.com/s-miyazawa/twep-system)
+- [Jetson demo branch](https://github.com/s-miyazawa/twep-system/tree/docs/jetson-twep-demo-setup)
+
+The `twep-system` submodule is pinned from the `docs/jetson-twep-demo-setup` branch.

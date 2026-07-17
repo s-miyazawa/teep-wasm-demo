@@ -22,5 +22,5 @@
 	url = https://github.com/yuma-nishi/taws
 [submodule "twep-system"]
 	path = twep-system
-	url = https://github.com/SysArchG/twep-system
+	url = https://github.com/s-miyazawa/twep-system
 	branch = docs/jetson-twep-demo-setup

@@ -83,12 +83,10 @@ The two tracks have different prerequisites and workflows. Follow their separate
 - `docker-compose.yaml`: TAWS and AttesTAM integration topology
 - `AttesTAM`: the AttesTAM submodule
 - `taws`: the TAWS submodule
-- `twep-system`: the TWEP-SYSTEM submodule, currently pinned from the private `docs/jetson-twep-demo-setup` branch
+- [`twep-system`](https://github.com/s-miyazawa/twep-system): the TWEP-SYSTEM submodule, currently pinned from the `docs/jetson-twep-demo-setup` branch
 - `veraison/services`: the local external VERAISON deployment
 - `assets`: manifests and demo inputs
 - `testvectors`: TEEP, SUIT, EAT, and SGX Quote3 test vectors
-
-The TWEP-SYSTEM submodule URL will be updated when the source repository is moved to its public GitHub account.
 
 ## Documentation
 
